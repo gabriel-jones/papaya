@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="Gotham Rounded Medium.otf">
+            <string>GothamRounded-Medium</string>
+        </array>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="67" id="KGk-i7-Jjw" customClass="PersonCell" customModule="PrePacked" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="417" height="67"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="417" height="66.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="kMe-sq-Xc4">
+                        <rect key="frame" x="8" y="8" width="50.5" height="50.5"/>
+                        <constraints>
+                            <constraint firstAttribute="width" secondItem="kMe-sq-Xc4" secondAttribute="height" multiplier="1:1" id="2IJ-Pw-9Og"/>
+                            <constraint firstAttribute="height" constant="50.5" id="6dY-dl-pn6"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Packed by:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ex7-iA-1uB">
+                        <rect key="frame" x="66.5" y="8" width="70.5" height="21"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="21" id="Ze6-jm-jeN"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" name="GothamRounded-Medium" family="Gotham Rounded" pointSize="14"/>
+                        <color key="textColor" red="0.40784314269999999" green="0.47058823700000002" blue="0.48627451059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Gabriel Jones" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wD5-1i-0rc">
+                        <rect key="frame" x="66.5" y="33" width="105" height="17"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="17" id="KEt-je-raa"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" name="GothamRounded-Medium" family="Gotham Rounded" pointSize="17"/>
+                        <color key="textColor" red="0.270588249" green="0.31372550129999999" blue="0.32549020649999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Pqh-pb-KnX" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                        <rect key="frame" x="309" y="8" width="100" height="47"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tip" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PRa-Pm-szw">
+                                <rect key="frame" x="8" y="8" width="84" height="31"/>
+                                <fontDescription key="fontDescription" name="GothamRounded-Medium" family="Gotham Rounded" pointSize="17"/>
+                                <color key="textColor" red="0.16078431900000001" green="0.82352942230000004" blue="0.42352941630000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="PRa-Pm-szw" secondAttribute="bottom" constant="8" id="6ru-M6-09s"/>
+                            <constraint firstItem="PRa-Pm-szw" firstAttribute="leading" secondItem="Pqh-pb-KnX" secondAttribute="leading" constant="8" id="Hgx-Bo-mr7"/>
+                            <constraint firstAttribute="height" constant="47" id="bdb-6J-TQq"/>
+                            <constraint firstItem="PRa-Pm-szw" firstAttribute="top" secondItem="Pqh-pb-KnX" secondAttribute="top" constant="8" id="bmq-jQ-EQB"/>
+                            <constraint firstAttribute="width" constant="100" id="ebx-iy-6jz"/>
+                            <constraint firstAttribute="trailing" secondItem="PRa-Pm-szw" secondAttribute="trailing" constant="8" id="kgH-Wb-K5h"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                <color key="value" red="0.16078431900000001" green="0.82352942230000004" blue="0.42352941630000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                <real key="value" value="2"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="10"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="kMe-sq-Xc4" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" id="8fK-l8-Mrb"/>
+                    <constraint firstItem="Ex7-iA-1uB" firstAttribute="leading" secondItem="kMe-sq-Xc4" secondAttribute="trailing" constant="8" id="9Xv-KW-IT2"/>
+                    <constraint firstItem="kMe-sq-Xc4" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" id="D2U-99-q6J"/>
+                    <constraint firstItem="wD5-1i-0rc" firstAttribute="top" secondItem="Ex7-iA-1uB" secondAttribute="bottom" constant="4" id="Drh-np-Zz5"/>
+                    <constraint firstItem="Pqh-pb-KnX" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" id="P4r-Z9-OUJ"/>
+                    <constraint firstItem="Ex7-iA-1uB" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" id="TqI-dZ-YnM"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="Pqh-pb-KnX" secondAttribute="trailing" id="ggU-Ih-6sf"/>
+                    <constraint firstItem="wD5-1i-0rc" firstAttribute="leading" secondItem="kMe-sq-Xc4" secondAttribute="trailing" constant="8" id="h0t-Wc-BAO"/>
+                </constraints>
+            </tableViewCellContentView>
+            <userDefinedRuntimeAttributes>
+                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                    <real key="value" value="10"/>
+                </userDefinedRuntimeAttribute>
+                <userDefinedRuntimeAttribute type="color" keyPath="flatShadowColor">
+                    <color key="value" red="0.84313726430000002" green="0.85490196939999996" blue="0.85882353779999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                </userDefinedRuntimeAttribute>
+                <userDefinedRuntimeAttribute type="boolean" keyPath="flatShadow" value="YES"/>
+            </userDefinedRuntimeAttributes>
+            <connections>
+                <outlet property="personDescription" destination="Ex7-iA-1uB" id="HZw-QV-PBa"/>
+                <outlet property="personImage" destination="kMe-sq-Xc4" id="cjL-A8-CTe"/>
+                <outlet property="personName" destination="wD5-1i-0rc" id="cK1-SZ-6bz"/>
+                <outlet property="personTip" destination="Pqh-pb-KnX" id="6Bj-OP-Kvo"/>
+            </connections>
+            <point key="canvasLocation" x="176.5" y="91.5"/>
+        </tableViewCell>
+    </objects>
+</document>
