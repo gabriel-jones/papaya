@@ -13,10 +13,8 @@ class ChooseShopViewController: UIViewController, UIGestureRecognizerDelegate, G
     
     //MARK: - Outlets
     @IBOutlet weak var mapView: GMSMapView!
-    @IBOutlet weak var menuButton: UIButton!
-    @IBOutlet weak var orderInProgressButton: LargeButton!
-    @IBOutlet weak var activityIndicator: ActivityIndicator!
-    @IBOutlet weak var orderInProgressSubview: UIView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var orderInProgressButton: UIButton!
     
     //MARK: - Properties
     
@@ -25,7 +23,7 @@ class ChooseShopViewController: UIViewController, UIGestureRecognizerDelegate, G
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        orderInProgressButton.gradientBackground()
+        //orderInProgressButton.gradientBackground()
         
         if Order.current.id != -1 {
             self.showStatus()
@@ -33,13 +31,6 @@ class ChooseShopViewController: UIViewController, UIGestureRecognizerDelegate, G
         
         self.mapView.camera = GMSCameraPosition.camera(withLatitude: 32.309657, longitude: -64.750270, zoom: 12.0)
         self.mapView.delegate = self
-        
-        self.revealViewController().frontViewShadowRadius = 0
-                
-        if revealViewController() != nil {
-            view.addGestureRecognizer(self.revealViewController().panGestureRecognizer())
-            menuButton.addTarget(self, action: #selector(revealToggle), for: UIControlEvents.touchUpInside)
-        }
         
         self.navigationController?.interactivePopGestureRecognizer?.delegate = self
         
@@ -157,17 +148,15 @@ class ChooseShopViewController: UIViewController, UIGestureRecognizerDelegate, G
             self.showStatus()
         }
         
-        activityIndicator.colorType = .White
-        activityIndicator.draw()
+        activityIndicator.activityIndicatorViewStyle = .white
         activityIndicator.startAnimating()
-        
+        /*
         if Order.current.id != -1 {
             orderInProgressButton.isHidden = false
             
-            orderInProgressButton.action = self.showStatus
         } else {
             orderInProgressButton.isHidden = true
-        }
+        }*/
         
         if keychain["user_email"] == nil && keychain["user_password"] == nil {
             print("Logging out...")
@@ -179,6 +168,10 @@ class ChooseShopViewController: UIViewController, UIGestureRecognizerDelegate, G
         
     }
     
+    @IBAction func orderInProgressClick(_ sender: Any) {
+        showStatus()
+    }
+    
     //MARK: - Transitions
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -187,10 +180,6 @@ class ChooseShopViewController: UIViewController, UIGestureRecognizerDelegate, G
     
     override func viewWillDisappear(_ animated: Bool) {
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
-    }
-    
-    @objc func revealToggle() {
-        self.revealViewController().revealToggle(animated: true)
     }
     
     func showStatus() {
@@ -208,12 +197,10 @@ class ChooseShopViewController: UIViewController, UIGestureRecognizerDelegate, G
     //MARK: - Map Methods
     
     func mapViewDidStartTileRendering(_ mapView: GMSMapView) {
-        activityIndicator.isHidden = false
         activityIndicator.startAnimating()
     }
     
     func mapViewDidFinishTileRendering(_ mapView: GMSMapView) {
-        activityIndicator.isHidden = true
         activityIndicator.stopAnimating()
     }
     
@@ -228,12 +215,8 @@ class ChooseShopViewController: UIViewController, UIGestureRecognizerDelegate, G
         GroceryList.current.delivery.location = User.current.defaultLocation
         GroceryList.current.delivery.address = User.current.defaultAddress
         
-        self.revealViewController().setFrontViewPosition(FrontViewPosition.leftSideMostRemoved, animated: true)
-        
         let vc = GroceryContainerVC.instantiate(from: .order)
         self.navigationController?.pushViewController(vc, animated: true)
-        
-        self.revealViewController().setFrontViewPosition(FrontViewPosition.leftSideMostRemoved, animated: true)
         
         self.tappedMarker = GMSMarker()
         self.infoWindow.removeFromSuperview()
@@ -286,8 +269,6 @@ class ShopInfoView: UIView {
     @objc func didTap(_ sender: UITapGestureRecognizer) {
         UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseInOut, animations: {
             self.blurView.frame.origin.y = self.isOpened ? 99.5 : 44.0
-            /*self.name.frame.origin.y = self.isOpened ? 4.0 : 43.0
-            self.hours.frame.origin.y = self.isOpened ? 29.0 : 68.0*/
             self.meinButton.alpha = self.isOpened ? 0.0 : 1.0
             
         }, completion: nil)

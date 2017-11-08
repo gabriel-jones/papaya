@@ -10,8 +10,8 @@ import UIKit
 
 class SettingsInfoVC: UIViewController, UIWebViewDelegate {
     
-    var activityIndicator: ActivityIndicator!
     @IBOutlet weak var webView: UIWebView!
+    var activityIndicator: UIActivityIndicatorView!
     
     enum InfoPage {
         case help, privacy, terms, acknowledgements
@@ -22,9 +22,10 @@ class SettingsInfoVC: UIViewController, UIWebViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        activityIndicator = ActivityIndicator(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
-        activityIndicator.colorType = .White
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: activityIndicator)
+        activityIndicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
+        activityIndicator.activityIndicatorViewStyle = .white
+        activityIndicator.hidesWhenStopped = true
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: activityIndicator)
         
         webView.delegate = self
         
@@ -33,18 +34,15 @@ class SettingsInfoVC: UIViewController, UIWebViewDelegate {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        activityIndicator.draw()
         activityIndicator.startAnimating()
     }
     
     func webViewDidStartLoad(_ webView: UIWebView) {
         activityIndicator.startAnimating()
-        activityIndicator.isHidden = false
     }
     
     func webViewDidFinishLoad(_ webView: UIWebView) {
         activityIndicator.stopAnimating()
-        activityIndicator.isHidden = true
     }
 
 }

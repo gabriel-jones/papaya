@@ -8,7 +8,7 @@
 
 import UIKit
 
-class OrderSummaryVC: UIViewController {
+class OrderSummaryVC: BaseVC {
     //MARK: - Properties
     
     
@@ -25,12 +25,11 @@ class OrderSummaryVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap(_:))))
     }
     
     //MARK: - Methods
     
-    @objc func tap(_ sender: UITapGestureRecognizer) {
+    override func tap(_ sender: UITapGestureRecognizer) {
         self.view.endEditing(true)
     }
     

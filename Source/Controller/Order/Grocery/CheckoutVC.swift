@@ -165,29 +165,26 @@ extension CheckoutVC {
     }
     
     func buy() {
-        let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
-        a.addButton("Continue", backgroundColor: Color.green) {
-            let vc = self.storyboard?.instantiateViewController(withIdentifier: "Processing") as! ProcessingVC
-            vc.delegate = self
-            
-            
-            vc.modalPresentationStyle = .overCurrentContext
-            self.addOverlay(vc, animated: true, completion: nil)
+        let processingAlert = UIAlertController(title: "Processing Order...", message: nil, preferredStyle: .alert)
+        let indicator = UIActivityIndicatorView(frame: processingAlert.view.bounds)
+        indicator.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        processingAlert.view.addSubview(indicator)
+        indicator.isUserInteractionEnabled = false
+        indicator.startAnimating()
+        present(processingAlert, animated: true) {
+            ProcessOrder.shared.buy { error in
+                processingAlert.dismiss(animated: true) {
+                    self.didProcess(error)
+                }
+            }
         }
-        a.addButton("Cancel") {}
-        a.showNotice("Start Order?", subTitle: "You will not be charged until the order is completed.")
     }
 }
 
-/*//MARK: UITableView
-extension CheckoutVC: UITableViewDelegate, UITableViewDataSource {
-    //
-}*/
-
 //MARK: ProcessDelegate
-extension CheckoutVC: ProcessDelegate {
+extension CheckoutVC {
     
-    func didProcess(_ error: ProcessingVC.OrderError?) {
+    func didProcess(_ error: ProcessOrder.OrderError?) {
         self.closeOverlay()
                 
         guard let e = error else {
@@ -227,31 +224,13 @@ extension CheckoutVC: ProcessDelegate {
         a.showWarning("Could not add order", subTitle: sub)
     }
 }
-
-protocol ProcessDelegate {
-    func didProcess(_ error: ProcessingVC.OrderError?)
-}
-
-class ProcessingVC: UIViewController {
+class ProcessOrder {
     
-    //MARK: - Properties
-    var delegate: ProcessDelegate!
-    //TODO: input variables
-    
-    //MARK: - Outlets
-    @IBOutlet weak var loading: LoadingIndicator!
+    static var shared = ProcessOrder()
     
     //MARK: - Enums
     enum OrderError: Int {
         case offline, unverified = 3, payment, userID = 2
-    }
-    
-    //MARK: - View Methods
-    override func viewWillAppear(_ animated: Bool) {
-        //ac.draw()
-        //ac.startAnimating()
-        loading.startAnimating()
-        buy()
     }
     
     func addOrder(c: @escaping (OrderError?)->()) {
@@ -287,21 +266,15 @@ class ProcessingVC: UIViewController {
         }
     }
     
-    func buy() {
-        //1. check online status
-        R.checkConnection() { online in
-            if !online {
-                self.dismiss(animated: true) {
-                    self.delegate.didProcess(.offline)
-                }
+    func buy(_ didProcess: @escaping ((OrderError?) -> ())) {
+        R.checkConnection { online in
+            guard online else {
+                didProcess(.offline)
                 return
             }
             
-            //2. order
             self.addOrder { e in
-                self.dismiss(animated: true) {
-                    self.delegate.didProcess(e)
-                }
+                didProcess(e)
             }
         }
     }

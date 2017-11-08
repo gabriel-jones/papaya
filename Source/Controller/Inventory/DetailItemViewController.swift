@@ -17,13 +17,7 @@ protocol DetailDelegate: class {
     func didFinishDetailWith(item toGoTo: Item?)
 }
 
-class DetailItemViewController: UIViewController, SwitchDelegate, UITextFieldDelegate, DetailDelegate {
-    
-    func switchView(valueChanged value: SwitchAlt.SwitchState) {
-        if !not_switch_on_load {
-            //TODO: save notify items, refactor database
-        }
-    }
+class DetailItemViewController: BaseVC, UITextFieldDelegate, DetailDelegate {
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
         self.quantity.text = ""
@@ -80,11 +74,8 @@ class DetailItemViewController: UIViewController, SwitchDelegate, UITextFieldDel
     @IBOutlet weak var shopName: UILabel!
     
     @IBOutlet weak var buyView: UIView!
-    @IBOutlet weak var notifySwitch: SwitchAlt!
     @IBOutlet weak var notifyLabel: UILabel!
     @IBOutlet weak var inventoryOK: LargeButton!
-
-    var not_switch_on_load = true
     
     override func viewDidLoad() {
         let border = CALayer()
@@ -104,22 +95,9 @@ class DetailItemViewController: UIViewController, SwitchDelegate, UITextFieldDel
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         
-        let t = UITapGestureRecognizer(target: self, action: #selector(tap))
-        self.view.addGestureRecognizer(t)
-        
         let _tap = UITapGestureRecognizer(target: self, action: #selector(imageTap))
         self.image.isUserInteractionEnabled = true
         self.image.addGestureRecognizer(_tap)
-
-        //let b = M.CurrentUser.notifyItems.contains(where: {$0.id == self.item.id})
-        notifySwitch.delegate = self
-        notifySwitch.color = .Green
-        //notifySwitch.toggleColor = Color.green
-        
-        notifySwitch.layer.borderWidth = 2.0
-        notifySwitch.layer.borderColor = UIColorFromRGB(notifySwitch.color.rawValue).cgColor
-        notifySwitch.changeTo(.Off, animted: false)
-        not_switch_on_load = false
         
         self.name.text = item.name
         self.likeImage.image = self.item.isLiked ? #imageLiteral(resourceName: "Heart Red Filled") : #imageLiteral(resourceName: "Heart Grey")
@@ -164,13 +142,11 @@ class DetailItemViewController: UIViewController, SwitchDelegate, UITextFieldDel
         }
         
         if self.inventoryParent {
-            self.notifySwitch.isHidden = false
             self.notifyLabel.isHidden = false
             self.buyView.isHidden = true
             self.inventoryOK.isHidden = false
         } else {
             self.buyView.isHidden = false
-            self.notifySwitch.isHidden = true
             self.notifyLabel.isHidden = true
             self.inventoryOK.isHidden = true
         }
@@ -264,23 +240,24 @@ class DetailItemViewController: UIViewController, SwitchDelegate, UITextFieldDel
         v.alpha = 0.9
         self.view.addSubview(v)
         
+        
         self.present(vc, animated: true, completion: nil)
     }
     
     @objc func textDidChange(_ sender: LoginTextField) {
         if sender.text != "" {
-            self.n = Int(sender.text!)!
+            n = Int(sender.text!)!
         }
     }
     
-    @objc func tap() {
-        self.view.endEditing(true)
+    @objc override func tap(_ sender: UITapGestureRecognizer) {
+        view.endEditing(true)
     }
     
     @objc func keyboardWillShow(notification: Notification) {
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y == 0{
-                self.view.frame.origin.y -= keyboardSize.height
+            if view.frame.origin.y == 0{
+                view.frame.origin.y -= keyboardSize.height
             }
         }
         
@@ -288,8 +265,8 @@ class DetailItemViewController: UIViewController, SwitchDelegate, UITextFieldDel
     
     @objc func keyboardWillHide(notification: Notification) {
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y != 0{
-                self.view.frame.origin.y += keyboardSize.height
+            if view.frame.origin.y != 0{
+                view.frame.origin.y += keyboardSize.height
             }
         }
     }

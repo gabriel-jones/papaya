@@ -26,18 +26,18 @@ class CompareVC: UIViewController, UICollectionViewDelegate, UICollectionViewDat
     
     override func viewWillAppear(_ animated: Bool) {
         
-        self.likeLabel.text = "Items like: \(item.name)"
+        likeLabel.text = "Items like: \(item.name)"
+        
         closeButton.action = {
             self.dismiss(animated: true) {
                 self.delegate.didFinishDetail()
             }
         }
         
-        self.collectionView.alpha = 0.0
-        let a = ActivityIndicator(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
-        a.center = self.view.center
-        a.colorType = .Grey
-        a.draw()
+        collectionView.alpha = 0.0
+        
+        let a = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        a.center = view.center
         a.startAnimating()
         
         R.get("/scripts/Inventory/similar_items.php", parameters: ["item_id": self.item.id]) { json, error in

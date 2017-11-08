@@ -13,7 +13,7 @@ class BaseVC: UIViewController {
     
     //MARK: - Properties
     private var overlay: UIView!
-    private var loading: LoadingIndicator!
+    private var loading: UIActivityIndicatorView!
     
     
     //MARK: - View Methods
@@ -24,10 +24,6 @@ class BaseVC: UIViewController {
         overlay = UIView(frame: self.view.frame)
         overlay.backgroundColor = .black
         overlay.alpha = 0.5
-        
-        let tap = UITapGestureRecognizer(target: self, action: #selector(tap(_:)))
-        tap.cancelsTouchesInView = false
-        self.view.addGestureRecognizer(tap)
         
     }
     
@@ -46,9 +42,7 @@ class BaseVC: UIViewController {
     
     //MARK: - Methods
     
-    @objc func tap(_ sender: UITapGestureRecognizer) {
-        
-    }
+    @objc func tap(_ sender: UITapGestureRecognizer) {}
     
     func load() {
         view.endEditing(true)
@@ -56,7 +50,7 @@ class BaseVC: UIViewController {
         overlay = UIView(frame: CGRect(x: 0, y: -50, width: view.frame.width, height: view.frame.height + 104))
         overlay.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.4)
         
-        loading = LoadingIndicator(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        loading = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         loading.center = overlay.center
         overlay.addSubview(loading)
         

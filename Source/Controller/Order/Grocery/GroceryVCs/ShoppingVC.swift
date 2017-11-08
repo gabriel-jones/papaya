@@ -297,11 +297,9 @@ class ShoppingVC: GroceryVC {
         if page == old_page_count { self.items.removeAll() } //Remove if refreshing first page
         
         //Loading Indicator
-        let ac = ActivityIndicator(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
-        ac.colorType = .Grey
-        ac.center = self.view.center
+        let ac = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        ac.center = view.center
         self.view.addSubview(ac)
-        ac.draw()
         ac.startAnimating()
         
         R.get("/scripts/Inventory/inventory.php", parameters: param) { json, error in

@@ -43,8 +43,6 @@ class PackerVC: UIViewController {
             self.navigationController?.dismiss(animated: false, completion: nil)
         }
         
-        self.loadingIndicator.draw()
-        
         self.loading(is: true)
         R.get("/scripts/Packer/get_status.php") { json, error in
             guard let j = json, !error else {
@@ -116,14 +114,14 @@ class PackerVC: UIViewController {
         for v in view.subviews {
             v.alpha = `is` ? (v.tag != 1 ? 0 : 1) : (v.tag != 2 ? 1 : 0)
         }
-        self.loadingVIew.alpha = `is` ? 1 : 0
+        if `is` {
+            startLoading()
+        } else {
+            stopLoading()
+        }
+        
         self.view.isUserInteractionEnabled = !`is`
-        if `is` { self.loadingIndicator.startAnimating() }
-        else { self.loadingIndicator.stopAnimating() }
     }
-    
-    @IBOutlet weak var loadingIndicator: ActivityIndicator!
-    @IBOutlet weak var loadingVIew: UIView!
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -174,6 +172,24 @@ class PackerVC: UIViewController {
                 self.navigationController?.pushViewController(vc, animated: true)
             }
         }
+    }
+    
+    var loadingAlert: UIAlertController!
+    
+    func startLoading() {
+        loadingAlert = UIAlertController(title: "Loading...", message: nil, preferredStyle: .alert)
+        let indicator = UIActivityIndicatorView(frame: loadingAlert.view.bounds)
+        indicator.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        loadingAlert.view.addSubview(indicator)
+        indicator.isUserInteractionEnabled = false
+        indicator.startAnimating()
+        
+        present(loadingAlert, animated: true, completion: nil)
+    }
+    
+    func stopLoading() {
+        loadingAlert.dismiss(animated: true, completion: nil)
     }
     
     @IBOutlet weak var onlineContainer: UIView!

@@ -14,7 +14,6 @@ class SettingsVC: UITableViewController {
     @IBOutlet weak var creditCard: UILabel!
     
     @IBOutlet weak var nameLabel: UILabel!
-    var delegate: MenuVC!
     
     override func viewDidLoad() {
         super.viewDidLoad()

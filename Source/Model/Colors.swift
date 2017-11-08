@@ -6,7 +6,7 @@
 //  Copyright © 2016 Fireminds Ltd. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 class Color {
     static let green = #colorLiteral(red: 0.1607843137, green: 0.8235294118, blue: 0.4235294118, alpha: 1)

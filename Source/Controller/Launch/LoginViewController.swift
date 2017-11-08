@@ -101,11 +101,11 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             return
         }
         
-        self.view.endEditing(true)
-        let a = ActivityIndicator(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 50, height: 50)))
-        a.center = self.view.center
-        a.colorType = .White
-        a.draw()
+        view.endEditing(true)
+        
+        let a = UIActivityIndicatorView(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: 50, height: 50)))
+        a.center = view.center
+        a.activityIndicatorViewStyle = .white
         a.startAnimating()
         
         R.login(self.email.text!, p: self.password.text!) { error in

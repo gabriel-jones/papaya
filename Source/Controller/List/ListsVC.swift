@@ -101,7 +101,7 @@ class ListsVC: BaseVC {
     }
     
     func getLists(_ completion: (() -> ())? = nil) {
-        let a = LoadingIndicator(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        let a = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         a.center = view.center
         view.addSubview(a)
         a.startAnimating()

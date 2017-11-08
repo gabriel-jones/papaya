@@ -44,6 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
         }
         GMSServices.provideAPIKey(C.GMS_KEY)
         GMSPlacesClient.provideAPIKey(C.GMS_KEY)
+        
         return true
     }
 }

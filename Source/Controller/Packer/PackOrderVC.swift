@@ -72,6 +72,7 @@ class PackOrderVC: UIViewController {
     var currentItem: PackItem? = nil
     var items: [PackItem] = []
     var showFinish = false
+    var loadingAlert: UIAlertController!
     
     //MARK: - Outlets
     //MARK: Current Item
@@ -102,9 +103,6 @@ class PackOrderVC: UIViewController {
     //MARK: General
     @IBOutlet weak var seeItemsLabel: UILabel!
     @IBOutlet weak var seeItemsButton: LargeButton!
-    
-    @IBOutlet weak var loadingView: UIView!
-    @IBOutlet weak var loadingIndicator: ActivityIndicator!
     
     @IBOutlet weak var offline: UIView!
     
@@ -161,7 +159,7 @@ class PackOrderVC: UIViewController {
     }
     
     func removeAllFailedStatuses() {
-        print("REmove all failed statuses")
+        print("Remove all failed statuses")
         UserDefaults.standard.removeObject(forKey: "prepacked_packer_status_items")
         UserDefaults.standard.synchronize()
     }
@@ -182,7 +180,7 @@ class PackOrderVC: UIViewController {
     
     func updateFailedStatuses(_ completion: ((Bool)->())? = nil) {
         print("update failed statuses")
-        if let failedStatuses = self.getFailedStatuses() {
+        if let failedStatuses = getFailedStatuses() {
             print("found failed statuses")
             if failedStatuses.isEmpty {
                 print("statuses empty")
@@ -247,14 +245,14 @@ class PackOrderVC: UIViewController {
     
     func nextItem(_ animated: Bool = true, _ completion: (() -> ())? = nil) {
         
-        self.currentItem = items.of(status: .unpacked).first
-        if self.currentItem == nil {
-            self.updateAllUI()
-            self.toggleFinished(true)
+        currentItem = items.of(status: .unpacked).first
+        if currentItem == nil {
+            updateAllUI()
+            toggleFinished(true)
             if let c = completion { c() }
             return
         } else {
-            self.toggleFinished(false)
+            toggleFinished(false)
         }
         
         print("animating next item")
@@ -283,7 +281,7 @@ class PackOrderVC: UIViewController {
         v = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height))
         v?.backgroundColor = .black
         v?.alpha = 0.4
-        self.view.addSubview(v!)
+        view.addSubview(v!)
     }
     
     func removeOverlay() {
@@ -299,9 +297,9 @@ class PackOrderVC: UIViewController {
         for v in self.view.subviews {
             v.alpha = 1
         }
-        self.loadingView.alpha = 0
-        self.collectionView.alpha = 0
-        self.view.isUserInteractionEnabled = true
+        stopLoading()
+        collectionView.alpha = 0
+        view.isUserInteractionEnabled = true
     }
     
     override func viewDidLoad() {
@@ -313,7 +311,7 @@ class PackOrderVC: UIViewController {
         
         UIApplication.shared.isIdleTimerDisabled = true
         
-        self.view.isUserInteractionEnabled = false
+        view.isUserInteractionEnabled = false
         
         NotificationCenter.default.addObserver(self, selector: #selector(networkChanged), name: .flagsChanged, object: Network.reachability)
         
@@ -331,13 +329,11 @@ class PackOrderVC: UIViewController {
         seeItemsButton.frame = CGRect(x: 16, y: view.frame.height - 45 - 16, width: view.frame.width - 32, height: 45)
         seeItemsLabel.frame = CGRect(x: 8, y: 8, width: seeItemsButton.frame.width - 16, height: seeItemsButton.frame.height - 16)
         
-        //finishContentView.frame = CGRect(x: view.frame.width, y: 73, width: view.frame.width - 32, height: view.frame.height - 73 - 76)
-        
         for v in view.subviews {
             v.alpha = v.tag != 1 ? 0 : 1
         }
         
-        self.loadOrderDetails {
+        loadOrderDetails {
             self.updateFailedStatuses { s in
                 self.finishLoading()
             }
@@ -381,8 +377,8 @@ class PackOrderVC: UIViewController {
         collectionView.addGestureRecognizer(tapGesture)
         
         let _tap = UITapGestureRecognizer(target: self, action: #selector(imageTap))
-        self.currentImage.isUserInteractionEnabled = true
-        self.currentImage.addGestureRecognizer(_tap)
+        currentImage.isUserInteractionEnabled = true
+        currentImage.addGestureRecognizer(_tap)
     }
     
     @objc func imageTap() {
@@ -399,17 +395,20 @@ class PackOrderVC: UIViewController {
     }
     
     func finishOrder() {
-        self.addOverlay()
-        self.view.isUserInteractionEnabled = false
-        self.loadingView.alpha = 1
-        guard self.signatureView.hasContent else {
+        addOverlay()
+        view.isUserInteractionEnabled = false
+        startLoading()
+        
+        guard signatureView.hasContent else {
             return
         }
-        self.signatureView.save()
+        
+        signatureView.save()
+        
         let img = self.signatureView.signature
-        R.finishOrder(id: self.order_id, image: img, items: self.items) { json, error in
+        R.finishOrder(id: order_id, image: img, items: items) { json, error in
             self.removeOverlay()
-            self.loadingView.alpha = 0
+            self.stopLoading()
             self.view.isUserInteractionEnabled = true
             let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
             guard let j = json, !error, j["success"].boolValue else {
@@ -439,9 +438,20 @@ class PackOrderVC: UIViewController {
         UIApplication.shared.isIdleTimerDisabled = false
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        loadingIndicator.draw()
-        loadingIndicator.startAnimating()
+    func startLoading() {
+        loadingAlert = UIAlertController(title: "Loading...", message: nil, preferredStyle: .alert)
+        let indicator = UIActivityIndicatorView(frame: loadingAlert.view.bounds)
+        indicator.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        loadingAlert.view.addSubview(indicator)
+        indicator.isUserInteractionEnabled = false
+        indicator.startAnimating()
+        
+        present(loadingAlert, animated: true, completion: nil)
+    }
+    
+    func stopLoading() {
+        loadingAlert.dismiss(animated: true, completion: nil)
     }
     
     var isViewingCurrentItem = true
