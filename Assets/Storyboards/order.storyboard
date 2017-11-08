@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
@@ -31,7 +31,7 @@
         <!--Checkout DeliveryVC-->
         <scene sceneID="WNl-Hv-ihD">
             <objects>
-                <viewController storyboardIdentifier="CheckoutDeliveryVC" id="H4O-vm-wAs" customClass="CheckoutDeliveryVC" customModule="PrePacked" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CheckoutDeliveryVC" id="H4O-vm-wAs" customClass="CheckoutDeliveryVC" customModule="Papaya" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="KvF-rP-GoJ"/>
                         <viewControllerLayoutGuide type="bottom" id="Nac-17-Oil"/>
@@ -130,7 +130,7 @@
         <!--Grocery Container-->
         <scene sceneID="YJD-tR-BUH">
             <objects>
-                <viewController storyboardIdentifier="GroceryContainerVC" title="Grocery Container" id="ts3-Ke-sDR" customClass="GroceryContainerVC" customModule="PrePacked" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="GroceryContainerVC" title="Grocery Container" id="ts3-Ke-sDR" customClass="GroceryContainerVC" customModule="Papaya" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="C6F-ku-uM6"/>
                         <viewControllerLayoutGuide type="bottom" id="nJH-7R-iq0"/>
@@ -173,21 +173,21 @@
                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jVj-SW-g2o" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
-                                        <rect key="frame" x="261" y="65" width="114" height="50"/>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jVj-SW-g2o" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
+                                        <rect key="frame" x="252" y="65" width="123" height="50"/>
                                         <subviews>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Shopping Cart White Filled-1" translatesAutoresizingMaskIntoConstraints="NO" id="zYb-kO-fVE">
-                                                <rect key="frame" x="75" y="13" width="25" height="25"/>
+                                                <rect key="frame" x="84" y="13" width="25" height="25"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="25" id="1hJ-Ux-PUq"/>
                                                     <constraint firstAttribute="width" constant="25" id="THO-tN-YH0"/>
                                                 </constraints>
                                             </imageView>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8i9-kb-nJf">
-                                                <rect key="frame" x="8" y="6" width="59" height="36"/>
+                                                <rect key="frame" x="8" y="9" width="68" height="33"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$0.00" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OgA-Dm-lMA">
-                                                        <rect key="frame" x="8" y="8" width="43" height="20"/>
+                                                        <rect key="frame" x="8" y="8" width="52" height="17"/>
                                                         <fontDescription key="fontDescription" name="GothamRounded-Medium" family="Gotham Rounded" pointSize="17"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                         <nil key="highlightedColor"/>
@@ -218,7 +218,7 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2fo-Td-hHw">
-                                        <rect key="frame" x="8" y="74" width="253" height="33"/>
+                                        <rect key="frame" x="8" y="74" width="244" height="33"/>
                                         <subviews>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Search White" translatesAutoresizingMaskIntoConstraints="NO" id="3RV-tL-Rf9">
                                                 <rect key="frame" x="4" y="4" width="25" height="25"/>
@@ -228,7 +228,7 @@
                                                 </constraints>
                                             </imageView>
                                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Search..." textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="xfM-hH-5r6">
-                                                <rect key="frame" x="37" y="4" width="216" height="25"/>
+                                                <rect key="frame" x="37" y="4" width="207" height="25"/>
                                                 <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="25" id="6zq-Bv-INd"/>
@@ -251,7 +251,7 @@
                                             <constraint firstAttribute="bottom" secondItem="3RV-tL-Rf9" secondAttribute="bottom" constant="4" id="yWj-cy-p2g"/>
                                         </constraints>
                                     </view>
-                                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AGL-l3-PaE" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AGL-l3-PaE" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                         <rect key="frame" x="8" y="74" width="160" height="33"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Continue Shopping" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AiA-Nu-58i">
@@ -330,7 +330,7 @@
         <!--CheckoutVC-->
         <scene sceneID="C3q-PP-XAW">
             <objects>
-                <viewController storyboardIdentifier="CheckoutVC" automaticallyAdjustsScrollViewInsets="NO" id="XnM-cn-OEU" customClass="CheckoutVC" customModule="PrePacked" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CheckoutVC" automaticallyAdjustsScrollViewInsets="NO" id="XnM-cn-OEU" customClass="CheckoutVC" customModule="Papaya" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="1WY-pk-7cg"/>
                         <viewControllerLayoutGuide type="bottom" id="Ofw-Xf-evV"/>
@@ -459,7 +459,7 @@
                                                     <userDefinedRuntimeAttribute type="boolean" keyPath="flatShadow" value="YES"/>
                                                 </userDefinedRuntimeAttributes>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="b2J-R2-OEO" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="b2J-R2-OEO" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                                 <rect key="frame" x="16" y="16" width="343" height="265"/>
                                                 <subviews>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zpU-Gx-jFL">
@@ -548,7 +548,7 @@
                                                     <userDefinedRuntimeAttribute type="boolean" keyPath="flatShadow" value="YES"/>
                                                 </userDefinedRuntimeAttributes>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FbR-Cg-obW" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FbR-Cg-obW" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                                 <rect key="frame" x="16" y="418" width="343" height="77"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Payment" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="adM-ia-sfC">
@@ -599,7 +599,7 @@
                                                     <userDefinedRuntimeAttribute type="boolean" keyPath="flatShadow" value="YES"/>
                                                 </userDefinedRuntimeAttributes>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nib-7L-3a1" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nib-7L-3a1" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                                 <rect key="frame" x="16" y="511" width="343" height="77"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Cart" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bO7-6Q-PnQ">
@@ -756,7 +756,7 @@ and delivered to you faster than regular customers.</string>
                                     <outlet property="delegate" destination="XnM-cn-OEU" id="3aA-i6-MxR"/>
                                 </connections>
                             </scrollView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eih-R9-SFL" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eih-R9-SFL" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                 <rect key="frame" x="16" y="891" width="343" height="50"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Continue" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iAf-Yx-lVr">
@@ -854,12 +854,12 @@ and delivered to you faster than regular customers.</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7Um-ud-PXf" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2152.8000000000002" y="548.27586206896558"/>
+            <point key="canvasLocation" x="2140" y="590"/>
         </scene>
         <!--Detail Item View Controller-->
         <scene sceneID="Ekd-K8-aKz">
             <objects>
-                <viewController storyboardIdentifier="DetailItem" id="BPv-lH-ppy" customClass="DetailItemViewController" customModule="PrePacked" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="DetailItem" id="BPv-lH-ppy" customClass="DetailItemViewController" customModule="Papaya" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="6oH-uQ-tJc"/>
                         <viewControllerLayoutGuide type="bottom" id="aF2-JE-YpR"/>
@@ -886,7 +886,7 @@ and delivered to you faster than regular customers.</string>
                                         <color key="textColor" red="0.270588249" green="0.31372550129999999" blue="0.32549020649999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Zjg-zB-vyN" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Zjg-zB-vyN" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                         <rect key="frame" x="220" y="189" width="50" height="75"/>
                                         <subviews>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Heart Grey" translatesAutoresizingMaskIntoConstraints="NO" id="Bqy-77-5cN">
@@ -968,7 +968,7 @@ and delivered to you faster than regular customers.</string>
                                         <color key="textColor" red="0.16078431900000001" green="0.82352942230000004" blue="0.42352941630000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ItD-m3-670" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ItD-m3-670" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                         <rect key="frame" x="235" y="0.0" width="60" height="60"/>
                                         <subviews>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Cancel Grey " translatesAutoresizingMaskIntoConstraints="NO" id="SlF-aD-RXJ">
@@ -990,7 +990,7 @@ and delivered to you faster than regular customers.</string>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fdE-0i-Fwc">
                                         <rect key="frame" x="8" y="403" width="279" height="74"/>
                                         <subviews>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ziB-9y-Btl" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ziB-9y-Btl" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                                 <rect key="frame" x="9" y="19" width="118" height="50"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VQm-IZ-65L">
@@ -1017,7 +1017,7 @@ and delivered to you faster than regular customers.</string>
                                                     </userDefinedRuntimeAttribute>
                                                 </userDefinedRuntimeAttributes>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5mC-K4-BaN" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5mC-K4-BaN" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                                 <rect key="frame" x="224" y="11" width="47" height="30"/>
                                                 <subviews>
                                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Plus Green" translatesAutoresizingMaskIntoConstraints="NO" id="szr-oR-tRD">
@@ -1030,7 +1030,7 @@ and delivered to you faster than regular customers.</string>
                                                     <constraint firstAttribute="height" constant="30" id="c0V-pI-fVl"/>
                                                 </constraints>
                                             </view>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VpF-uV-xIr" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VpF-uV-xIr" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                                 <rect key="frame" x="224" y="41" width="47" height="30"/>
                                                 <subviews>
                                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Minus Red" translatesAutoresizingMaskIntoConstraints="NO" id="r04-np-KpW">
@@ -1082,7 +1082,7 @@ and delivered to you faster than regular customers.</string>
                                         </constraints>
                                     </view>
                                     <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Notify me when in stock" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5vp-7m-nVv">
-                                        <rect key="frame" x="83" y="394" width="187" height="21"/>
+                                        <rect key="frame" x="86" y="394" width="184" height="21"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="21" id="SKn-sC-3QP"/>
                                         </constraints>
@@ -1090,15 +1090,7 @@ and delivered to you faster than regular customers.</string>
                                         <color key="textColor" red="0.66666666669999997" green="0.66666666669999997" blue="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Z0a-aT-Og7" customClass="SwitchAlt" customModule="PrePacked" customModuleProvider="target">
-                                        <rect key="frame" x="25" y="392" width="50" height="25"/>
-                                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="50" id="Rgc-hf-qc1"/>
-                                            <constraint firstAttribute="height" constant="25" id="hSG-VQ-Df2"/>
-                                        </constraints>
-                                    </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GjY-6P-g7M" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GjY-6P-g7M" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="428" width="295" height="58"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="OK" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J1W-2K-a5s">
@@ -1119,7 +1111,7 @@ and delivered to you faster than regular customers.</string>
                                             <constraint firstAttribute="height" constant="58" id="IRq-6Q-jZf"/>
                                         </constraints>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3jj-HQ-1y8" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3jj-HQ-1y8" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
                                         <subviews>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Compare Grey" translatesAutoresizingMaskIntoConstraints="NO" id="6MV-eY-ncS">
@@ -1160,7 +1152,6 @@ and delivered to you faster than regular customers.</string>
                                     <constraint firstItem="Zjg-zB-vyN" firstAttribute="leading" secondItem="yq0-Ck-yFI" secondAttribute="trailing" constant="8" id="9Y6-lG-ay7"/>
                                     <constraint firstItem="GjY-6P-g7M" firstAttribute="top" secondItem="5vp-7m-nVv" secondAttribute="bottom" constant="13" id="Cvy-3Y-RC2"/>
                                     <constraint firstAttribute="trailing" secondItem="Zjg-zB-vyN" secondAttribute="trailing" constant="25" id="EvW-gd-mtb"/>
-                                    <constraint firstItem="Z0a-aT-Og7" firstAttribute="centerY" secondItem="5vp-7m-nVv" secondAttribute="centerY" id="Evc-BI-zC9"/>
                                     <constraint firstAttribute="bottom" secondItem="GjY-6P-g7M" secondAttribute="bottom" id="F4G-3b-V95"/>
                                     <constraint firstItem="Zjg-zB-vyN" firstAttribute="trailing" secondItem="3yV-RE-RIw" secondAttribute="trailing" id="FeQ-Li-1GJ"/>
                                     <constraint firstItem="3jj-HQ-1y8" firstAttribute="top" secondItem="sdX-yK-7iW" secondAttribute="top" id="Fp8-8v-Iuc"/>
@@ -1185,10 +1176,8 @@ and delivered to you faster than regular customers.</string>
                                     <constraint firstAttribute="trailing" secondItem="ItD-m3-670" secondAttribute="trailing" id="aGI-pr-Yrq"/>
                                     <constraint firstItem="3EA-yT-3hq" firstAttribute="top" secondItem="2at-5X-t5R" secondAttribute="bottom" constant="15" id="amV-EF-B9n"/>
                                     <constraint firstAttribute="trailing" secondItem="fdE-0i-Fwc" secondAttribute="trailing" constant="8" id="bbf-52-qOI"/>
-                                    <constraint firstItem="Z0a-aT-Og7" firstAttribute="leading" secondItem="sdX-yK-7iW" secondAttribute="leading" constant="25" id="cTf-R4-a2I"/>
                                     <constraint firstAttribute="trailing" secondItem="3yV-RE-RIw" secondAttribute="trailing" constant="25" id="fdk-mN-t4C"/>
                                     <constraint firstItem="dFt-CQ-OzQ" firstAttribute="top" secondItem="sdX-yK-7iW" secondAttribute="top" id="gVH-Vk-VUS"/>
-                                    <constraint firstItem="5vp-7m-nVv" firstAttribute="leading" secondItem="Z0a-aT-Og7" secondAttribute="trailing" constant="8" id="ih0-We-iMZ"/>
                                     <constraint firstItem="2at-5X-t5R" firstAttribute="top" secondItem="yq0-Ck-yFI" secondAttribute="bottom" constant="8" id="m6Y-Hg-efY"/>
                                     <constraint firstItem="3yV-RE-RIw" firstAttribute="top" secondItem="sdX-yK-7iW" secondAttribute="top" constant="40" id="myY-I9-spV"/>
                                     <constraint firstAttribute="trailing" secondItem="5vp-7m-nVv" secondAttribute="trailing" constant="25" id="nvm-DA-CcH"/>
@@ -1224,7 +1213,6 @@ and delivered to you faster than regular customers.</string>
                         <outlet property="minus" destination="VpF-uV-xIr" id="szQ-5J-MiX"/>
                         <outlet property="name" destination="yq0-Ck-yFI" id="Dnt-Iq-vc2"/>
                         <outlet property="notifyLabel" destination="5vp-7m-nVv" id="2Xv-OD-rZB"/>
-                        <outlet property="notifySwitch" destination="Z0a-aT-Og7" id="jQ8-rJ-Xe8"/>
                         <outlet property="plus" destination="5mC-K4-BaN" id="q7U-9j-V7h"/>
                         <outlet property="price" destination="fpq-6x-XwE" id="jjB-Z7-RQ4"/>
                         <outlet property="quantity" destination="sVv-Td-R4a" id="eNh-10-y6C"/>
@@ -1239,7 +1227,7 @@ and delivered to you faster than regular customers.</string>
         <!--Image DetailVC-->
         <scene sceneID="TBd-mA-gtM">
             <objects>
-                <viewController storyboardIdentifier="ImageDetailVC" id="1a1-ls-ojR" customClass="ImageDetailVC" customModule="PrePacked" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ImageDetailVC" id="1a1-ls-ojR" customClass="ImageDetailVC" customModule="Papaya" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="HCP-5D-Pzo"/>
                         <viewControllerLayoutGuide type="bottom" id="xJ3-ca-Cz2"/>
@@ -1261,7 +1249,7 @@ and delivered to you faster than regular customers.</string>
                                     <outlet property="delegate" destination="1a1-ls-ojR" id="D44-qp-BXo"/>
                                 </connections>
                             </scrollView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vUy-cR-IjA" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vUy-cR-IjA" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                 <rect key="frame" x="289" y="20" width="70" height="70"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Cancel White" translatesAutoresizingMaskIntoConstraints="NO" id="pp1-7o-9ch">
@@ -1280,7 +1268,7 @@ and delivered to you faster than regular customers.</string>
                                     <constraint firstAttribute="trailing" secondItem="pp1-7o-9ch" secondAttribute="trailing" constant="5" id="iQZ-3q-ZaK"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="U4C-Q0-gP4" customClass="DSGradientProgressView" customModule="PrePacked" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="U4C-Q0-gP4" customClass="DSGradientProgressView" customModule="Papaya" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="666" width="375" height="1"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -1316,7 +1304,7 @@ and delivered to you faster than regular customers.</string>
         <!--CompareVC-->
         <scene sceneID="B2E-Ee-hW8">
             <objects>
-                <viewController storyboardIdentifier="CompareVC" id="LWd-fS-NIE" customClass="CompareVC" customModule="PrePacked" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CompareVC" id="LWd-fS-NIE" customClass="CompareVC" customModule="Papaya" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="pMG-7Z-yag"/>
                         <viewControllerLayoutGuide type="bottom" id="LcE-lA-9z5"/>
@@ -1339,7 +1327,7 @@ and delivered to you faster than regular customers.</string>
                                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                         </collectionViewFlowLayout>
                                         <cells>
-                                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="cell" id="0Lo-au-nWk" customClass="ShoppingItemCell" customModule="PrePacked" customModuleProvider="target">
+                                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="cell" id="0Lo-au-nWk" customClass="ShoppingItemCell" customModule="Papaya" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="25" width="295" height="142.5"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -1347,19 +1335,19 @@ and delivered to you faster than regular customers.</string>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
                                                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="kRw-O7-mqU">
-                                                            <rect key="frame" x="4" y="4" width="119" height="134.5"/>
+                                                            <rect key="frame" x="12" y="12" width="119" height="118.5"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="119" id="lMa-uF-VCB"/>
                                                             </constraints>
                                                         </imageView>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Item Name" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jk6-31-92W">
-                                                            <rect key="frame" x="131" y="8" width="156" height="109.5"/>
+                                                            <rect key="frame" x="139" y="16" width="140" height="93.5"/>
                                                             <fontDescription key="fontDescription" name="GothamRounded-Medium" family="Gotham Rounded" pointSize="15"/>
                                                             <color key="textColor" red="0.270588249" green="0.31372550129999999" blue="0.32549020649999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Price @ Shop" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="q7v-Su-F26">
-                                                            <rect key="frame" x="131" y="117.5" width="156" height="17"/>
+                                                            <rect key="frame" x="139" y="109.5" width="140" height="17"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="17" id="B58-Rj-kKn"/>
                                                             </constraints>
@@ -1443,12 +1431,12 @@ and delivered to you faster than regular customers.</string>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             </collectionViewCell>
                                         </cells>
-                                        <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="header" id="C4L-bk-Weq" customClass="SimilarItemHeaderCell" customModule="PrePacked" customModuleProvider="target">
+                                        <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="header" id="C4L-bk-Weq" customClass="SimilarItemHeaderCell" customModule="Papaya" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="0.0" width="295" height="25"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SHOP NAME" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IQe-kW-FQa">
-                                                    <rect key="frame" x="0.0" y="0.0" width="295" height="25"/>
+                                                    <rect key="frame" x="8" y="8" width="279" height="9"/>
                                                     <fontDescription key="fontDescription" name="GothamRounded-Medium" family="Gotham Rounded" pointSize="11"/>
                                                     <color key="textColor" red="0.48235294220000002" green="0.54509806630000002" blue="0.56078433989999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -1469,7 +1457,7 @@ and delivered to you faster than regular customers.</string>
                                             <outlet property="delegate" destination="LWd-fS-NIE" id="Gkv-pe-k8Z"/>
                                         </connections>
                                     </collectionView>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lJ4-K7-i6i" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lJ4-K7-i6i" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                         <rect key="frame" x="227" y="0.0" width="60" height="60"/>
                                         <subviews>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Cancel Grey " translatesAutoresizingMaskIntoConstraints="NO" id="bB0-zh-Lza">
@@ -1532,72 +1520,10 @@ and delivered to you faster than regular customers.</string>
             </objects>
             <point key="canvasLocation" x="2967" y="1682"/>
         </scene>
-        <!--ProcessingVC-->
-        <scene sceneID="6RE-qy-uIy">
-            <objects>
-                <viewController storyboardIdentifier="Processing" id="pqY-r8-d85" customClass="ProcessingVC" customModule="PrePacked" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="TDt-VJ-SRZ"/>
-                        <viewControllerLayoutGuide type="bottom" id="wep-yf-HK2"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="vIT-Ql-ED7">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gvf-x0-7zm">
-                                <rect key="frame" x="48" y="296" width="279" height="75"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Processing..." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pvd-PD-lZo">
-                                        <rect key="frame" x="91" y="0.0" width="188" height="75"/>
-                                        <fontDescription key="fontDescription" name="GothamRounded-Medium" family="Gotham Rounded" pointSize="17"/>
-                                        <color key="textColor" red="0.270588249" green="0.31372550129999999" blue="0.32549020649999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OvV-BK-GIv" customClass="LoadingIndicator" customModule="PrePacked" customModuleProvider="target">
-                                        <rect key="frame" x="8" y="0.0" width="75" height="75"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" secondItem="OvV-BK-GIv" secondAttribute="height" multiplier="1:1" id="eKs-sc-5Us"/>
-                                        </constraints>
-                                    </view>
-                                </subviews>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="Pvd-PD-lZo" secondAttribute="trailing" id="0db-oY-vEF"/>
-                                    <constraint firstItem="Pvd-PD-lZo" firstAttribute="leading" secondItem="OvV-BK-GIv" secondAttribute="trailing" constant="8" id="5F6-g0-zQk"/>
-                                    <constraint firstItem="Pvd-PD-lZo" firstAttribute="top" secondItem="gvf-x0-7zm" secondAttribute="top" id="GNv-KH-9o3"/>
-                                    <constraint firstAttribute="height" constant="75" id="Kbz-9n-eQi"/>
-                                    <constraint firstAttribute="bottom" secondItem="OvV-BK-GIv" secondAttribute="bottom" id="iPb-nw-VBn"/>
-                                    <constraint firstItem="OvV-BK-GIv" firstAttribute="leading" secondItem="gvf-x0-7zm" secondAttribute="leading" constant="8" id="qKw-aN-U53"/>
-                                    <constraint firstAttribute="bottom" secondItem="Pvd-PD-lZo" secondAttribute="bottom" id="wbz-Ke-juV"/>
-                                    <constraint firstItem="OvV-BK-GIv" firstAttribute="top" secondItem="gvf-x0-7zm" secondAttribute="top" id="zgp-KJ-qYY"/>
-                                </constraints>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                        <real key="value" value="16"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                            </view>
-                        </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="gvf-x0-7zm" firstAttribute="leading" secondItem="vIT-Ql-ED7" secondAttribute="leadingMargin" constant="32" id="KIb-kg-ug1"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="gvf-x0-7zm" secondAttribute="trailing" constant="32" id="cgq-fF-dT1"/>
-                            <constraint firstItem="gvf-x0-7zm" firstAttribute="centerY" secondItem="vIT-Ql-ED7" secondAttribute="centerY" id="tRE-ra-Tu4"/>
-                        </constraints>
-                    </view>
-                    <connections>
-                        <outlet property="loading" destination="OvV-BK-GIv" id="ba5-vd-Ygh"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="kHh-58-xh0" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2965.5999999999999" y="443.92803598200902"/>
-        </scene>
         <!--ShoppingVC-->
         <scene sceneID="5CX-sy-ZKK">
             <objects>
-                <viewController storyboardIdentifier="ShoppingVC" title="ShoppingVC" id="DzD-DT-wAi" customClass="ShoppingVC" customModule="PrePacked" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ShoppingVC" title="ShoppingVC" id="DzD-DT-wAi" customClass="ShoppingVC" customModule="Papaya" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="zWc-el-nuB"/>
                         <viewControllerLayoutGuide type="bottom" id="drO-zx-geh"/>
@@ -1616,7 +1542,7 @@ and delivered to you faster than regular customers.</string>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="cell" id="85w-n3-nf9" customClass="ShoppingItemCell" customModule="PrePacked" customModuleProvider="target">
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="cell" id="85w-n3-nf9" customClass="ShoppingItemCell" customModule="Papaya" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="172.5" height="172.5"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -1735,11 +1661,11 @@ and delivered to you faster than regular customers.</string>
                                     <outlet property="delegate" destination="DzD-DT-wAi" id="XSw-xY-eBh"/>
                                 </connections>
                             </collectionView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hwb-7G-HgR" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hwb-7G-HgR" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                 <rect key="frame" x="8" y="0.0" width="178" height="35"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="FILTER: ALL" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="B4B-EK-m6G">
-                                        <rect key="frame" x="8" y="7" width="55" height="28"/>
+                                        <rect key="frame" x="8" y="7" width="61.5" height="28"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="28" id="SJy-TN-g8P"/>
                                         </constraints>
@@ -1748,7 +1674,7 @@ and delivered to you faster than regular customers.</string>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Arrow Down Grey Filled" translatesAutoresizingMaskIntoConstraints="NO" id="4mD-DS-EwD">
-                                        <rect key="frame" x="70" y="15" width="12" height="12"/>
+                                        <rect key="frame" x="76.5" y="15" width="12" height="12"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="12" id="7JK-Ld-mNJ"/>
                                             <constraint firstAttribute="height" constant="12" id="Nkk-wx-bYV"/>
@@ -1765,7 +1691,7 @@ and delivered to you faster than regular customers.</string>
                                     <constraint firstItem="4mD-DS-EwD" firstAttribute="centerY" secondItem="B4B-EK-m6G" secondAttribute="centerY" constant="-0.5" id="nLT-At-oDc"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2Do-yO-pOv" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2Do-yO-pOv" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                 <rect key="frame" x="188" y="0.0" width="187" height="35"/>
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Sort By Name Ascending" translatesAutoresizingMaskIntoConstraints="NO" id="U5x-xW-PZB">
@@ -1824,12 +1750,12 @@ and delivered to you faster than regular customers.</string>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kAa-w5-YHL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1381.5999999999999" y="1612.8935532233884"/>
+            <point key="canvasLocation" x="1382" y="1671"/>
         </scene>
         <!--CartVC-->
         <scene sceneID="U4D-dY-rhL">
             <objects>
-                <viewController storyboardIdentifier="CartVC" title="CartVC" automaticallyAdjustsScrollViewInsets="NO" id="DNV-DF-DVm" customClass="CartVC" customModule="PrePacked" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CartVC" title="CartVC" automaticallyAdjustsScrollViewInsets="NO" id="DNV-DF-DVm" customClass="CartVC" customModule="Papaya" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="PNY-dh-8Sb"/>
                         <viewControllerLayoutGuide type="bottom" id="avb-lR-1pZ"/>
@@ -1838,7 +1764,7 @@ and delivered to you faster than regular customers.</string>
                         <rect key="frame" x="0.0" y="0.0" width="375" height="514"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="V7C-l3-hLj" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="V7C-l3-hLj" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                 <rect key="frame" x="16" y="448" width="343" height="50"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Checkout" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PLf-3o-Nqy">
@@ -1868,13 +1794,13 @@ and delivered to you faster than regular customers.</string>
                                 <rect key="frame" x="16" y="363" width="343" height="70"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$99.99" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jbw-jH-Xpa">
-                                        <rect key="frame" x="256.5" y="8" width="70.5" height="54"/>
+                                        <rect key="frame" x="244.5" y="8" width="82.5" height="54"/>
                                         <fontDescription key="fontDescription" name="GothamRounded-Bold" family="Gotham Rounded" pointSize="23"/>
                                         <color key="textColor" red="0.16078431900000001" green="0.82352942230000004" blue="0.42352941630000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Total" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jUx-Iu-gsn">
-                                        <rect key="frame" x="32" y="12" width="40.5" height="21"/>
+                                        <rect key="frame" x="32" y="12" width="47.5" height="21"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="21" id="rQU-Tk-oPp"/>
                                         </constraints>
@@ -1883,7 +1809,7 @@ and delivered to you faster than regular customers.</string>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="82 items" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nYe-wg-LUp">
-                                        <rect key="frame" x="32" y="37" width="65" height="21"/>
+                                        <rect key="frame" x="32" y="37" width="73" height="21"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="21" id="FAm-kT-r8O"/>
                                         </constraints>
@@ -1917,7 +1843,7 @@ and delivered to you faster than regular customers.</string>
                                 <rect key="frame" x="0.0" y="20" width="375" height="335"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell" id="lod-cj-sVC" customClass="CartCell" customModule="PrePacked" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell" id="lod-cj-sVC" customClass="CartCell" customModule="Papaya" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="375" height="100"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="lod-cj-sVC" id="lFm-Dy-fKK">
@@ -1925,13 +1851,13 @@ and delivered to you faster than regular customers.</string>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="M4W-A4-ASl">
-                                                    <rect key="frame" x="16" y="8" width="343" height="84"/>
+                                                    <rect key="frame" x="23" y="11" width="329" height="78"/>
                                                     <subviews>
                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iUW-7o-gFu">
-                                                            <rect key="frame" x="0.0" y="0.0" width="343" height="84"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="329" height="78"/>
                                                             <subviews>
                                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="R0v-Nf-bjb">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="50" height="84"/>
+                                                                    <rect key="frame" x="0.0" y="0.0" width="50" height="78"/>
                                                                     <subviews>
                                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="22" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eBt-Uc-Ajl">
                                                                             <rect key="frame" x="0.0" y="0.0" width="50" height="84"/>
@@ -1947,15 +1873,24 @@ and delivered to you faster than regular customers.</string>
                                                                     </constraints>
                                                                 </view>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PIneapple" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cYJ-je-fwW">
-                                                                    <rect key="frame" x="66" y="4" width="219" height="52"/>
+                                                                    <rect key="frame" x="66" y="4" width="205" height="46"/>
                                                                     <fontDescription key="fontDescription" name="GothamRounded-Medium" family="Gotham Rounded" pointSize="17"/>
                                                                     <color key="textColor" red="0.270588249" green="0.31372550129999999" blue="0.32549020649999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$6.99  |  Produce" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="s7E-Kb-Bst">
+                                                                    <rect key="frame" x="66" y="54" width="205" height="16"/>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="height" constant="16" id="Qsm-TO-fvu"/>
+                                                                    </constraints>
+                                                                    <fontDescription key="fontDescription" name="GothamRounded-Medium" family="Gotham Rounded" pointSize="14"/>
+                                                                    <color key="textColor" red="0.48235294220000002" green="0.54509806630000002" blue="0.56078433989999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
                                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ol2-5e-NKq">
-                                                                    <rect key="frame" x="293" y="0.0" width="50" height="84"/>
+                                                                    <rect key="frame" x="279" y="0.0" width="50" height="78"/>
                                                                     <subviews>
-                                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jmk-fq-0P0" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jmk-fq-0P0" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                                                             <rect key="frame" x="10" y="8" width="30" height="30"/>
                                                                             <subviews>
                                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="+" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dI2-hT-3pM">
@@ -1986,8 +1921,8 @@ and delivered to you faster than regular customers.</string>
                                                                                 </userDefinedRuntimeAttribute>
                                                                             </userDefinedRuntimeAttributes>
                                                                         </view>
-                                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="b7p-xw-pY8" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
-                                                                            <rect key="frame" x="10" y="46" width="30" height="30"/>
+                                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="b7p-xw-pY8" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
+                                                                            <rect key="frame" x="10" y="40" width="30" height="30"/>
                                                                             <subviews>
                                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="-" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4Yr-J0-3bf">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="30" height="30"/>
@@ -2027,15 +1962,6 @@ and delivered to you faster than regular customers.</string>
                                                                         <constraint firstItem="jmk-fq-0P0" firstAttribute="centerX" secondItem="ol2-5e-NKq" secondAttribute="centerX" id="yxI-7W-1c4"/>
                                                                     </constraints>
                                                                 </view>
-                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$6.99  |  Produce" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="s7E-Kb-Bst">
-                                                                    <rect key="frame" x="66" y="60" width="219" height="16"/>
-                                                                    <constraints>
-                                                                        <constraint firstAttribute="height" constant="16" id="Qsm-TO-fvu"/>
-                                                                    </constraints>
-                                                                    <fontDescription key="fontDescription" name="GothamRounded-Medium" family="Gotham Rounded" pointSize="14"/>
-                                                                    <color key="textColor" red="0.48235294220000002" green="0.54509806630000002" blue="0.56078433989999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                                    <nil key="highlightedColor"/>
-                                                                </label>
                                                             </subviews>
                                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                             <constraints>
@@ -2078,8 +2004,8 @@ and delivered to you faster than regular customers.</string>
                                                         </userDefinedRuntimeAttribute>
                                                     </userDefinedRuntimeAttributes>
                                                 </view>
-                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AoJ-CC-fpO" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
-                                                    <rect key="frame" x="383" y="8" width="75" height="84"/>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AoJ-CC-fpO" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
+                                                    <rect key="frame" x="376" y="8" width="75" height="84"/>
                                                     <subviews>
                                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Trash White" translatesAutoresizingMaskIntoConstraints="NO" id="Upn-FD-ZuZ">
                                                             <rect key="frame" x="24" y="16" width="27" height="27"/>
@@ -2134,7 +2060,7 @@ and delivered to you faster than regular customers.</string>
                                             <outlet property="subtitle" destination="s7E-Kb-Bst" id="utl-a9-feG"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="nothingCell" rowHeight="168" id="R1u-5u-pDe" customClass="NothingCartCell" customModule="PrePacked" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="nothingCell" rowHeight="168" id="R1u-5u-pDe" customClass="NothingCartCell" customModule="Papaya" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="128" width="375" height="168"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="R1u-5u-pDe" id="KeP-Fn-hyi">
@@ -2142,7 +2068,7 @@ and delivered to you faster than regular customers.</string>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your cart is empty." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DHN-Pt-QUx">
-                                                    <rect key="frame" x="24" y="24" width="327" height="19"/>
+                                                    <rect key="frame" x="31" y="27" width="313" height="19"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="19" id="Uh0-kn-Gmy"/>
                                                     </constraints>
@@ -2150,8 +2076,8 @@ and delivered to you faster than regular customers.</string>
                                                     <color key="textColor" red="0.270588249" green="0.31372550129999999" blue="0.32549020649999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lOz-lU-Wnp" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
-                                                    <rect key="frame" x="62" y="51" width="250" height="40"/>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lOz-lU-Wnp" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
+                                                    <rect key="frame" x="62" y="54" width="250" height="40"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add some items" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BpB-wn-Nbi">
                                                             <rect key="frame" x="0.0" y="8" width="250" height="24"/>
@@ -2226,7 +2152,7 @@ and delivered to you faster than regular customers.</string>
         <!--FilterVC-->
         <scene sceneID="O3N-bK-eiM">
             <objects>
-                <viewController storyboardIdentifier="FilterVC" id="JfO-mT-SdC" customClass="FilterVC" customModule="PrePacked" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="FilterVC" id="JfO-mT-SdC" customClass="FilterVC" customModule="Papaya" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="m4a-L7-LBF"/>
                         <viewControllerLayoutGuide type="bottom" id="ruE-gD-qbs"/>
@@ -2265,7 +2191,7 @@ and delivered to you faster than regular customers.</string>
                                             <outlet property="delegate" destination="JfO-mT-SdC" id="w9h-e6-ah7"/>
                                         </connections>
                                     </tableView>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mfl-YP-cYS" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mfl-YP-cYS" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                         <rect key="frame" x="235" y="0.0" width="60" height="43"/>
                                         <subviews>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Cancel Grey " translatesAutoresizingMaskIntoConstraints="NO" id="KOW-Yv-nCV">

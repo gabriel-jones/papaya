@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="cLY-eX-Cai">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="cLY-eX-Cai">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13174"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -21,7 +21,7 @@
         <!--Loading-->
         <scene sceneID="Wtd-sm-GCj">
             <objects>
-                <viewController storyboardIdentifier="LaunchVC" title="Loading" id="cLY-eX-Cai" customClass="LaunchScreenViewController" customModule="PrePacked" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="LaunchVC" title="Loading" id="cLY-eX-Cai" customClass="LaunchScreenViewController" customModule="Papaya" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="8OS-Mh-6Bb"/>
                         <viewControllerLayoutGuide type="bottom" id="zEY-WS-9Md"/>
@@ -30,12 +30,19 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mRu-yS-N6e">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="mRu-yS-N6e">
                                 <rect key="frame" x="162" y="308" width="50" height="50"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="ScC-ou-m3C"/>
+                                    <constraint firstAttribute="height" constant="50" id="e0g-1k-pB1"/>
+                                </constraints>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="mRu-yS-N6e" firstAttribute="centerY" secondItem="Ws9-f8-Y16" secondAttribute="centerY" id="GTE-hO-4K6"/>
+                            <constraint firstItem="mRu-yS-N6e" firstAttribute="centerX" secondItem="Ws9-f8-Y16" secondAttribute="centerX" id="OSk-dq-K3e"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="r5L-sJ-Uoa"/>
                     <connections>
@@ -69,7 +76,7 @@
         <!--Login-->
         <scene sceneID="bPF-2z-N5b">
             <objects>
-                <viewController storyboardIdentifier="LoginVC" title="Login" id="FUO-Z0-ZDg" customClass="LoginViewController" customModule="PrePacked" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="LoginVC" title="Login" id="FUO-Z0-ZDg" customClass="LoginViewController" customModule="Papaya" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="wcZ-Gh-2dO"/>
                         <viewControllerLayoutGuide type="bottom" id="Vj7-Qb-kfv"/>
@@ -78,7 +85,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" keyboardDismissMode="interactive" translatesAutoresizingMaskIntoConstraints="NO" id="eJ3-vS-Z7k" customClass="LoginScrollView" customModule="PrePacked" customModuleProvider="target">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" keyboardDismissMode="interactive" translatesAutoresizingMaskIntoConstraints="NO" id="eJ3-vS-Z7k" customClass="LoginScrollView" customModule="Papaya" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fjC-ok-3Ab" userLabel="Content View">
@@ -96,8 +103,8 @@
                                                     <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PrePacked" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U80-g5-Lna">
-                                                            <rect key="frame" x="50" y="145" width="325" height="35"/>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Papaya" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U80-g5-Lna">
+                                                            <rect key="frame" x="93" y="133" width="282" height="35"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="35" id="9qi-f2-CVo"/>
                                                             </constraints>
@@ -105,24 +112,30 @@
                                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RK6-wg-iWV">
-                                                            <rect key="frame" x="50" y="168" width="325" height="55"/>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Deliver fresh Bermudian groceries straight to your doorstep" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RK6-wg-iWV">
+                                                            <rect key="frame" x="50" y="168" width="276" height="55"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="55" id="A0U-in-lrP"/>
                                                             </constraints>
-                                                            <string key="text">The easiest way to shop online
-in Bermuda</string>
                                                             <fontDescription key="fontDescription" name="GothamRounded-Medium" family="Gotham Rounded" pointSize="14"/>
                                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
+                                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" image="Logo" translatesAutoresizingMaskIntoConstraints="NO" id="L4X-99-Sa1">
+                                                            <rect key="frame" x="50" y="145" width="35" height="35"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" constant="35" id="KC7-km-RpB"/>
+                                                                <constraint firstAttribute="height" constant="35" id="eBu-5Z-eno"/>
+                                                            </constraints>
+                                                        </imageView>
                                                     </subviews>
                                                     <constraints>
-                                                        <constraint firstItem="RK6-wg-iWV" firstAttribute="top" secondItem="U80-g5-Lna" secondAttribute="bottom" constant="-12" id="DzB-dp-alx"/>
-                                                        <constraint firstAttribute="trailing" secondItem="RK6-wg-iWV" secondAttribute="trailing" id="Jer-OA-QF3"/>
+                                                        <constraint firstItem="L4X-99-Sa1" firstAttribute="leading" secondItem="evo-DO-CTI" secondAttribute="leading" constant="50" id="9nm-YP-fTR"/>
+                                                        <constraint firstItem="RK6-wg-iWV" firstAttribute="top" secondItem="U80-g5-Lna" secondAttribute="bottom" id="DzB-dp-alx"/>
+                                                        <constraint firstAttribute="trailing" secondItem="RK6-wg-iWV" secondAttribute="trailing" constant="50" id="Jer-OA-QF3"/>
                                                         <constraint firstAttribute="trailing" secondItem="U80-g5-Lna" secondAttribute="trailing" id="YBg-NI-NdN"/>
                                                         <constraint firstItem="RK6-wg-iWV" firstAttribute="leading" secondItem="evo-DO-CTI" secondAttribute="leading" constant="50" id="YRL-Tj-bU8"/>
-                                                        <constraint firstItem="U80-g5-Lna" firstAttribute="leading" secondItem="evo-DO-CTI" secondAttribute="leading" constant="50" id="tuT-w6-ia4"/>
+                                                        <constraint firstItem="U80-g5-Lna" firstAttribute="leading" secondItem="L4X-99-Sa1" secondAttribute="trailing" constant="8" id="nId-5I-eSq"/>
                                                     </constraints>
                                                 </view>
                                                 <blurEffect style="dark"/>
@@ -130,7 +143,7 @@ in Bermuda</string>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0JU-TS-QfA">
                                                 <rect key="frame" x="0.0" y="246" width="375" height="325"/>
                                                 <subviews>
-                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mjT-bU-wBC" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mjT-bU-wBC" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                                         <rect key="frame" x="50" y="194" width="275" height="40"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LOGIN" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HHP-hU-vqY">
@@ -173,7 +186,7 @@ in Bermuda</string>
                                                             <action selector="forgotPass:" destination="FUO-Z0-ZDg" eventType="touchUpInside" id="M3d-St-9E4"/>
                                                         </connections>
                                                     </button>
-                                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="lje-Yl-Rxb" customClass="LoginTextField" customModule="PrePacked" customModuleProvider="target">
+                                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="lje-Yl-Rxb" customClass="LoginTextField" customModule="Papaya" customModuleProvider="target">
                                                         <rect key="frame" x="50" y="25" width="275" height="30"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="30" id="YXK-IE-dhs"/>
@@ -184,7 +197,7 @@ in Bermuda</string>
                                                             <outlet property="delegate" destination="FUO-Z0-ZDg" id="fh1-ZZ-irL"/>
                                                         </connections>
                                                     </textField>
-                                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="YWa-6a-eIg" customClass="LoginTextField" customModule="PrePacked" customModuleProvider="target">
+                                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="YWa-6a-eIg" customClass="LoginTextField" customModule="Papaya" customModuleProvider="target">
                                                         <rect key="frame" x="50" y="95" width="275" height="30"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="30" id="gzC-Qm-cTs"/>
@@ -288,7 +301,7 @@ in Bermuda</string>
         <!--SignupVC-->
         <scene sceneID="b1s-MJ-ZeN">
             <objects>
-                <viewController storyboardIdentifier="SignupVC" id="wdH-FB-7iK" customClass="SignupVC" customModule="PrePacked" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SignupVC" id="wdH-FB-7iK" customClass="SignupVC" customModule="Papaya" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="0gQ-Jw-iia"/>
                         <viewControllerLayoutGuide type="bottom" id="hdv-6R-1GR"/>
@@ -354,7 +367,7 @@ in Bermuda</string>
         <!--Signup TermsVC-->
         <scene sceneID="Egq-7k-4Mi">
             <objects>
-                <viewController storyboardIdentifier="Signup_TermsVC" id="jI3-e8-OKv" customClass="Signup_TermsVC" customModule="PrePacked" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="Signup_TermsVC" id="jI3-e8-OKv" customClass="Signup_TermsVC" customModule="Papaya" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="upV-7w-i1b"/>
                         <viewControllerLayoutGuide type="bottom" id="GWs-rl-0WD"/>
@@ -363,7 +376,7 @@ in Bermuda</string>
                         <rect key="frame" x="0.0" y="0.0" width="375" height="557"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RJZ-AS-dx5" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RJZ-AS-dx5" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                 <rect key="frame" x="32" y="487" width="311" height="50"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Agree" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="52l-ID-8vK">
@@ -443,7 +456,7 @@ in Bermuda</string>
         <!--Signup DetailsVC-->
         <scene sceneID="wfg-LK-cYR">
             <objects>
-                <viewController storyboardIdentifier="Signup_DetailsVC" id="5HS-pf-rsp" customClass="Signup_DetailsVC" customModule="PrePacked" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="Signup_DetailsVC" id="5HS-pf-rsp" customClass="Signup_DetailsVC" customModule="Papaya" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="ak5-lU-WCt"/>
                         <viewControllerLayoutGuide type="bottom" id="BpS-iH-nzw"/>
@@ -452,7 +465,7 @@ in Bermuda</string>
                         <rect key="frame" x="0.0" y="0.0" width="375" height="557"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gQc-vD-7NO" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gQc-vD-7NO" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                 <rect key="frame" x="32" y="406" width="311" height="50"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Next" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kRn-aH-47f">
@@ -476,7 +489,7 @@ in Bermuda</string>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </view>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Gabriel" placeholder="First Name" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="NWv-gX-9GB" customClass="LoginTextField" customModule="PrePacked" customModuleProvider="target">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Gabriel" placeholder="First Name" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="NWv-gX-9GB" customClass="LoginTextField" customModule="Papaya" customModuleProvider="target">
                                 <rect key="frame" x="32" y="36" width="311" height="40"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -489,7 +502,7 @@ in Bermuda</string>
                                     <outlet property="delegate" destination="5HS-pf-rsp" id="7wV-gU-gY0"/>
                                 </connections>
                             </textField>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Jones" placeholder="Last Name" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="w5M-GY-PTW" customClass="LoginTextField" customModule="PrePacked" customModuleProvider="target">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Jones" placeholder="Last Name" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="w5M-GY-PTW" customClass="LoginTextField" customModule="Papaya" customModuleProvider="target">
                                 <rect key="frame" x="32" y="106" width="311" height="40"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -502,7 +515,7 @@ in Bermuda</string>
                                     <outlet property="delegate" destination="5HS-pf-rsp" id="ZxC-XV-6I7"/>
                                 </connections>
                             </textField>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="pass" placeholder="Password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0Hp-hs-Ebw" customClass="LoginTextField" customModule="PrePacked" customModuleProvider="target">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="pass" placeholder="Password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0Hp-hs-Ebw" customClass="LoginTextField" customModule="Papaya" customModuleProvider="target">
                                 <rect key="frame" x="32" y="246" width="311" height="40"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -515,7 +528,7 @@ in Bermuda</string>
                                     <outlet property="delegate" destination="5HS-pf-rsp" id="8op-Cc-RjL"/>
                                 </connections>
                             </textField>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="pass" placeholder="Repeat Password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Vga-l9-p7U" customClass="LoginTextField" customModule="PrePacked" customModuleProvider="target">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="pass" placeholder="Repeat Password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Vga-l9-p7U" customClass="LoginTextField" customModule="Papaya" customModuleProvider="target">
                                 <rect key="frame" x="32" y="316" width="311" height="40"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -528,7 +541,7 @@ in Bermuda</string>
                                     <outlet property="delegate" destination="5HS-pf-rsp" id="E6K-ZP-O4C"/>
                                 </connections>
                             </textField>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="gabriel.jones@saltus.bm" placeholder="Email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0ml-m9-8Ru" customClass="LoginTextField" customModule="PrePacked" customModuleProvider="target">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="gabriel.jones@saltus.bm" placeholder="Email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0ml-m9-8Ru" customClass="LoginTextField" customModule="Papaya" customModuleProvider="target">
                                 <rect key="frame" x="32" y="176" width="311" height="40"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -582,7 +595,7 @@ in Bermuda</string>
         <!--Signup CardVC-->
         <scene sceneID="KVV-NP-fF8">
             <objects>
-                <viewController storyboardIdentifier="Signup_CardVC" id="jru-3H-tJ0" customClass="Signup_CardVC" customModule="PrePacked" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="Signup_CardVC" id="jru-3H-tJ0" customClass="Signup_CardVC" customModule="Papaya" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="qmo-uz-CiP"/>
                         <viewControllerLayoutGuide type="bottom" id="RQX-Nb-SC4"/>
@@ -591,7 +604,7 @@ in Bermuda</string>
                         <rect key="frame" x="0.0" y="0.0" width="375" height="557"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="E6U-3C-ZKa" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="E6U-3C-ZKa" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                 <rect key="frame" x="32" y="266" width="311" height="50"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Next" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uSS-la-vTj">
@@ -615,7 +628,7 @@ in Bermuda</string>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </view>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="4111111111111111" placeholder="Credit Card Number" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="sr3-LV-C5b" customClass="LoginTextField" customModule="PrePacked" customModuleProvider="target">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="4111111111111111" placeholder="Credit Card Number" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="sr3-LV-C5b" customClass="LoginTextField" customModule="Papaya" customModuleProvider="target">
                                 <rect key="frame" x="32" y="36" width="311" height="40"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -625,7 +638,7 @@ in Bermuda</string>
                                 <fontDescription key="fontDescription" name="GothamRounded-Medium" family="Gotham Rounded" pointSize="17"/>
                                 <textInputTraits key="textInputTraits" keyboardType="numberPad" keyboardAppearance="alert"/>
                             </textField>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="02/18" placeholder="Expiration Date" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="lXb-mg-fnV" customClass="LoginTextField" customModule="PrePacked" customModuleProvider="target">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="02/18" placeholder="Expiration Date" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="lXb-mg-fnV" customClass="LoginTextField" customModule="Papaya" customModuleProvider="target">
                                 <rect key="frame" x="32" y="106" width="311" height="40"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -635,7 +648,7 @@ in Bermuda</string>
                                 <fontDescription key="fontDescription" name="GothamRounded-Medium" family="Gotham Rounded" pointSize="17"/>
                                 <textInputTraits key="textInputTraits" keyboardAppearance="alert"/>
                             </textField>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="123" placeholder="Security Code" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="jM3-rG-5jN" customClass="LoginTextField" customModule="PrePacked" customModuleProvider="target">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="123" placeholder="Security Code" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="jM3-rG-5jN" customClass="LoginTextField" customModule="Papaya" customModuleProvider="target">
                                 <rect key="frame" x="32" y="176" width="311" height="40"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -678,7 +691,7 @@ in Bermuda</string>
         <!--Signup PremiumVC-->
         <scene sceneID="OaA-4h-1nR">
             <objects>
-                <viewController storyboardIdentifier="Signup_PremiumVC" id="7iE-yt-WXu" customClass="Signup_PremiumVC" customModule="PrePacked" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="Signup_PremiumVC" id="7iE-yt-WXu" customClass="Signup_PremiumVC" customModule="Papaya" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="l8Z-bL-7fY"/>
                         <viewControllerLayoutGuide type="bottom" id="Dm4-aa-vVl"/>
@@ -687,7 +700,7 @@ in Bermuda</string>
                         <rect key="frame" x="0.0" y="0.0" width="375" height="557"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ssy-6J-ccP" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ssy-6J-ccP" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                 <rect key="frame" x="32" y="268" width="311" height="50"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Get Premium" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uox-M2-noS">
@@ -711,83 +724,83 @@ in Bermuda</string>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KbW-Iq-YeL">
-                                <rect key="frame" x="32" y="36" width="311" height="208"/>
+                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KbW-Iq-YeL">
+                                <rect key="frame" x="32" y="36" width="311" height="224"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wkD-iD-wbD">
-                                        <rect key="frame" x="16" y="16" width="279" height="41"/>
+                                        <rect key="frame" x="16" y="16" width="279" height="34"/>
                                         <attributedString key="attributedText">
                                             <fragment content="For ">
                                                 <attributes>
                                                     <color key="NSColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <font key="NSFont" metaFont="system" size="17"/>
+                                                    <font key="NSFont" size="17" name="GothamRounded-Medium"/>
                                                 </attributes>
                                             </fragment>
                                             <fragment content="$9.99 / month">
                                                 <attributes>
                                                     <color key="NSColor" red="1" green="0.8251953125" blue="0.28387129309999998" alpha="1" colorSpace="calibratedRGB"/>
-                                                    <font key="NSFont" metaFont="system" size="17"/>
+                                                    <font key="NSFont" size="17" name="GothamRounded-Medium"/>
                                                 </attributes>
                                             </fragment>
                                             <fragment content=", you'll gain access to:">
                                                 <attributes>
                                                     <color key="NSColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <font key="NSFont" metaFont="system" size="17"/>
+                                                    <font key="NSFont" size="17" name="GothamRounded-Medium"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="R8C-zw-xW4">
-                                        <rect key="frame" x="32" y="65" width="263" height="41"/>
+                                        <rect key="frame" x="32" y="58" width="263" height="34"/>
                                         <attributedString key="attributedText">
                                             <fragment content="- Faster deliveries in the  ">
                                                 <attributes>
                                                     <color key="NSColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <font key="NSFont" metaFont="system" size="17"/>
+                                                    <font key="NSFont" size="17" name="GothamRounded-Medium"/>
                                                 </attributes>
                                             </fragment>
                                             <fragment content="Express queue">
                                                 <attributes>
                                                     <color key="NSColor" red="1" green="0.8251953125" blue="0.28387129309999998" alpha="1" colorSpace="calibratedRGB"/>
-                                                    <font key="NSFont" metaFont="system" size="17"/>
+                                                    <font key="NSFont" size="17" name="GothamRounded-Medium"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="- Exclusive deals and newsletters" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rgA-Dd-ePR">
-                                        <rect key="frame" x="32" y="114" width="263" height="34"/>
+                                        <rect key="frame" x="32" y="100" width="263" height="34"/>
                                         <fontDescription key="fontDescription" name="GothamRounded-Medium" family="Gotham Rounded" pointSize="17"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="64c-Ka-z49">
-                                        <rect key="frame" x="32" y="156" width="263" height="20.5"/>
+                                        <rect key="frame" x="32" y="142" width="263" height="17"/>
                                         <attributedString key="attributedText">
                                             <fragment content="- ">
                                                 <attributes>
                                                     <color key="NSColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <font key="NSFont" metaFont="system" size="17"/>
+                                                    <font key="NSFont" size="17" name="GothamRounded-Medium"/>
                                                 </attributes>
                                             </fragment>
                                             <fragment content="Free">
                                                 <attributes>
                                                     <color key="NSColor" red="1" green="0.8251953125" blue="0.28387129309999998" alpha="1" colorSpace="calibratedRGB"/>
-                                                    <font key="NSFont" metaFont="system" size="17"/>
+                                                    <font key="NSFont" size="17" name="GothamRounded-Medium"/>
                                                 </attributes>
                                             </fragment>
                                             <fragment content=" deliveries">
                                                 <attributes>
                                                     <color key="NSColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <font key="NSFont" metaFont="system" size="17"/>
+                                                    <font key="NSFont" size="17" name="GothamRounded-Medium"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You may cancel Premium at any time in the Settings." lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OvP-ks-lMo">
-                                        <rect key="frame" x="16" y="188.5" width="279" height="24"/>
+                                        <rect key="frame" x="16" y="171" width="279" height="24"/>
                                         <fontDescription key="fontDescription" name="GothamRounded-Medium" family="Gotham Rounded" pointSize="12"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
@@ -818,7 +831,7 @@ in Bermuda</string>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HGn-ns-ode" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HGn-ns-ode" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                 <rect key="frame" x="32" y="334" width="311" height="50"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Thanks" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YmT-kF-hv7">
@@ -870,7 +883,7 @@ in Bermuda</string>
         <!--Signup DeliveryVC-->
         <scene sceneID="CBq-XF-72T">
             <objects>
-                <viewController storyboardIdentifier="Signup_DeliveryVC" id="hOk-mw-c5O" customClass="Signup_DeliveryVC" customModule="PrePacked" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="Signup_DeliveryVC" id="hOk-mw-c5O" customClass="Signup_DeliveryVC" customModule="Papaya" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="s8W-p0-Yvi"/>
                         <viewControllerLayoutGuide type="bottom" id="enR-Qg-TgA"/>
@@ -965,7 +978,7 @@ in Bermuda</string>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1kK-hI-CnJ" customClass="LargeButton" customModule="PrePacked" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1kK-hI-CnJ" customClass="LargeButton" customModule="Papaya" customModuleProvider="target">
                                 <rect key="frame" x="32" y="457" width="311" height="50"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Next" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k8t-Ai-eDk">
@@ -1066,6 +1079,7 @@ in Bermuda</string>
     </scenes>
     <resources>
         <image name="Arrow Left White" width="100" height="100"/>
-        <image name="Groceries" width="401" height="534"/>
+        <image name="Groceries" width="900" height="600"/>
+        <image name="Logo" width="16" height="16"/>
     </resources>
 </document>
