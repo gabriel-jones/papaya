@@ -58,6 +58,9 @@ class SignupVC: BaseVC {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        view.gradientBackground()
+        
         self.setupPageVC()
     }
     

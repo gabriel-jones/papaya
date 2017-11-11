@@ -30,7 +30,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="mRu-yS-N6e">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo" translatesAutoresizingMaskIntoConstraints="NO" id="mRu-yS-N6e">
                                 <rect key="frame" x="162" y="308" width="50" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="ScC-ou-m3C"/>
@@ -49,7 +49,6 @@
                         <segue destination="FUO-Z0-ZDg" kind="showDetail" identifier="toLogin" id="zzQ-dY-jNz">
                             <nil key="action"/>
                         </segue>
-                        <segue destination="zPv-MZ-bPe" kind="show" identifier="go" id="2sR-1V-jAv"/>
                         <segue destination="76T-Ij-FBd" kind="show" identifier="goPacker" id="GD4-4x-n1c"/>
                     </connections>
                 </viewController>
@@ -64,14 +63,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="h9j-j2-xpV" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="157" y="507"/>
-        </scene>
-        <!--main-->
-        <scene sceneID="FzV-A5-KWd">
-            <objects>
-                <viewControllerPlaceholder storyboardName="main" id="zPv-MZ-bPe" sceneMemberID="viewController"/>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="IfF-Wy-pD4" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="157" y="380"/>
         </scene>
         <!--Login-->
         <scene sceneID="bPF-2z-N5b">
@@ -121,8 +112,8 @@
                                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
-                                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" image="Logo" translatesAutoresizingMaskIntoConstraints="NO" id="L4X-99-Sa1">
-                                                            <rect key="frame" x="50" y="145" width="35" height="35"/>
+                                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo" translatesAutoresizingMaskIntoConstraints="NO" id="L4X-99-Sa1">
+                                                            <rect key="frame" x="50" y="133" width="35" height="35"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="35" id="KC7-km-RpB"/>
                                                                 <constraint firstAttribute="height" constant="35" id="eBu-5Z-eno"/>
@@ -135,6 +126,7 @@
                                                         <constraint firstAttribute="trailing" secondItem="RK6-wg-iWV" secondAttribute="trailing" constant="50" id="Jer-OA-QF3"/>
                                                         <constraint firstAttribute="trailing" secondItem="U80-g5-Lna" secondAttribute="trailing" id="YBg-NI-NdN"/>
                                                         <constraint firstItem="RK6-wg-iWV" firstAttribute="leading" secondItem="evo-DO-CTI" secondAttribute="leading" constant="50" id="YRL-Tj-bU8"/>
+                                                        <constraint firstItem="L4X-99-Sa1" firstAttribute="centerY" secondItem="U80-g5-Lna" secondAttribute="centerY" id="dEe-BW-zEZ"/>
                                                         <constraint firstItem="U80-g5-Lna" firstAttribute="leading" secondItem="L4X-99-Sa1" secondAttribute="trailing" constant="8" id="nId-5I-eSq"/>
                                                     </constraints>
                                                 </view>
@@ -431,7 +423,7 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" red="0.16078431900000001" green="0.82352942230000004" blue="0.42352941630000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="GWs-rl-0WD" firstAttribute="top" secondItem="RJZ-AS-dx5" secondAttribute="bottom" constant="20" id="7WB-mv-vzX"/>
                             <constraint firstItem="RJZ-AS-dx5" firstAttribute="top" secondItem="nvk-dG-7bz" secondAttribute="bottom" constant="32" id="BGi-ya-JHN"/>
@@ -555,7 +547,7 @@
                                 </connections>
                             </textField>
                         </subviews>
-                        <color key="backgroundColor" red="0.16078431900000001" green="0.82352942230000004" blue="0.42352941630000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailingMargin" secondItem="w5M-GY-PTW" secondAttribute="trailing" constant="16" id="0cg-9R-LNm"/>
                             <constraint firstItem="0ml-m9-8Ru" firstAttribute="top" secondItem="w5M-GY-PTW" secondAttribute="bottom" constant="30" id="4Yd-fe-2oW"/>
@@ -659,7 +651,7 @@
                                 <textInputTraits key="textInputTraits" keyboardType="numberPad" keyboardAppearance="alert"/>
                             </textField>
                         </subviews>
-                        <color key="backgroundColor" red="0.16078431900000001" green="0.82352942230000004" blue="0.42352941630000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="lXb-mg-fnV" firstAttribute="top" secondItem="sr3-LV-C5b" secondAttribute="bottom" constant="30" id="CMp-Km-QQm"/>
                             <constraint firstAttribute="trailingMargin" secondItem="E6U-3C-ZKa" secondAttribute="trailing" constant="16" id="HJm-up-iO1"/>
@@ -856,7 +848,7 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" red="0.16078431900000001" green="0.82352942230000004" blue="0.42352941630000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailingMargin" secondItem="HGn-ns-ode" secondAttribute="trailing" constant="16" id="9Ah-9d-CzL"/>
                             <constraint firstItem="HGn-ns-ode" firstAttribute="top" secondItem="ssy-6J-ccP" secondAttribute="bottom" constant="16" id="Qjm-oX-tzv"/>
@@ -1045,7 +1037,7 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" red="0.16078431900000001" green="0.82352942230000004" blue="0.42352941630000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="X1W-WL-DmZ" firstAttribute="trailing" secondItem="dOC-dv-zrJ" secondAttribute="trailingMargin" constant="-16" id="0vP-iv-Flg"/>
                             <constraint firstItem="X1W-WL-DmZ" firstAttribute="leading" secondItem="dOC-dv-zrJ" secondAttribute="leadingMargin" constant="16" id="37I-hb-UJf"/>
@@ -1080,6 +1072,6 @@
     <resources>
         <image name="Arrow Left White" width="100" height="100"/>
         <image name="Groceries" width="900" height="600"/>
-        <image name="Logo" width="16" height="16"/>
+        <image name="Logo" width="580" height="580"/>
     </resources>
 </document>

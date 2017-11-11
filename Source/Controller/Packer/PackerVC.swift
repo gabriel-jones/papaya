@@ -56,9 +56,7 @@ class PackerVC: UIViewController {
             
             self.online = j["online"].boolValue
             self.updateUI()
-            self.refreshData() {
-                self.loading(is: false)
-            }
+            self.refreshData()
         }
         
     }
@@ -71,9 +69,15 @@ class PackerVC: UIViewController {
         }
     }
     
+    var isLoading = false
+    
     func refreshData(c: @escaping () -> () = {}) {
-        self.loading(is: true)
+        print("REFRESH DATA")
+        if !isLoading {
+            self.loading(is: true)
+        }
         R.get("/scripts/Packer/get_all_orders.php", parameters: [:]) { json, error in
+            print("END REFRESH DATA")
             self.loading(is: false)
             self.collectionView.alpha = self.online ? 1 : 0
             guard !error, let j = json else {
@@ -111,6 +115,7 @@ class PackerVC: UIViewController {
     }
     
     func loading(`is`: Bool) {
+        print("loading(`is`: \(`is`))")
         for v in view.subviews {
             v.alpha = `is` ? (v.tag != 1 ? 0 : 1) : (v.tag != 2 ? 1 : 0)
         }
@@ -119,9 +124,10 @@ class PackerVC: UIViewController {
         } else {
             stopLoading()
         }
-        
-        self.view.isUserInteractionEnabled = !`is`
+        isLoading = `is`
+        view.isUserInteractionEnabled = !`is`
     }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -174,22 +180,24 @@ class PackerVC: UIViewController {
         }
     }
     
-    var loadingAlert: UIAlertController!
+    weak var loadingAlert: UIAlertController!
     
     func startLoading() {
         loadingAlert = UIAlertController(title: "Loading...", message: nil, preferredStyle: .alert)
-        let indicator = UIActivityIndicatorView(frame: loadingAlert.view.bounds)
-        indicator.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        
+        let indicator = UIActivityIndicatorView(frame: CGRect(x: 10, y: 5, width: 50, height: 50))
+        indicator.activityIndicatorViewStyle = .gray
         loadingAlert.view.addSubview(indicator)
-        indicator.isUserInteractionEnabled = false
         indicator.startAnimating()
         
         present(loadingAlert, animated: true, completion: nil)
     }
     
     func stopLoading() {
-        loadingAlert.dismiss(animated: true, completion: nil)
+        print("stop loading")
+        print(loadingAlert)
+        DispatchQueue.main.async {
+            self.loadingAlert.dismiss(animated: true, completion: nil)
+        }
     }
     
     @IBOutlet weak var onlineContainer: UIView!

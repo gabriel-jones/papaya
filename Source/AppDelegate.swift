@@ -16,8 +16,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
 
     var window: UIWindow?
     
+    func setupUI() {
+        UINavigationBar.appearance().titleTextAttributes = [
+            NSAttributedStringKey.font: UIFont(name: "GothamRounded-Medium", size: 20)!,
+            NSAttributedStringKey.strokeColor: UIColor.white
+        ]
+        UINavigationBar.appearance().tintColor = .white
+        
+        UITabBarItem.appearance().setTitleTextAttributes(
+            [NSAttributedStringKey.font: UIFont(name: "GothamRounded-Medium", size: 11)!], for: .normal
+        )
+        UITabBarItem.appearance().setTitleTextAttributes(
+            [NSAttributedStringKey.font: UIFont(name: "GothamRounded-Bold", size: 11)!], for: .selected
+        )
+    }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        
+        setupUI()
         
         //TODO: remove in production
         NSSetUncaughtExceptionHandler { exception in

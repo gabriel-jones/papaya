@@ -28,6 +28,10 @@ enum Storyboard: String {
         return self.instance.instantiateViewController(withIdentifier: `class`.storyboardID) as! T
     }
     
+    func viewController(name: String) -> UIViewController {
+        return self.instance.instantiateViewController(withIdentifier: name)
+    }
+    
     func initialViewController() -> UIViewController? {
         return instance.instantiateInitialViewController()
     }

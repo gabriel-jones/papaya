@@ -24,7 +24,9 @@ class LaunchScreenViewController: UIViewController {
     }
     
     func next() {
-        self.performSegue(withIdentifier: User.current.isPacker ? "goPacker" : "go", sender: self)
+        let tabBarController = MainTabVC()
+        tabBarController.modalTransitionStyle = .crossDissolve
+        present(tabBarController, animated: true, completion: nil)
     }
     
     func m() {

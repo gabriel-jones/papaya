@@ -137,3 +137,11 @@ class SettingsVC: UITableViewController {
         }
     }
 }
+
+extension SettingsVC {
+    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        let header = view as! UITableViewHeaderFooterView
+        header.textLabel?.font = UIFont(name: "GothamRounded-Medium", size: 11)
+        header.textLabel?.textColor = UIColor.lightGray
+    }
+}

@@ -103,6 +103,7 @@
 		C00A21DF1FAEC27D007B04B7 /* packer.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C00A216F1FAEC27D007B04B7 /* packer.storyboard */; };
 		C00A21E01FAEC27D007B04B7 /* settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C00A21701FAEC27D007B04B7 /* settings.storyboard */; };
 		C00A21E11FAEC27D007B04B7 /* status.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C00A21711FAEC27D007B04B7 /* status.storyboard */; };
+		C0452ED21FB5120400240CFF /* MainTabVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0452ED11FB5120400240CFF /* MainTabVC.swift */; };
 		C0F69D061FAFA1AC00668371 /* ShopInfoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C0F69D051FAFA1AB00668371 /* ShopInfoView.xib */; };
 /* End PBXBuildFile section */
 
@@ -208,6 +209,7 @@
 		C00A21701FAEC27D007B04B7 /* settings.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = settings.storyboard; sourceTree = "<group>"; };
 		C00A21711FAEC27D007B04B7 /* status.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = status.storyboard; sourceTree = "<group>"; };
 		C00A21E21FAF7C8C007B04B7 /* Papaya-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Papaya-Bridging-Header.h"; sourceTree = "<group>"; };
+		C0452ED11FB5120400240CFF /* MainTabVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabVC.swift; sourceTree = "<group>"; };
 		C0F69D051FAFA1AB00668371 /* ShopInfoView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ShopInfoView.xib; sourceTree = "<group>"; };
 		F0C28D1A4F9B5F12E794D237 /* Pods-Papaya.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Papaya.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Papaya/Pods-Papaya.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -275,6 +277,7 @@
 				C00A20F51FAEC27D007B04B7 /* Order */,
 				C00A21241FAEC27D007B04B7 /* Packer */,
 				C00A212A1FAEC27D007B04B7 /* Settings */,
+				C0452ED11FB5120400240CFF /* MainTabVC.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -776,6 +779,7 @@
 				C00A21901FAEC27D007B04B7 /* OrderSummary.swift in Sources */,
 				C00A217A1FAEC27D007B04B7 /* SignUpViewController.swift in Sources */,
 				C00A21B31FAEC27D007B04B7 /* Extensions.swift in Sources */,
+				C0452ED21FB5120400240CFF /* MainTabVC.swift in Sources */,
 				C00A21A91FAEC27D007B04B7 /* PackOrderVC.swift in Sources */,
 				C00A21A11FAEC27D007B04B7 /* TipVC.swift in Sources */,
 				C00A218C1FAEC27D007B04B7 /* ExpressStatus.swift in Sources */,

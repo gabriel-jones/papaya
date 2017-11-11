@@ -147,6 +147,10 @@ extension ListsVC: UITableViewDelegate, UITableViewDataSource {
         vc.list = lists[indexPath.row]
         navigationController?.pushViewController(vc, animated: true)
     }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 75.0
+    }
 }
 
 extension ListsVC: ListProtocol {

@@ -44,5 +44,9 @@ class SettingsInfoVC: UIViewController, UIWebViewDelegate {
     func webViewDidFinishLoad(_ webView: UIWebView) {
         activityIndicator.stopAnimating()
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        webView.stopLoading()
+    }
 
 }
