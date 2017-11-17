@@ -34,7 +34,7 @@ class NameVC: UITableViewController {
     override func navigationShouldPopOnBackButton() -> Bool {
         self.view.endEditing(true)
         if madeChanges {
-            alert(actions: [
+            /*alert(actions: [
                 AlertButton("Save Changes", backgroundColor: Color.green, textColor: UIColor.white) {
                     self.save(nil)
                 },
@@ -42,7 +42,7 @@ class NameVC: UITableViewController {
                     self.navigationController?.popViewController(animated: true)
                 },
                 AlertButton("Cancel", backgroundColor: Color.grey.0)
-            ]).showWarning("Exit?", subTitle: "Any unsaved changes will be lost.")
+            ]).showWarning("Exit?", subTitle: "Any unsaved changes will be lost.")*/
             return false
         }
         return true
@@ -56,7 +56,7 @@ class NameVC: UITableViewController {
         self.view.endEditing(true)
         if !madeChanges { return }
         
-        let a = alert(actions: [AlertButton("OK")])
+        /*let a = alert(actions: [AlertButton("OK")])
         if first.text!.isEmpty || last.text!.isEmpty {
             a.showWarning("Could not change name", subTitle: "Please enter a first and last name.")
         }
@@ -74,7 +74,7 @@ class NameVC: UITableViewController {
             self.madeChanges = false
             a.showSuccess("Success", subTitle: "Your name has been changed.")
             
-        }
+        }*/
     }
 
 }

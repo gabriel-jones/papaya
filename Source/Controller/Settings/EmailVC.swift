@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import SCLAlertView
 
 class EmailVC: UITableViewController {
     
@@ -43,7 +42,7 @@ class EmailVC: UITableViewController {
     override func navigationShouldPopOnBackButton() -> Bool {
         self.view.endEditing(true)
         if madeChanges {
-            alert(actions: [
+            /*alert(actions: [
                 AlertButton("Save Changes", backgroundColor: Color.green, textColor: UIColor.white) {
                     self.save(nil)
                 },
@@ -51,7 +50,7 @@ class EmailVC: UITableViewController {
                     self.navigationController?.popViewController(animated: true)
                 },
                 AlertButton("Cancel")
-            ]).showWarning("Exit?", subTitle: "Any unsaved changes will be lost.")
+            ]).showWarning("Exit?", subTitle: "Any unsaved changes will be lost.")*/
             return false
         }
         return true
@@ -70,13 +69,13 @@ class EmailVC: UITableViewController {
         R.verifyEmail(User.current.email) { complete in
             DispatchQueue.main.async {
                 print("Sent verification email")
-                let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
+                /*let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
                 a.addButton("OK") {}
                 if !complete {
                     a.showWarning("Could not send email", subTitle: "Please check your connection and try again.")
                 } else {
                     a.showSuccess("Email sent", subTitle: "Please check your email for the verification link.")
-                }
+                }*/
             }
         }
     }
@@ -89,19 +88,19 @@ class EmailVC: UITableViewController {
         self.view.isUserInteractionEnabled = false
         R.checkEmail(self.email.text!) { x in
             DispatchQueue.main.async {
-                let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
-                a.addButton("OK") {}
+                //let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
+                //a.addButton("OK") {}
                 switch x {
                 case .invalid:
-                    a.showWarning("Email invalid", subTitle: "Please enter a valid email")
+                    //a.showWarning("Email invalid", subTitle: "Please enter a valid email")
                     self.view.isUserInteractionEnabled = true
                     return
                 case .taken:
-                    a.showWarning("Email taken", subTitle: "This email is in use by another account")
+                    //a.showWarning("Email taken", subTitle: "This email is in use by another account")
                     self.view.isUserInteractionEnabled = true
                     return
                 case .requestError:
-                    a.showWarning("Could not change email", subTitle: "Please check your connection and try again.")
+                    //a.showWarning("Could not change email", subTitle: "Please check your connection and try again.")
                     self.view.isUserInteractionEnabled = true
                     return
                 case .valid:
@@ -109,9 +108,9 @@ class EmailVC: UITableViewController {
                         self.view.isUserInteractionEnabled = true
 
                         guard !error, let j = json,j["success"].boolValue else {
-                            let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
+                            /*let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
                             a.addButton("OK") {}
-                            a.showWarning("Could not change email", subTitle: "Please check your connection and try again.")
+                            a.showWarning("Could not change email", subTitle: "Please check your connection and try again.")*/
                             return
                         }
                         
@@ -120,7 +119,7 @@ class EmailVC: UITableViewController {
                         keychain["user_email"] = self.email.text!
                         User.current.email = self.email.text!
                         self.tableView.reloadData()
-                        a.showSuccess("Email changed", subTitle: "Please check your new email for the verification link.")
+                        //a.showSuccess("Email changed", subTitle: "Please check your new email for the verification link.")
                     }
                 }
             }

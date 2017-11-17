@@ -16,7 +16,7 @@ class User: PPObj {
     
     func logout() -> Bool {
         User.current = nil
-        GroceryList.current = GroceryList(items: [], shop_id: 0, created: Date())
+        Cart.current = Cart(items: [])
         Order.current.id = -1
         
         R.get("/scripts/User/logout.php", parameters: ["user_id": self.id])

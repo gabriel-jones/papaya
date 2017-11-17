@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import XLActionController
 
 class GroceryContainerVC: BaseVC {
     
@@ -77,12 +76,12 @@ extension GroceryContainerVC: GroceryDelegate {
         page += direction == .forward ? 1 : -1
         if page > pageVCs.count { page = pageVCs.count-1 }
         if page < 0 {
-            alert(actions: [
+            /*alert(actions: [
                 AlertButton("OK", backgroundColor: Color.red) {
                     self.navigationController?.popViewController(animated: true)
                 },
                 AlertButton("Cancel")
-            ]).showWarning("Exit?", subTitle: "You will lose your current grocery list.")
+            ]).showWarning("Exit?", subTitle: "You will lose your current grocery list.")*/
             return
         }
         self.setVC(pageVCs[page], direction)
@@ -120,12 +119,12 @@ extension GroceryContainerVC: GroceryDelegate {
     
     func updateTotals() {
         print("update totals")
-        self.cartPrice.text = GroceryList.current.total.currency_format
+        //self.cartPrice.text = GroceryList.current.total.currency_format
     }
     
     func addItemToCart(_ item: Item, _ quantity: Int) {
         print("add item to cart: \(item.name) \(quantity)")
-        GroceryList.current.items.append((item, quantity))
+        //GroceryList.current.items.append((item, quantity))
         self.updateTotals()
     }
     
@@ -209,7 +208,7 @@ extension GroceryContainerVC {
     func loadList() {
     }
     
-    func more() {
+    func more() {/*
         let a = YoutubeActionController()
         a.addAction(Action(ActionData.init(title: "Load List", image: #imageLiteral(resourceName: "Upload Grey")), style: ActionStyle.default) { action in
             if !GroceryList.current.items.isEmpty {
@@ -236,6 +235,6 @@ extension GroceryContainerVC {
         a.addAction(Action(ActionData.init(title: "Cancel", image: #imageLiteral(resourceName: "Cancel Grey ")), style: ActionStyle.cancel) { action in
             a.dismiss(animated: true, completion: nil)
         })
-        self.present(a, animated: true, completion: nil)
+        self.present(a, animated: true, completion: nil)*/
     }
 }

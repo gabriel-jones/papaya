@@ -8,7 +8,6 @@
 
 import UIKit
 import GoogleMaps
-import XLActionController
 import SwiftyJSON
 import MessageUI
 

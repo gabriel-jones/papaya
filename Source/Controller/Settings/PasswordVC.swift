@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import SCLAlertView
 
 class PasswordVC: UITableViewController {
 
@@ -19,18 +18,18 @@ class PasswordVC: UITableViewController {
     @IBAction func save(_ sender: UIButton?) {
         self.view.isUserInteractionEnabled = false
         
-        let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
-        a.addButton("OK") {}
+        //let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
+        //a.addButton("OK") {}
         R.post("/scripts/User/change_password.php", parameters: ["old": oldPassword.text!, "new": newPassword.text!, "user_id": User.current.id]) { json, error in
             
             self.view.isUserInteractionEnabled = true
             
             guard !error, let j = json, j["success"].boolValue else {
-                a.showWarning("Can't reset password", subTitle: "Please check your connection and try again.")
+                //a.showWarning("Can't reset password", subTitle: "Please check your connection and try again.")
                 return
             }
             
-            a.showSuccess("Password Reset", subTitle: "Your password has been reset successfully.")
+            //a.showSuccess("Password Reset", subTitle: "Your password has been reset successfully.")
             keychain["user_password"] = self.newPassword.text!
             self.madeChanges = false
         }
@@ -58,7 +57,7 @@ class PasswordVC: UITableViewController {
     override func navigationShouldPopOnBackButton() -> Bool {
         self.view.endEditing(true)
         if madeChanges {
-            alert(actions: [
+            /*alert(actions: [
                 AlertButton("Save Changes", backgroundColor: Color.green, textColor: UIColor.white) {
                     self.save(nil)
                 },
@@ -66,23 +65,23 @@ class PasswordVC: UITableViewController {
                     self.navigationController?.popViewController(animated: true)
                 },
                 AlertButton("Cancel")
-            ]).showWarning("Exit?", subTitle: "Any unsaved changes will be lost.")
+            ]).showWarning("Exit?", subTitle: "Any unsaved changes will be lost.")*/
             return false
         }
         return true
     }
     
     @IBAction func forgotPassword(_ sender: UIButton) {
-        let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
+        //let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
         R.get("/scripts/User/forgot_password.php", parameters: ["email": User.current.email]) { json, error in
             guard !error, let j = json else {
-                a.addButton("OK") {}
-                a.showWarning("Error", subTitle: "Could not complete operation. Please try again later")
+                //a.addButton("OK") {}
+                //a.showWarning("Error", subTitle: "Could not complete operation. Please try again later")
                 return
             }
             
             if(j["success"].boolValue) {
-                a.addButton("OK", action: {
+                /*a.addButton("OK", action: {
                     let b = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
                     b.addButton("OK") {
                         User.current = nil
@@ -101,9 +100,9 @@ class PasswordVC: UITableViewController {
                     }
                     b.showNotice("Notice", subTitle: "You will now be logged out.")
                 })
-                a.showSuccess("Change Password", subTitle: "Please check your email for the link to reset your password.")
+                a.showSuccess("Change Password", subTitle: "Please check your email for the link to reset your password.")*/
             } else {
-                a.addButton("Resend Verification Email", backgroundColor: Color.green, textColor: UIColor.white) {
+                /*a.addButton("Resend Verification Email", backgroundColor: Color.green, textColor: UIColor.white) {
                     R.verifyEmail(User.current.email) { complete in
                         DispatchQueue.main.async {
                             print("Sent verification email")
@@ -118,7 +117,7 @@ class PasswordVC: UITableViewController {
                     }
                 }
                 a.addButton("OK") {}
-                a.showWarning("Can't reset password", subTitle: "Please check if your email has been verified and try again.")
+                a.showWarning("Can't reset password", subTitle: "Please check if your email has been verified and try again.")*/
             }
         }
     }

@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import SCLAlertView
 
 class AdvancedVC: UITableViewController {
     
@@ -27,28 +26,28 @@ class AdvancedVC: UITableViewController {
     @IBAction func requestStoreLink(_ sender: UIButton) {
         self.view.endEditing(true)
         
-        let a = alert(actions: [
+        /*let a = alert(actions: [
             AlertButton("OK")
-        ])
+        ])*/
         R.get("/scripts/User/get_verification_status.php", parameters: ["user_id": User.current.id]) { json, error in
             guard !error, let j = json else {
-                a.showWarning("Could not link", subTitle: "There was an error. Please try again.")
+                //a.showWarning("Could not link", subTitle: "There was an error. Please try again.")
                 return
             }
             
             User.current.verified = j["verified"].boolValue
             if !User.current.verified {
-                a.showWarning("Could not link", subTitle: "Your email must be verified to link your account to a store.")
+                //a.showWarning("Could not link", subTitle: "Your email must be verified to link your account to a store.")
                 return
             }
             R.get("/scripts/User/link.php", parameters: ["user_id": User.current.id, "shop_id": self.storeID.text!]) { _json, _error in
                 guard !error, let _j = _json else {
-                    a.showWarning("Could not link", subTitle: "There was an error. Please try again.")
+                    //a.showWarning("Could not link", subTitle: "There was an error. Please try again.")
                     return
                 }
                 print(_j)
                 if _j["success"].boolValue {
-                    alert(actions: [
+                    /*alert(actions: [
                         AlertButton("OK") {
                             if User.current.logout() {
                                 self.dismiss(animated: true, completion: nil)
@@ -56,9 +55,9 @@ class AdvancedVC: UITableViewController {
                                 print("Could not logout")
                             }
                         }
-                    ]).showSuccess("Packer Request Sent", subTitle: "Please contact your supervisor to authorise your account. You will now be logged out.")
+                    ]).showSuccess("Packer Request Sent", subTitle: "Please contact your supervisor to authorise your account. You will now be logged out.")*/
                 } else {
-                    a.showWarning("Could not link", subTitle: "Please check the Store ID and try again. (Error Code: \(_j["code"].intValue))")
+                    //a.showWarning("Could not link", subTitle: "Please check the Store ID and try again. (Error Code: \(_j["code"].intValue))")
                 }
             }
         }
@@ -92,13 +91,13 @@ class AdvancedVC: UITableViewController {
     
     @IBAction func deleteAccount(_ sender: UIButton) {
         if Order.current.id != -1 {
-            let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
+            /*let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
             a.addButton("OK") {}
-            a.showWarning("An order is in progress", subTitle: "You cannot delete your account. Please cancel the order or call the store for help.")
+            a.showWarning("An order is in progress", subTitle: "You cannot delete your account. Please cancel the order or call the store for help.")*/
             return
         }
         
-        let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
+        /*let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
         a.addButton("Yes, I am sure", backgroundColor: Color.red) {
             self.getAuth {
                 R.get("/scripts/User/delete_account.php", parameters: ["user_id": User.current.id]) { json, error in
@@ -118,7 +117,7 @@ class AdvancedVC: UITableViewController {
             }
         }
         a.addButton("Cancel", backgroundColor: Color.grey.0) {}
-        a.showError("Delete Account", subTitle: "Are you sure you want to delete your account? This cannot be undone.")
+        a.showError("Delete Account", subTitle: "Are you sure you want to delete your account? This cannot be undone.")*/
     }
 
     

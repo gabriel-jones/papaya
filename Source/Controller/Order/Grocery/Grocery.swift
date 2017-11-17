@@ -8,13 +8,13 @@
 
 import UIKit
 
-func unique(_ items: Array<(Item,Int)>) -> Array<(Item,Int)> {
+func unique(_ items: [CartItem]) -> [CartItem] {
     //var buffer = [(Item,Int)]()
-    var unique = [(Item,Int)]()
+    var unique = [CartItem]()
     for i in items {
-        if let index = unique.index(where: {$0.0.id == i.0.id}) { //not a unique element
+        if let index = unique.index(where: {$0.item.id == i.item.id}) { //not a unique element
             let u = unique[index]
-            unique.append((u.0, u.1+i.1 > u.0.stock ? u.0.stock : u.1+i.1))
+            unique.append(CartItem(item: u.item, quantity:  u.quantity+i.quantity > u.item.stock ? u.item.stock : u.quantity+i.quantity))
             unique.remove(at: index)
         } else {
             unique.append(i)

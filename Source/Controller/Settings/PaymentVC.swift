@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import SCLAlertView
 
 class PaymentVC: UITableViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
     
@@ -38,7 +37,7 @@ class PaymentVC: UITableViewController, UITextFieldDelegate, UIPickerViewDelegat
     func shouldClose() -> Bool {
         self.view.endEditing(true)
         if madeChanges {
-            let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
+            /*let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
             a.addButton("Save Changes", backgroundColor: Color.green, textColor: UIColor.white) {
                 self.save(nil)
             }
@@ -46,7 +45,7 @@ class PaymentVC: UITableViewController, UITextFieldDelegate, UIPickerViewDelegat
                 self.navigationController?.popViewController(animated: true)
             }
             a.addButton("Cancel", backgroundColor: Color.grey.0, textColor: UIColor.white) {}
-            a.showWarning("Are you sure you want to exit?", subTitle: "Any unsaved changes will be lost.")
+            a.showWarning("Are you sure you want to exit?", subTitle: "Any unsaved changes will be lost.")*/
             return false
         }
         return true
@@ -55,7 +54,7 @@ class PaymentVC: UITableViewController, UITextFieldDelegate, UIPickerViewDelegat
     @objc func close(_ sender: Any) {
         self.view.endEditing(true)
         if madeChanges {
-            let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
+            /*let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
             a.addButton("Save Changes", backgroundColor: Color.green, textColor: UIColor.white) {
                 self.save(nil)
             }
@@ -63,7 +62,7 @@ class PaymentVC: UITableViewController, UITextFieldDelegate, UIPickerViewDelegat
                 self.dismiss(animated: true, completion: nil)
             }
             a.addButton("Cancel", backgroundColor: Color.grey.0, textColor: UIColor.white) {}
-            a.showWarning("Exit?", subTitle: "Any unsaved changes will be lost.")
+            a.showWarning("Exit?", subTitle: "Any unsaved changes will be lost.")*/
         } else {
             self.dismiss(animated: true, completion: nil)
         }

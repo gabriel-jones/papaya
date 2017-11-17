@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import XLActionController
 
 extension Array where Element : Hashable {
     var unique: [Element] {
@@ -21,15 +20,15 @@ class ListDetailVC: UIViewController {
     
     var categories: [String] {
         get {
-            return list.list.items.map { $0.0.category }.unique
+            return list.list.items.map { $0.item.category }.unique
         }
     }
     
-    func items(in category: String) -> [(Item, Int)] {
-        return list.list.items.filter { $0.0.category == category }
+    func items(in category: String) -> [CartItem] {
+        return list.list.items.filter { $0.item.category == category }
     }
     
-    func item(in indexPath: IndexPath) -> (Item, Int) {
+    func item(in indexPath: IndexPath) -> CartItem {
         return items(in: categories[indexPath.section])[indexPath.row]
     }
     
@@ -70,14 +69,14 @@ extension ListDetailVC: UITableViewDelegate, UITableViewDataSource {
         
         let item = self.item(in: indexPath)
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ListItemCell
-        cell.name.text = item.0.name
-        cell.quantity.text = "Quantity: \(item.1)"
+        cell.name.text = item.item.name
+        cell.quantity.text = "Quantity: \(item.quantity)"
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("select: \(indexPath)")
-        print("select item: \(item(in: indexPath).0.name)")
+        print("select item: \(item(in: indexPath).item.name)")
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {

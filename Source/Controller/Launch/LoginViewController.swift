@@ -8,7 +8,6 @@
 
 import UIKit
 import SwiftyJSON
-import SCLAlertView
 
 var didLogin = false
 
@@ -65,12 +64,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         if !UserDefaults.standard.bool(forKey: "tutorial-login") {
-            let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
+            /*let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
             a.addButton("OK") {
                 UserDefaults.standard.set(true, forKey: "tutorial-login")
                 UserDefaults.standard.synchronize()
             }
-            a.showSuccess("Welcome to PrePacked!", subTitle: "To get started, create an account or login with an existing account.")
+            a.showSuccess("Welcome to PrePacked!", subTitle: "To get started, create an account or login with an existing account.")*/
         }
     }
     
@@ -119,9 +118,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                 } else if error == .incorrectPassword {
                     self.password.error = true
                 } else if error == .awaitingPackerStatus {
-                    SCLAlertView().showWarning("Cannot login", subTitle: "Awaiting packer authorisation. Please contact your supervisor for assistance.")
+                    //SCLAlertView().showWarning("Cannot login", subTitle: "Awaiting packer authorisation. Please contact your supervisor for assistance.")
                 } else {
-                    SCLAlertView().showWarning("An Error Occurred", subTitle: "An unexpected error occured. Please check your connection and try again.")
+                    //SCLAlertView().showWarning("An Error Occurred", subTitle: "An unexpected error occured. Please check your connection and try again.")
                 }
             }
         }
@@ -134,7 +133,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     @IBAction func forgotPass(_ sender: AnyObject) {
         self.view.endEditing(true)
-        
+        /*
         let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
         a.addButton("OK", action: {})
 
@@ -173,7 +172,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                     a.showWarning("Can't reset password", subTitle: "Please check if your email is valid and try again.")
                 }
             }
-        }
+        }*/
     }
     
     @objc func keyboardWillShow(notification: Notification) {

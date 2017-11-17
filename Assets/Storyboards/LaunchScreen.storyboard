@@ -31,18 +31,12 @@
                                     <constraint firstAttribute="width" constant="50" id="lJ9-06-fPw"/>
                                 </constraints>
                             </imageView>
-                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="2Pt-GR-Mtg">
-                                <rect key="frame" x="169" y="408" width="37" height="37"/>
-                                <color key="color" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="j9X-GU-02O" firstAttribute="centerY" secondItem="VJs-Lr-Kil" secondAttribute="centerY" id="907-11-exq"/>
                             <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="VJs-Lr-Kil" secondAttribute="bottom" id="ReI-st-duN"/>
                             <constraint firstItem="VJs-Lr-Kil" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="Uha-Q1-a1N"/>
-                            <constraint firstItem="2Pt-GR-Mtg" firstAttribute="centerX" secondItem="j9X-GU-02O" secondAttribute="centerX" id="Z5d-ed-HnY"/>
-                            <constraint firstItem="2Pt-GR-Mtg" firstAttribute="top" secondItem="j9X-GU-02O" secondAttribute="bottom" constant="50" id="bnx-8k-mpN"/>
                             <constraint firstItem="VJs-Lr-Kil" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="ceF-Iu-O6k"/>
                             <constraint firstItem="j9X-GU-02O" firstAttribute="centerX" secondItem="VJs-Lr-Kil" secondAttribute="centerX" id="cre-1r-0K0"/>
                             <constraint firstAttribute="trailing" secondItem="VJs-Lr-Kil" secondAttribute="trailing" id="etC-Wv-ddF"/>
@@ -55,7 +49,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Launch Gradient" width="16" height="16"/>
+        <image name="Launch Gradient" width="138" height="245"/>
         <image name="Logo" width="580" height="580"/>
     </resources>
 </document>

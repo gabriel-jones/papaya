@@ -211,9 +211,9 @@ class ChooseShopViewController: UIViewController, UIGestureRecognizerDelegate, G
             return
         }
         
-        GroceryList.current = GroceryList(items: [], shop_id: id, created: Date())
-        GroceryList.current.delivery.location = User.current.defaultLocation
-        GroceryList.current.delivery.address = User.current.defaultAddress
+        Cart.current = Cart(items: [])/*
+        Cart.current.delivery.location = User.current.defaultLocation
+        Cart.current.delivery.address = User.current.defaultAddress*/
         
         let vc = GroceryContainerVC.instantiate(from: .order)
         self.navigationController?.pushViewController(vc, animated: true)

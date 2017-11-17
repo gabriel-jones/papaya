@@ -18,10 +18,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
     
     func setupUI() {
         UINavigationBar.appearance().titleTextAttributes = [
-            NSAttributedStringKey.font: UIFont(name: "GothamRounded-Medium", size: 20)!,
-            NSAttributedStringKey.strokeColor: UIColor.white
+            NSAttributedStringKey.font: UIFont(name: "GothamRounded-Medium", size: 20)!
         ]
-        UINavigationBar.appearance().tintColor = .white
         
         UITabBarItem.appearance().setTitleTextAttributes(
             [NSAttributedStringKey.font: UIFont(name: "GothamRounded-Medium", size: 11)!], for: .normal
@@ -29,10 +27,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
         UITabBarItem.appearance().setTitleTextAttributes(
             [NSAttributedStringKey.font: UIFont(name: "GothamRounded-Bold", size: 11)!], for: .selected
         )
+        
+        
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        
         setupUI()
         
         //TODO: remove in production

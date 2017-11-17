@@ -10,5 +10,6 @@
 #define Papaya_Bridging_Header_h
 
 #import "UIViewController+BackButtonHandler.h"
+#import "UIBarButtonItem+Badge.h"
 
 #endif /* Papaya_Bridging_Header_h */

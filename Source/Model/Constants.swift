@@ -19,4 +19,9 @@ struct C {
     }
     
     static let GMS_KEY = "AIzaSyCFy56PBJTowmL5q6cTX-d_uT6HFydP0DM"
+    
+    struct Notification {
+        static let base = "bm.papaya"
+        static let CartBadgeUpdate = base + ".cartBadgeUpdate"
+    }
 }

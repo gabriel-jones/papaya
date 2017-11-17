@@ -134,19 +134,19 @@ extension SignupVC: SignupDelegate {
     }
     
     func finish() {
-        let al = alert(actions: [
+        /*let al = alert(actions: [
             AlertButton.init("OK", backgroundColor: Color.green, textColor: UIColor.white) {
                 didLogin = true
                 self.dismiss(animated: true, completion: nil)
             }
         ])
-        al.showSuccess("You're signed up!", subTitle: "Please check your email for a verification link")
+        al.showSuccess("You're signed up!", subTitle: "Please check your email for a verification link")*/
     }
     
     func signup(_ completion: @escaping (Bool) -> ()) {
         R.register(email: data["email"].stringValue, password: data["password"].stringValue, fname: data["fname"].stringValue, lname: data["lname"].stringValue, cc: data["cardNumber"].stringValue, cvv: data["code"].stringValue, exp: data["exp"].stringValue, address: data["address"].stringValue, houseNumber: data["houseNumber"].stringValue, location: Location.init(lat: data["latitude"].doubleValue, long: data["longitude"].doubleValue), premium: data["premium"].boolValue) { err in
             guard err == nil else {
-                let al = alert(actions: [
+                /*let al = alert(actions: [
                     AlertButton.init("OK", backgroundColor: Color.red, textColor: UIColor.white) {
                         
                     }
@@ -162,7 +162,7 @@ extension SignupVC: SignupDelegate {
                     al.showError("Could not sign up", subTitle: "Please try again.")
                 default: break
                 }
-                
+                */
                 completion(false)
                 return
             }

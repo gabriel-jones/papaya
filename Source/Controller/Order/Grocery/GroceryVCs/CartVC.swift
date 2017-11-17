@@ -27,7 +27,7 @@ class CartVC: GroceryVC {
         tableView.allowsSelection = false
         
         nextButton.action = {
-            if !GroceryList.current.items.isEmpty {
+            if !Cart.current.items.isEmpty {
                 self.delegate.next()
             }
         }
@@ -48,8 +48,8 @@ class CartVC: GroceryVC {
     
     func updateTotal() {
         delegate.updateTotals()
-        self.total.text = GroceryList.current.total.currency_format
-        self.itemCount.text = "\(GroceryList.current.items.count) item\(GroceryList.current.items.count != 1 ? "s" : "")"
+        self.total.text = Cart.current.total.currency_format
+        self.itemCount.text = "\(Cart.current.items.count) item\(Cart.current.items.count != 1 ? "s" : "")"
     }
 }
 
@@ -57,13 +57,13 @@ class CartVC: GroceryVC {
 extension CartVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        GroceryList.current.items = unique(GroceryList.current.items)
+        Cart.current.items = unique(Cart.current.items)
         self.updateTotal()
-        return GroceryList.current.items.isEmpty ? 1 : GroceryList.current.items.count
+        return Cart.current.items.isEmpty ? 1 : Cart.current.items.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if GroceryList.current.items.isEmpty {
+        if Cart.current.items.isEmpty {
             let cell = tableView.dequeueReusableCell(withIdentifier: "nothingCell", for: indexPath) as! NothingCartCell
             cell.addItems.action = {
                 if self.delegate.switchVC(to: 0) {
@@ -74,13 +74,13 @@ extension CartVC: UITableViewDelegate, UITableViewDataSource {
         }
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! CartCell
-        let d = GroceryList.current.items[indexPath.row]
+        let d = Cart.current.items[indexPath.row]
         
-        cell.id = d.0.id
-        cell.count = d.1
-        cell.name.text = d.0.name
-        let a = NSMutableAttributedString(string: "\(d.0.price.currency_format)  |  \(d.0.category.capitalizingFirstLetter())")
-        a.addAttribute(NSAttributedStringKey.foregroundColor, value: Color.green, range: NSMakeRange(0, d.0.price.currency_format.length))
+        cell.id = d.item.id
+        cell.count = d.quantity
+        cell.name.text = d.item.name
+        let a = NSMutableAttributedString(string: "\(d.item.price.currency_format)  |  \(d.item.category.capitalizingFirstLetter())")
+        a.addAttribute(NSAttributedStringKey.foregroundColor, value: Color.green, range: NSMakeRange(0, d.item.price.currency_format.length))
         cell.subtitle.attributedText = a
         
         cell.minusButton.action = {
@@ -88,19 +88,19 @@ extension CartVC: UITableViewDelegate, UITableViewDataSource {
                 cell.toggleDelete(true)
             } else {
                 cell.count -= 1
-                GroceryList.current.items[indexPath.row].1 = cell.count
+                Cart.current.items[indexPath.row].quantity = cell.count
                 self.updateTotal()
             }
         }
         
         cell.plusButton.action = {
             cell.count += 1
-            GroceryList.current.items[indexPath.row].1 = cell.count
+            Cart.current.items[indexPath.row].quantity = cell.count
             self.updateTotal()
         }
         
         cell.deleteButton.action = {
-            GroceryList.current.items.remove(at: indexPath.row)
+            Cart.current.items.remove(at: indexPath.row)
             self.update()
         }
         

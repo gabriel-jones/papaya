@@ -7,8 +7,7 @@
 //
 
 import UIKit
-import SCLAlertView
-
+/*
 struct AlertButton {
     var title: String
     var backgroundColor: UIColor
@@ -32,7 +31,7 @@ func alert(actions: [AlertButton] = [], alertFont: UIFont = Font.gotham(size: 12
         a.addButton(action.title, backgroundColor: action.backgroundColor, textColor: action.textColor, action: action.action)
     }
     return a
-}
+}*/
 
 protocol ActiveLargeButtonDelegate: class {
     func didToggleActive(to active: Bool, sender: ActiveLargeButton)

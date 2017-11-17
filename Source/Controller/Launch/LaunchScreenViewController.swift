@@ -18,9 +18,9 @@ class LaunchScreenViewController: UIViewController {
     }
     
     func error() {
-        alert(actions: [AlertButton("OK", action: {
+        /*alert(actions: [AlertButton("OK", action: {
             //Allow retry
-        })]).showWarning("An Error Occured", subTitle: "Please check your connection and try again.")
+        })]).showWarning("An Error Occured", subTitle: "Please check your connection and try again.")*/
     }
     
     func next() {

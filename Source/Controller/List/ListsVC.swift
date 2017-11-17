@@ -8,16 +8,14 @@
 
 import UIKit
 import SwiftyJSON
-import SCLAlertView
-import XLActionController
 
 class List: PPObj {
     var name: String!
-    var list: GroceryList!
+    var list: Cart!
     
     init(j: JSON) {
         self.name = j["name"].stringValue
-        self.list = GroceryList(j: j)
+        self.list = nil
         super.init(id: j["id"].intValue)
     }
     
@@ -25,7 +23,7 @@ class List: PPObj {
         return [
             "id": self.id,
             "name": self.name,
-            "list": self.list.json()!.stringValue
+            "list": ""
         ]
     }
 }

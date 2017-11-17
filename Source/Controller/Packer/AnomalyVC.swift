@@ -37,7 +37,7 @@ class AnomalyVC: UIViewController {
             self.view.endEditing(true)
             if self.anomalyStock.text == "" { return }
             let val = Int(self.anomalyStock.text!)!
-            
+            /*
             let a = alert(actions: [
                 AlertButton("OK")
             ])
@@ -48,7 +48,7 @@ class AnomalyVC: UIViewController {
             } else if val >= self.item.quantity {
                 a.showWarning("Cannot reduce", subTitle: "If you have collected all requested of this item, then select the \"All\" button on the previous page.")
                 return
-            }
+            }*/
             self.close(val)
         }
         

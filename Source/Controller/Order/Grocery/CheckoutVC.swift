@@ -10,7 +10,6 @@ import UIKit
 import GoogleMaps
 import CoreLocation
 import SwiftyJSON
-import SCLAlertView
 
 var orderInProgress = false
 
@@ -52,7 +51,7 @@ class CheckoutVC: GroceryVC {
     }
     
     @IBAction func expressChange(_ sender: UISwitch) {
-        GroceryList.current.delivery.isExpress = sender.isOn
+        //GroceryList.current.delivery.isExpress = sender.isOn
         updateTotals()
     }
     
@@ -74,7 +73,7 @@ class CheckoutVC: GroceryVC {
         editCardButton.action = editPayment
         viewCartButton.action = viewCart
         viewDeliveryButton.action = editDelivery
-        
+        /*
         subtotalLabel.text = GroceryList.current.total.currency_format
         packingFeeLabel.text = 10.0.currency_format
         expressLabel.text = 5.0.currency_format
@@ -98,7 +97,7 @@ class CheckoutVC: GroceryVC {
             deliveryContainerHeight.constant = 75
             viewDeliveryButton.alpha = 0
             deliveryAddressLabel.textColor = Color.red
-        }
+        }*/
     }
 }
 
@@ -109,11 +108,11 @@ protocol CheckoutDeliveryDelegate: class {
 //MARK: GMSMapView
 extension CheckoutVC: CheckoutDeliveryDelegate {
     func pickedDelivery(location: Location, address: String) {
-        let delivery = GroceryList.current.delivery
+        /*let delivery = GroceryList.current.delivery
         delivery.address = address
         delivery.location = location
         
-        deliveryAddressLabel.text = delivery.address
+        deliveryAddressLabel.text = delivery.address*/
     }
 }
 
@@ -193,7 +192,7 @@ extension CheckoutVC {
             orderInProgress = true
             return
         }
-        
+        /*
         let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
         var sub = ""
         switch e {
@@ -221,7 +220,7 @@ extension CheckoutVC {
             sub = "There was an unexpected account error. Please try again."
         }
         a.addButton("OK") {}
-        a.showWarning("Could not add order", subTitle: sub)
+        a.showWarning("Could not add order", subTitle: sub)*/
     }
 }
 class ProcessOrder {
@@ -235,7 +234,7 @@ class ProcessOrder {
     
     func addOrder(c: @escaping (OrderError?)->()) {
         //3. add order
-        var body: [String:Any] = [:]
+        var body: [String:Any] = [:]/*
         
         var items = [[String:Any]]()
         for item in GroceryList.current.items {
@@ -248,7 +247,7 @@ class ProcessOrder {
         body["latitude"] = GroceryList.current.delivery.location!.latitude
         body["longitude"] = GroceryList.current.delivery.location!.longitude
         body["address"] = GroceryList.current.delivery.address!
-        body["amount"] = GroceryList.current.total
+        body["amount"] = GroceryList.current.total*/
         
         R.post("/scripts/Orders/add_order.php", parameters: body) { json, error in
             guard !error, let j = json else {

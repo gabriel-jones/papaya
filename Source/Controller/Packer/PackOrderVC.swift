@@ -8,7 +8,6 @@
 
 import UIKit
 import SwiftyJSON
-import SCLAlertView
 
 class PackItem: PPObj {
     
@@ -410,16 +409,16 @@ class PackOrderVC: UIViewController {
             self.removeOverlay()
             self.stopLoading()
             self.view.isUserInteractionEnabled = true
-            let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
+            //let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
             guard let j = json, !error, j["success"].boolValue else {
-                a.addButton("OK") {}
-                a.showWarning("Could not complete order", subTitle: "Check your internet connection and try again.")
+                //a.addButton("OK") {}
+                //a.showWarning("Could not complete order", subTitle: "Check your internet connection and try again.")
                 return
             }
-            a.addButton("OK") {
+            /*a.addButton("OK") {
                 self.navigationController?.popViewController(animated: true)
             }
-            a.showSuccess("Nice job!", subTitle: "The order has been completed.")
+            a.showSuccess("Nice job!", subTitle: "The order has been completed.")*/
         }
     }
     

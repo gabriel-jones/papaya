@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import SCLAlertView
 
 class SettingsVC: UITableViewController {
     
@@ -125,7 +124,7 @@ class SettingsVC: UITableViewController {
     }
     
     @IBAction func logout(_ sender: UIButton) {
-        let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
+        /*let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
         a.addButton("Logout") {
             self.logout()
         }
@@ -134,7 +133,7 @@ class SettingsVC: UITableViewController {
             a.showNotice("An order is in progress", subTitle: "You will not receive updates on it's status if you logout.")
         } else {
             a.showNotice("Logout", subTitle: "Are you sure you want to logout?")
-        }
+        }*/
     }
 }
 

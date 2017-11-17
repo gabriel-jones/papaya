@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import XLActionController
 
 protocol InventoryItemsDelegate {
     func didUpdateShop(id: Int)
@@ -94,7 +93,6 @@ class ShoppingVC: GroceryVC {
         if self.inv_delegate != nil {
             self.shop_id = -1
         } else {
-            self.shop_id = GroceryList.current.shop_id
         }
         
         self.categories = self.getCategories()
@@ -114,7 +112,7 @@ class ShoppingVC: GroceryVC {
             }
         }
         
-        sortButton.action = {
+        sortButton.action = {/*
             let a = YoutubeActionController()
             a.addAction(Action(ActionData(title: "Name", image: #imageLiteral(resourceName: "Sort By Name Ascending")), style: ActionStyle.default) { _a in
                 self.showSortDirection(previous: _a)
@@ -123,13 +121,12 @@ class ShoppingVC: GroceryVC {
                 self.showSortDirection(previous: _a)
             })
             a.addAction(Action(ActionData(title: "Cancel", image: #imageLiteral(resourceName: "Cancel Grey ")), style: ActionStyle.default, handler: nil))
-            self.present(a, animated: true, completion: nil)
+            self.present(a, animated: true, completion: nil)*/
         }
     }
-    
+    /*
     func showSortDirection(previous: Action<ActionData>) {
         let s = previous.data!.title!.lowercased()
-        
         let a = YoutubeActionController()
         a.addAction(Action(ActionData(title: "Ascending", image: s == "name" ? #imageLiteral(resourceName: "Sort By Name Ascending") : #imageLiteral(resourceName: "Ascending Grey")), style: ActionStyle.default) { _ in
             self.updateSort(s, dir: .asc)
@@ -139,7 +136,7 @@ class ShoppingVC: GroceryVC {
         })
         a.addAction(Action(ActionData(title: "Cancel", image: #imageLiteral(resourceName: "Cancel Grey ")), style: ActionStyle.default, handler: nil))
         self.present(a, animated: true, completion: nil)
-    }
+    }*/
     
     func updateSort(_ s: String, dir: SortDirection) {
         self.sort = SortType(rawValue: s)!
@@ -165,7 +162,6 @@ class ShoppingVC: GroceryVC {
         
         if self.inv_delegate == nil {
             category = i.row
-            shop = Shop.all.index { $0.id == GroceryList.current.shop_id }! + 1
         } else {
             if i.section == 0 {
                 shop = i.row

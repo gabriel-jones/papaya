@@ -8,8 +8,6 @@
 
 import UIKit
 import SwiftyJSON
-import XLActionController
-import SCLAlertView
 
 enum StatusMode: String {
     case sent, packing, packed, delivery, finished
@@ -193,7 +191,7 @@ class StatusVC: BaseVC {
         self.dismiss(animated: true, completion: nil)
     }
     
-    @IBAction func more(_ sender: UIButton) {
+    @IBAction func more(_ sender: UIButton) {/*
         let a = YoutubeActionController()
         
         if Order.current.status == .sent {
@@ -247,7 +245,7 @@ class StatusVC: BaseVC {
             self.addOverlay(vc, animated: true, completion: nil)
         })
         
-        present(a, animated: true, completion: nil)
+        present(a, animated: true, completion: nil)*/
     }
     
     //MARK: - View Methods

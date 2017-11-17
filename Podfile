@@ -10,6 +10,10 @@ target 'Papaya' do
     pod 'GoogleMaps'
     pod 'GooglePlaces'
     pod 'KeychainAccess'
-    pod 'XLActionController'
-    pod 'SCLAlertView', :git => 'https://github.com/vikmeup/SCLAlertView-Swift', :branch => 'master'
+    pod 'PINRemoteImage'
+    pod 'SnapKit', '~> 4.0.0'
+    pod 'RMPZoomTransitionAnimator'
+    pod 'PMAlertController'
+    pod 'TOMSMorphingLabel', '~> 0.5'
+    pod 'JVFloatLabeledTextField'
 end

@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import XLActionController
 
 protocol InventoryVCDelegate {
     func openOverlay(_ vc: UIViewController, animated: Bool)

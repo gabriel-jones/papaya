@@ -9,7 +9,6 @@
 import UIKit
 import SwiftyJSON
 import GoogleMaps
-import SCLAlertView
 
 class PackerOrder: PPObj {
     var itemCount = 0
@@ -149,7 +148,7 @@ class PackerVC: UIViewController {
             }
         }
         
-        powerButton.action = {
+        powerButton.action = {/*
             let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
             a.addButton("Go Offline", backgroundColor: Color.red, textColor: UIColor.white) {
                 self.go(online: false) { json, error in
@@ -161,7 +160,7 @@ class PackerVC: UIViewController {
                 }
             }
             a.addButton("Cancel") {}
-            a.showNotice("Go Offline?", subTitle: "You will not be able to pack orders offline.")
+            a.showNotice("Go Offline?", subTitle: "You will not be able to pack orders offline.")*/
         }
         
         startDeliveryButton.action = {
@@ -264,12 +263,12 @@ extension PackerVC: UICollectionViewDataSource, UICollectionViewDelegate, UIColl
                 c.startButton.backgroundColor = didLoad ? Color.green : Color.grey.0
                 self.updateLoadCount()
             } else {
-                let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
+                /*let a = SCLAlertView(appearance: SCLAlertView.SCLAppearance(showCloseButton: false))
                 a.addButton("Pack", backgroundColor: Color.green, textColor: UIColor.white) {
                     self.progress(with: data)
                 }
                 a.addButton("Cancel") {}
-                a.showNotice("Start Packing?", subTitle: "Do you want to start packing this order? (#\(User.current.packer_shop_id!)-\(data.id))")
+                a.showNotice("Start Packing?", subTitle: "Do you want to start packing this order? (#\(User.current.packer_shop_id!)-\(data.id))")*/
             }
         }
         
