@@ -20,16 +20,18 @@ class ItemGroupTableViewCell: UITableViewCell {
     
     public var viewAllItems: ((Int) -> ())? = nil
     
-    public var itemDataSource: ItemDataSource?
-    public var itemDelegate: ItemDelegate?
+    public var itemModel: ItemModel? {
+        didSet {
+            collectionView.dataSource = itemModel
+            collectionView.delegate = itemModel
+        }
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        print("load group item cell")
         
         collectionView.register(UINib(nibName: C.ViewModel.Nib.itemCell, bundle: nil), forCellWithReuseIdentifier: C.ViewModel.CellIdentifier.itemCell)
-
-        collectionView.dataSource = itemDataSource
-        collectionView.delegate = itemDelegate
     }
     
     public func setTitle(to: String) {

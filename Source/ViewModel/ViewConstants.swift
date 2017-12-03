@@ -13,6 +13,7 @@ extension C {
         struct CellIdentifier {
             static let itemCell = "itemCell"
             static let cartItemCell = "cartItemCell"
+            static let cartEmptyCell = "cartEmptyCell"
             static let aisleSectionBarCell = "aisleSectionBarCell"
             static let itemGroupCell = "itemGroupCell"
             static let instructionsItemCell = "instructionsItemCell"

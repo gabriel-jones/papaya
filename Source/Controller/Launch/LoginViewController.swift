@@ -44,12 +44,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         self.scrollView.isUserInteractionEnabled = true
         
         
-        email.img = #imageLiteral(resourceName: "Email White")
+        //email.img = #imageLiteral(resourceName: "Email White")
         email.attributedPlaceholder = NSAttributedString(string: "Email", attributes: [NSAttributedStringKey.foregroundColor: #colorLiteral(red: 0.8431372643, green: 0.8549019694, blue: 0.8588235378, alpha: 1)])
         email.setNeedsDisplay()
         email.text = try? keychain.get("user_email") ?? ""
         
-        password.img = #imageLiteral(resourceName: "Lock White Filled-1")
+        //password.img = #imageLiteral(resourceName: "Lock White Filled-1")
         password.attributedPlaceholder = NSAttributedString(string: "Password", attributes: [NSAttributedStringKey.foregroundColor: #colorLiteral(red: 0.8431372643, green: 0.8549019694, blue: 0.8588235378, alpha: 1)])
         password.setNeedsDisplay()
         
@@ -176,7 +176,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     }
     
     @objc func keyboardWillShow(notification: Notification) {
-        
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
             if self.view.frame.origin.y == 0{
                 self.view.frame.origin.y -= keyboardSize.height

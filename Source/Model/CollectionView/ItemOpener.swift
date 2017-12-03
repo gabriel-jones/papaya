@@ -73,9 +73,3 @@ extension ItemOpener: RMPZoomTransitionAnimating, RMPZoomTransitionDelegate {
         print("did complete animation")
     }
 }
-
-class ItemDelegate: NSObject, UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("open item at row: \(indexPath)")
-    }
-}

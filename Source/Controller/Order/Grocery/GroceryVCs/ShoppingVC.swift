@@ -267,7 +267,6 @@ class ShoppingVC: GroceryVC {
     }
     
     func getItems(_ completion: (()->())? = nil) {
-        R.clearRequests()
         isDownloading = true
         
         let q = self.delegate.getSearchText()

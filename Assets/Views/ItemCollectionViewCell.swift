@@ -19,9 +19,10 @@ class ItemCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
         backgroundColor = .white
         cornerRadius = 10
-        itemImage.image = #imageLiteral(resourceName: "Picture Grey")
+        itemImage.image = #imageLiteral(resourceName: "Placeholder")
         flatShadow = true
         flatShadowColor = Color.flatShadow
+        clipsToBounds = true
     }
     
     func load(item: Item) {
@@ -33,13 +34,13 @@ class ItemCollectionViewCell: UICollectionViewCell {
     }
     
     private func loadImage(url: URL) {
-        itemImage.pin_setPlaceholder(with: #imageLiteral(resourceName: "Picture Grey"))
+        itemImage.pin_setPlaceholder(with: #imageLiteral(resourceName: "Placeholder"))
         itemImage.pin_updateWithProgress = true
         itemImage.pin_setImage(from: url)
     }
     
     override func prepareForReuse() {
-        itemImage.image = #imageLiteral(resourceName: "Picture Grey")
+        itemImage.image = #imageLiteral(resourceName: "Placeholder")
         super.prepareForReuse()
     }
 }

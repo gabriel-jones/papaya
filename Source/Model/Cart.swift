@@ -35,4 +35,12 @@ class Cart {
     func changeQuantity(for item: CartItem, new: Int) {
         items[items.index(where: {$0.item.id == item.item.id})!].quantity = new
     }
+    
+    func add(item: Item, quantity: Int) {
+        if items.contains(where: { $0.item.id == item.id }) {
+            items[items.index(where: {$0.item.id == item.id })!].quantity += quantity
+        } else {
+            items.append(CartItem(item: item, quantity: quantity))
+        }
+    }
 }

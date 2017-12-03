@@ -14,7 +14,7 @@ let keychain = Keychain(server: URL(string: "https://prepacked.bm/")!, protocolT
 struct C {
     struct URL {
         static let main = production
-        static let production = "https://prepacked.bm/"
+        static let production = "https://prepacked.bm"
         static let development = ""//"http://localhost/"
     }
     

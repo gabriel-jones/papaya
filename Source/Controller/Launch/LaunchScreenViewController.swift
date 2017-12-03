@@ -30,6 +30,7 @@ class LaunchScreenViewController: UIViewController {
     }
     
     func m() {
+        print("LOAD")
         R.checkConnection { online in
             print(online)
             if !online {
@@ -69,6 +70,7 @@ class LaunchScreenViewController: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        print("view did appear")
         m()
     }
     

@@ -21,17 +21,12 @@ class MainTabVC: UITabBarController, UITabBarControllerDelegate {
         tabBar.shadowImage = UIImage()
 
     }
-    
-    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        print("selected: \(viewController.title)")
-    }
 
 }
 
 class TabChildVC: UIViewController {
     
     @objc func openCart(_ sender: UIBarButtonItem) {
-        print("Open Cart")
         tabBarController?.performSegue(withIdentifier: "openCart", sender: self)
     }
     

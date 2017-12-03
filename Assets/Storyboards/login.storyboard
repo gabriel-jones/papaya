@@ -862,7 +862,7 @@
     </scenes>
     <resources>
         <image name="Arrow Left White" width="100" height="100"/>
-        <image name="Groceries" width="900" height="600"/>
+        <image name="Groceries" width="300" height="200"/>
         <image name="Logo" width="580" height="580"/>
     </resources>
 </document>

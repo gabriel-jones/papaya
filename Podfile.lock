@@ -1,4 +1,8 @@
 PODS:
+  - Alamofire (4.5.1)
+  - AlamofireSwiftyJSON (1.0.0):
+    - Alamofire (~> 4.0)
+    - SwiftyJSON (~> 3.0)
   - FLAnimatedImage (1.0.12)
   - GoogleMaps (2.4.0):
     - GoogleMaps/Maps (= 2.4.0)
@@ -20,10 +24,13 @@ PODS:
   - PMAlertController (3.0.0)
   - RMPZoomTransitionAnimator (1.0.3)
   - SnapKit (4.0.0)
+  - SocketRocket (0.5.1)
   - SwiftyJSON (3.1.4)
   - TOMSMorphingLabel (0.5.1)
 
 DEPENDENCIES:
+  - Alamofire (~> 4.5)
+  - AlamofireSwiftyJSON
   - GoogleMaps
   - GooglePlaces
   - JVFloatLabeledTextField
@@ -32,10 +39,13 @@ DEPENDENCIES:
   - PMAlertController
   - RMPZoomTransitionAnimator
   - SnapKit (~> 4.0.0)
+  - SocketRocket
   - SwiftyJSON
   - TOMSMorphingLabel (~> 0.5)
 
 SPEC CHECKSUMS:
+  Alamofire: 2d95912bf4c34f164fdfc335872e8c312acaea4a
+  AlamofireSwiftyJSON: 78908b766483a28aa5cc90fd191a687467042973
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
   GoogleMaps: 8436ab5d1c25e36915b2f7416d0c8e3fa2e76c61
   GooglePlaces: aafe5990fa7951e98e078761bbdaaf236d7e0c65
@@ -46,9 +56,10 @@ SPEC CHECKSUMS:
   PMAlertController: 90c809d1dbf38293cfa1817da6d023314bc24075
   RMPZoomTransitionAnimator: 33ded739d91052810c05c8e553663cc9ec79275b
   SnapKit: a42d492c16e80209130a3379f73596c3454b7694
+  SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
   SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
   TOMSMorphingLabel: 3e88a2bf5257f8993ebc51fb3109187a0bfb2c4d
 
-PODFILE CHECKSUM: e6deaa7a1ce2bc18d1ab6ac87a9e0975fcd1b61d
+PODFILE CHECKSUM: e8ad09b4a1ac1d77d8a19e0b02eab9cb082d9566
 
 COCOAPODS: 1.3.1

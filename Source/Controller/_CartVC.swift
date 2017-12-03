@@ -10,9 +10,10 @@ import UIKit
 
 class _CartVC: UIViewController {
     
+    @IBOutlet weak var tableView: UITableView!
     
     @IBAction func close(_ sender: Any) {
-        dismiss(animated: true, completion: nil)
+        dismiss(animated: false, completion: nil)
     }
     
     override func viewDidLoad() {
@@ -21,25 +22,40 @@ class _CartVC: UIViewController {
 }
 
 extension _CartVC: CartItemDelegate {
-    func quantity(item: CartItem) {
-        print("change quantity: \(item.item.name)")
+    func quantity(item: CartItem, new: Int) {
+        Cart.current.changeQuantity(for: item, new: new)
+        tableView.reloadData()
     }
     
     func delete(item: CartItem) {
-        print("delete cart item: \(item.item.name)")
+        Cart.current.remove(item: item)
+        tableView.reloadData()
     }
     
-    func openDetail(for item: CartItem) {
-        print("Open Item Detail")
+    func addInstructions(item: CartItem) {
+        print("Add INstructions")
     }
 }
 
 extension _CartVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if Cart.current.items.isEmpty {
+            tableView.separatorStyle = .none
+            return 1
+        }
+        tableView.separatorStyle = .singleLine
         return Cart.current.items.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if Cart.current.items.isEmpty {
+            let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.cartEmptyCell, for: indexPath) as! CartEmptyCell
+            cell.action = {
+                self.close(cell)
+            }
+            return cell
+        }
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.cartItemCell, for: indexPath) as! CartItemCell
         cell.delegate = self
         cell.load(item: Cart.current.items[indexPath.row])
@@ -47,14 +63,26 @@ extension _CartVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("open detail for item")
+        if Cart.current.items.isEmpty {
+            return
+        }
+        
+        print("open item detail")
     }
 }
 
 protocol CartItemDelegate {
     func delete(item: CartItem)
-    func quantity(item: CartItem)
-    func openDetail(`for` item: CartItem)
+    func quantity(item: CartItem, new: Int)
+    func addInstructions(item: CartItem)
+}
+
+class CartEmptyCell: UITableViewCell {
+    var action: (() -> ())? = nil
+    
+    @IBAction func shopNow(_ sender: Any) {
+        action?()
+    }
 }
 
 class CartItemCell: UITableViewCell {
@@ -72,21 +100,27 @@ class CartItemCell: UITableViewCell {
     @IBOutlet weak var deleteButton: UIButton!
     
     @IBAction func reduceQuantity(_ sender: Any) {
-        _item!.quantity = max(1, _item!.quantity - 1)
-        delegate?.quantity(item: _item!)
+        if let item = _item {
+            delegate?.quantity(item: item, new: max(1, item.quantity - 1))
+        }
     }
     
     @IBAction func increaseQuantity(_ sender: Any) {
-        _item!.quantity += 1
-        delegate?.quantity(item: _item!)
+        if let item = _item {
+            delegate?.quantity(item: item, new: item.quantity + 1)
+        }
     }
     
     @IBAction func editDetails(_ sender: Any) {
-        print("Add Instructions")
+        if let item = _item {
+            delegate?.addInstructions(item: item)
+        }
     }
     
     @IBAction func deleteItem(_ sender: Any) {
-        delegate?.delete(item: _item!)
+        if let item = _item {
+            delegate?.delete(item: item)
+        }
     }
     
     func load(item: CartItem) {

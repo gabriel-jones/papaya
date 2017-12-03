@@ -25,18 +25,6 @@ class R {
         R.Image.uploadImage("/scripts/Packer/finish_packing.php", parameters: params, image: image, completion: completion)
     }
     
-    static func clearRequests() {
-        print("clear requests")
-        for t in requests {
-            if t.state == .running {
-                t.cancel()
-            }
-            if t.state != .canceling {
-                requests.remove(at: requests.index(of: t)!)
-            }
-        }
-    }
-    
     static var requests: [URLSessionDataTask] = []
     
     static func verifyEmail(_ email: String, comp: @escaping (Bool) -> ()) {
@@ -54,7 +42,7 @@ class R {
         var r = URLRequest(url: URL(string: u)!)
         r.httpMethod = "GET"
         
-        let t = URLSession.shared.dataTask(with: r) { data, response, error in
+        URLSession.shared.dataTask(with: r) { data, response, error in
             DispatchQueue.main.async {
                 if error != nil {
                     comp(.requestError)
@@ -72,9 +60,7 @@ class R {
                     }
                 }
             }
-        }
-        t.resume()
-        requests.append(t)
+        }.resume()
     }
     
     static func addAuthorization(request: inout URLRequest) {
@@ -102,8 +88,9 @@ class R {
         addAuthorization(request: &r)
         r.httpMethod = "GET"
         print("Get: \(String(describing: url))")
-        let t = URLSession.shared.dataTask(with: r) { data, response, error in
+        URLSession.shared.dataTask(with: r) { data, response, error in
             DispatchQueue.main.async {
+                print("response: \(data, response, error)")
                 if let httpResponse = response as? HTTPURLResponse {
                     print(httpResponse.allHeaderFields)
                 }
@@ -115,9 +102,7 @@ class R {
                     c(j, error != nil)
                 }
             }
-        }
-        t.resume()
-        requests.append(t)
+        }.resume()
     }
     
     static func post(_ url: String, parameters: [String:Any], data: Data? = nil, _ completion: ((JSON?, Bool)->())? = nil) {
@@ -151,7 +136,7 @@ class R {
             r.httpBody = j
         }
         print("starting post request...")
-        let t = URLSession.shared.dataTask(with: r) { data, response, error in
+        URLSession.shared.dataTask(with: r) { data, response, error in
             DispatchQueue.main.async {
                 print("got back from post")
                 if let c = completion {
@@ -162,9 +147,7 @@ class R {
                     c(j, error != nil)
                 }
             }
-        }
-        t.resume()
-        requests.append(t)
+        }.resume()
     }
     
     enum LoginError: Error {
@@ -191,7 +174,7 @@ class R {
         let s = JSON(rawValue: body)!.rawString()!.replacingOccurrences(of: "\n", with: "")
         
         r.httpBody = s.data(using: String.Encoding.utf8)
-        let t = URLSession.shared.dataTask(with: r) { data, response, error in
+        URLSession.shared.dataTask(with: r) { data, response, error in
             DispatchQueue.main.async {
                 if error == nil {
                     let _response = (response as! HTTPURLResponse)
@@ -219,9 +202,7 @@ class R {
                     c(.ambiguous)
                 }
             }
-        }
-        t.resume()
-        requests.append(t)
+        }.resume()
     }
     
     static func register(email: String, password: String, fname: String, lname: String, cc: String, cvv: String, exp: String, address: String, houseNumber: String, location: Location, premium: Bool, c: @escaping ((LoginError?)->Void)) {
@@ -250,7 +231,7 @@ class R {
         print(s)
         r.httpBody = s.data(using: String.Encoding.utf8)
         
-        let t = URLSession.shared.dataTask(with: r) { data, response, error in
+        URLSession.shared.dataTask(with: r) { data, response, error in
             DispatchQueue.main.async {
                 let _response = (response as! HTTPURLResponse)
                 if _response.statusCode == 403 {
@@ -263,9 +244,7 @@ class R {
                     c(.ambiguous)
                 }
             }
-        }
-        t.resume()
-        self.requests.append(t)
+        }.resume()
     }
     
     static func checkConnection(c: @escaping ((Bool)->Void)) {

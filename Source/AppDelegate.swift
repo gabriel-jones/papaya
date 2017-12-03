@@ -20,15 +20,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
         UINavigationBar.appearance().titleTextAttributes = [
             NSAttributedStringKey.font: UIFont(name: "GothamRounded-Medium", size: 20)!
         ]
-        
         UITabBarItem.appearance().setTitleTextAttributes(
             [NSAttributedStringKey.font: UIFont(name: "GothamRounded-Medium", size: 11)!], for: .normal
         )
         UITabBarItem.appearance().setTitleTextAttributes(
             [NSAttributedStringKey.font: UIFont(name: "GothamRounded-Bold", size: 11)!], for: .selected
         )
-        
-        
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {

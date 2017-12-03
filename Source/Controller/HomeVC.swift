@@ -14,8 +14,7 @@ class HomeVC: TabChildVC {
     @IBOutlet weak var greetingLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
     
-    var itemsModel = ItemDataSource()
-    let itemDelegate = ItemDelegate()
+    var itemModel = ItemModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,7 +28,7 @@ class HomeVC: TabChildVC {
                 return
             }
             
-            self.itemsModel = ItemDataSource(items:
+            self.itemModel = ItemModel(items:
                 json["items"].arrayValue.map({
                     Item(dict: $0)
                 })
@@ -64,11 +63,10 @@ extension HomeVC: UITableViewDelegate, UITableViewDataSource {
         }
         
         let titles = ["Today's Specials", "Recommended for You"]
-        
+        print("reloading")
         let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.itemGroupCell, for: indexPath) as! ItemGroupTableViewCell
         cell.setTitle(to: titles[indexPath.row-1])
-        cell.itemDataSource = itemsModel
-        cell.itemDelegate = itemDelegate
+        cell.itemModel = itemModel
         cell.viewAllItems = { sectionId in
             print("View All items")
         }

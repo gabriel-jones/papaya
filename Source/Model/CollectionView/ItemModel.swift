@@ -8,18 +8,21 @@
 
 import Foundation
 
-class ItemDataSource: NSObject, UICollectionViewDataSource {
+class ItemModel: NSObject, UICollectionViewDataSource, UICollectionViewDelegate {
     var items: [Item]
+    var delegate: ItemDelegateAction?
     
     override init() {
         items = []
     }
     
     init(items: [Item]) {
+        print("init data srouce with # items: \(items.count)")
         self.items = items
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        print(items.count)
         return items.count
     }
     
@@ -27,5 +30,9 @@ class ItemDataSource: NSObject, UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: C.ViewModel.CellIdentifier.itemCell, for: indexPath) as! ItemCollectionViewCell
         cell.load(item: items[indexPath.row])
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        delegate?.open(item: items[indexPath.row])
     }
 }
