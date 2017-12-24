@@ -25,22 +25,13 @@ func data2Json(from data: Data) -> Result<JSON> {
     }
 }
 
-func json2Object<T>(from json: JSON, type: T.Type) -> Result<T> {
-    guard let objectBuilder = ObjectBuilder<T>() else {
-        return Result(error: RequestError.failedToParseJsonToObject)
-    }
-    
-    if !objectBuilder.validate(json: json) {
-        return Result(error: RequestError.failedToParseJsonToObject)
-    }
-    
-    if let object = objectBuilder.parse(json: json) {
+func json2Object<T: BaseObject>(from json: JSON, to type: T.Type) -> Result<T> {
+    if let object = T(dict: json) {
         return Result(value: object)
-    } else {
-        return Result(error: RequestError.failedToParseJsonToObject)
     }
+    return Result(error: RequestError.failedToParseJsonToObject)
 }
 
 func json2User(from json: JSON) -> Result<User> {
-    return json2Object(from: json, type: User.self)
+    return json2Object(from: json, to: User.self)
 }

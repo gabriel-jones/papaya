@@ -8,7 +8,7 @@
 
 import Foundation
 import SwiftyJSON
-
+/*
 struct ObjectBuilder<T> {
     var validator: JSONValidator<T>
     
@@ -89,4 +89,4 @@ struct AddressParser: JSONParser {
     func parseJSON(json: JSON) -> Address {
         return Address(street: json["street"].stringValue, zip: json["zip_code"].stringValue)
     }
-}
+}*/

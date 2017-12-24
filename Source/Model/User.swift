@@ -21,4 +21,11 @@ struct User: BaseObject {
             return [fname, lname].joined(separator: " ")
         }
     }
+    
+    init?(dict: JSON) {
+        email = dict["email"].stringValue
+        fname = dict["fname"].stringValue
+        lname = dict["lname"].stringValue
+        phone = dict["phone"].string
+    }
 }

@@ -7,8 +7,14 @@
 //
 
 import Foundation
+import SwiftyJSON
 
 struct Address: BaseObject {
     var street: String
     var zip: String
+    
+    init?(dict: JSON) {
+        street = dict["street"].stringValue
+        zip = dict["zip_code"].stringValue
+    }
 }
