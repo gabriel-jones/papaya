@@ -43,7 +43,7 @@ extension MeVC: UITableViewDataSource, UITableViewDelegate {
 }
 
 class MeListCell: UITableViewCell {
-    var lists = [List]()
+    var lists = [Any]()
     
     var viewAll: (() -> ())? = nil
     

@@ -8,8 +8,6 @@
 
 import UIKit
 import SwiftyJSON
-import GoogleMaps
-import GooglePlaces
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
@@ -54,8 +52,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
         } catch {
             print(error)
         }
-        GMSServices.provideAPIKey(C.GMS_KEY)
-        GMSPlacesClient.provideAPIKey(C.GMS_KEY)
+        //GMSServices.provideAPIKey(C.GMS_KEY)
+        //GMSPlacesClient.provideAPIKey(C.GMS_KEY)
         
         return true
     }

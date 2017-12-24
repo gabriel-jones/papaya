@@ -24,21 +24,21 @@
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Launch Gradient" translatesAutoresizingMaskIntoConstraints="NO" id="VJs-Lr-Kil">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                             </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo" translatesAutoresizingMaskIntoConstraints="NO" id="j9X-GU-02O">
-                                <rect key="frame" x="162" y="308" width="50" height="50"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo" translatesAutoresizingMaskIntoConstraints="NO" id="tx6-RD-R4f">
+                                <rect key="frame" x="167" y="313" width="40" height="40"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="50" id="dpf-Ml-J5l"/>
-                                    <constraint firstAttribute="width" constant="50" id="lJ9-06-fPw"/>
+                                    <constraint firstAttribute="width" constant="40" id="FtU-Kk-fIt"/>
+                                    <constraint firstAttribute="height" constant="40" id="evF-lf-1qB"/>
                                 </constraints>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="j9X-GU-02O" firstAttribute="centerY" secondItem="VJs-Lr-Kil" secondAttribute="centerY" id="907-11-exq"/>
+                            <constraint firstItem="tx6-RD-R4f" firstAttribute="centerX" secondItem="VJs-Lr-Kil" secondAttribute="centerX" id="5hR-B5-jEj"/>
+                            <constraint firstItem="tx6-RD-R4f" firstAttribute="centerY" secondItem="VJs-Lr-Kil" secondAttribute="centerY" id="5q5-E5-ZkG"/>
                             <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="VJs-Lr-Kil" secondAttribute="bottom" id="ReI-st-duN"/>
                             <constraint firstItem="VJs-Lr-Kil" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="Uha-Q1-a1N"/>
                             <constraint firstItem="VJs-Lr-Kil" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="ceF-Iu-O6k"/>
-                            <constraint firstItem="j9X-GU-02O" firstAttribute="centerX" secondItem="VJs-Lr-Kil" secondAttribute="centerX" id="cre-1r-0K0"/>
                             <constraint firstAttribute="trailing" secondItem="VJs-Lr-Kil" secondAttribute="trailing" id="etC-Wv-ddF"/>
                         </constraints>
                     </view>

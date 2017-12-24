@@ -6,17 +6,25 @@ target 'Papaya' do
   use_frameworks!
 
   # Pods for Papaya
-  pod 'Alamofire', '~> 4.5'
-  pod 'SwiftyJSON'
-  pod 'AlamofireSwiftyJSON'
-  pod 'GoogleMaps'
-  pod 'GooglePlaces'
-  pod 'KeychainAccess'
-  pod 'PINRemoteImage'
+  
+  #UI
   pod 'SnapKit', '~> 4.0.0'
-  pod 'RMPZoomTransitionAnimator'
-  pod 'PMAlertController'
-  pod 'TOMSMorphingLabel', '~> 0.5'
+  pod 'CHIPageControl/Jaloro'
   pod 'JVFloatLabeledTextField'
+  pod 'TOMSMorphingLabel', '~> 0.5'
+  pod 'PMAlertController'
+  pod 'DSGradientProgressView'
+  
+  #HTTP
+  pod 'SwiftyJSON'
   pod 'SocketRocket'
+  pod 'PINRemoteImage'
+
+  #Animations
+  pod 'RMPZoomTransitionAnimator'
+  pod 'Hero', '1.0.0-alpha.4'
+  
+  #Other
+  pod 'KeychainAccess'
+  
 end

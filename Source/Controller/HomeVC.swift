@@ -23,18 +23,7 @@ class HomeVC: TabChildVC {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        R.get("/scripts/Inventory/inventory.php?shop_id=5&q&sort=name&sort_dir=asc&filter&user_id&category&p=1", parameters: [:]) { json, error in
-            guard let json = json, !error else {
-                return
-            }
-            
-            self.itemModel = ItemModel(items:
-                json["items"].arrayValue.map({
-                    Item(dict: $0)
-                })
-            )
-            self.tableView.reloadData()
-        }
+        
     }
     
     @objc func viewAll(_ sender: UIButton) {

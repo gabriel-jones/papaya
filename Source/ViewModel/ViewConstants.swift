@@ -24,5 +24,10 @@ extension C {
             static let itemGroupCell = "ItemGroupTableViewCell"
             static let itemCell = "ItemCollectionViewCell"
         }
+        
+        struct StoryboardIdentifier {
+            static let homeTabBar = "HomeTabBarVC"
+            static let getStartedNav = "GetStartedNavVC"
+        }
     }
 }
