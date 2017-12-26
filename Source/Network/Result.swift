@@ -10,13 +10,13 @@ import Foundation
 
 enum Result<A> {
     case success(A)
-    case failure(Error)
+    case failure(RequestError)
     
     public init(value: A) {
         self = .success(value)
     }
     
-    public init(fromOptional: A?, error: Error) {
+    public init(fromOptional: A?, error: RequestError) {
         if let value = fromOptional {
             self = .success(value)
         } else {
@@ -24,15 +24,18 @@ enum Result<A> {
         }
     }
     
-    public init(from: A, optional error: Error?) {
+    public init(from: A, optional error: NSError?) {
         if let error = error {
-            self = .failure(error)
+            if let error = RequestError(rawValue: error.code) {
+                self = .failure(error)
+            }
+            self = .failure(RequestError.unknown)
         } else {
             self = .success(from)
         }
     }
     
-    public init(error: Error?) {
+    public init(error: RequestError?) {
         if let error = error {
             self = .failure(error)
         } else {
@@ -40,7 +43,7 @@ enum Result<A> {
         }
     }
     
-    func package<B>(ifSuccess: (A) -> B, ifFailure: (Error) -> B) -> B {
+    func package<B>(ifSuccess: (A) -> B, ifFailure: (RequestError) -> B) -> B {
         switch self {
         case .success(let value):
             return ifSuccess(value)
@@ -59,7 +62,7 @@ enum Result<A> {
             ifFailure: Result<B>.failure)
     }
     
-    public var error: Error? {
+    public var error: RequestError? {
         switch self {
         case .failure(let error):
             return error

@@ -37,24 +37,20 @@ class LoadingVC: UIViewController {
     }
     
     func load() {
-        /*User.current.checkAuthorisation { success in
-            if success {
+        try! Request.shared.checkAuthentication { result in
+            switch result {
+            case .failure(let error):
+                switch error {
+                case .networkOffline: // network offline, do something
+                    break
+                default: //other error, go to login page
+                    self.openGetStarted()
+                }
+            case .success(_): //Authenticated, go to home
                 self.openHomeScreen()
-            } else {
-                self.reauthorise()
-            }
-        }*/
-    }
-    /*
-    func reauthorise() {
-        User.current.reauthorise { success in
-            if success {
-                self.openHomeScreen()
-            } else {
-                self.openGetStarted()
             }
         }
-    }*/
+    }
     
     func openHomeScreen() {
         let vc = Storyboard.main.viewController(name: C.ViewModel.StoryboardIdentifier.homeTabBar)

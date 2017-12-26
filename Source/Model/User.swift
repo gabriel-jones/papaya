@@ -11,6 +11,7 @@ import SwiftyJSON
 
 struct User: BaseObject {
     
+    let id: Int
     let email: String
     let fname: String
     let lname: String
@@ -23,6 +24,7 @@ struct User: BaseObject {
     }
     
     init?(dict: JSON) {
+        id = dict["id"].intValue
         email = dict["email"].stringValue
         fname = dict["fname"].stringValue
         lname = dict["lname"].stringValue

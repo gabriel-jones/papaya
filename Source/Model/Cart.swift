@@ -9,10 +9,24 @@
 import Foundation
 import SwiftyJSON
 
-class Cart {
-    static var current = Cart(items: [])
+struct Cart: BaseObject {
+    static var current: Cart!
     
-    var items: [CartItem]
+    let id: Int
+    var items = [CartItem]()
+    
+    init?(dict: JSON) {
+        guard let items = dict["items"].array, let id = dict["id"].int else {
+            return nil
+        }
+        
+        self.id = id
+        for item in items {
+            if let item = CartItem(dict: item) {
+                self.items.append(item)
+            }
+        }
+    }
 
     var total: Double {
         get {
@@ -24,23 +38,19 @@ class Cart {
         }
     }
     
-    init(items: [CartItem]) {
-        self.items = items
-    }
-    
-    func remove(item: CartItem) {
+    mutating func remove(item: CartItem) {
         items.remove(at: items.index(where: { $0.item.id == item.item.id })!)
     }
     
-    func changeQuantity(for item: CartItem, new: Int) {
+    mutating func changeQuantity(for item: CartItem, new: Int) {
         items[items.index(where: {$0.item.id == item.item.id})!].quantity = new
     }
     
-    func add(item: Item, quantity: Int) {
+    mutating func add(item: Item, quantity: Int) {
         if items.contains(where: { $0.item.id == item.id }) {
             items[items.index(where: {$0.item.id == item.id })!].quantity += quantity
         } else {
-            items.append(CartItem(item: item, quantity: quantity))
+            //items.append(CartItem(item: item, quantity: quantity))
         }
     }
 }

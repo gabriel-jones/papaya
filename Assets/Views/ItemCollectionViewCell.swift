@@ -28,8 +28,8 @@ class ItemCollectionViewCell: UICollectionViewCell {
     func load(item: Item) {
         itemPrice.text = item.price.currency_format
         itemName.text = item.name
-        if item.hasImage ?? false {
-            loadImage(url: URL(string: C.URL.main + "/img/items/\(item.id).png")!)
+        if let url = item.img {
+            loadImage(url: url)
         }
     }
     

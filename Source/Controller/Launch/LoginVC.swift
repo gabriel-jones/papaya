@@ -46,36 +46,34 @@ class LoginVC: UIViewController {
             sender.hideLoading()
             return
         }
+        
         guard !password.isEmpty else {
             showLoginError(message: "Password required")
             sender.hideLoading()
             return
         }
         
-        /*User.current.login(email: email, password: password) { success, code in
+        try! Request.shared.reauthorise { result in
             sender.hideLoading()
             
-            if success {
-                //return to home screen
-                print("login success")
-                print(User.current.auth_token)
-                return
+            switch result {
+            case .failure(let error):
+                // Handle Error
+                switch error {
+                case .userNotFound: // Email incorrect
+                    self.showLoginError(message: "Incorrect email")
+                case .unauthorised: // Password incorrect
+                    self.showLoginError(message: "Incorrect password")
+                default: // Generic error
+                    self.showLoginError(message: "An error occurred.")
+                }
+                break
+            case .success(_):
+                // return to home screen
+                print("Successfully logged in")
+                break
             }
-            
-            switch code {
-            case .userNotFound:
-                // incorrect email
-                self.showLoginError(message: "Incorrect email")
-            case .unauthorised:
-                // incorrect password
-                self.showLoginError(message: "Incorrect password")
-            default:
-                //request error, handle somehow
-                print(code)
-                self.showLoginError(message: "An error occurred.")
-            }
-        }*/
-        
+        }
     }
     
     @IBAction func forgotPassword(_ sender: Any) {

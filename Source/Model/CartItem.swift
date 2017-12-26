@@ -7,15 +7,30 @@
 //
 
 import Foundation
+import SwiftyJSON
 
-struct CartItem {
+struct CartItem: BaseObject {
+    let id: Int
     var quantity: Int
-    var item: Item
+    let item: Item
     var instructions: String?
-    var replaceOption: ReplaceOption = .replaceAuto
+    var replaceOption: ReplaceOption
     
     enum ReplaceOption {
         case replaceAuto, replaceSpecific(item: Item?), skip
+        
+        var rawValue: String {
+            get {
+                switch self {
+                case .replaceAuto:
+                    return "replace_best"
+                case .replaceSpecific:
+                    return "replace_specific"
+                case .skip:
+                    return "skip"
+                }
+            }
+        }
         
         var description: (String, UIColor) {
             get {
@@ -44,8 +59,39 @@ struct CartItem {
         }
     }
     
-    init(item: Item, quantity: Int) {
-        self.quantity = quantity
-        self.item = item
+    var rawdict: [String:Any] {
+        get {
+            var specificItem: Item?
+            if case .replaceSpecific(let item) = replaceOption {
+                specificItem = item
+            }
+            
+            return [
+                "item_id": id,
+                "quantity": quantity,
+                "notes": instructions as Any,
+                "replace_option": replaceOption.rawValue,
+                "replace_specific": specificItem as Any
+            ]
+        }
+    }
+    
+    init?(dict: JSON) {
+        id = dict["id"].intValue
+        quantity = dict["quantity"].intValue
+        item = Item(dict: dict)!
+        instructions = dict["notes"].string
+        switch dict["replace_option"] {
+        case "replace_specific":
+            if let replaceSpecificItem = Item(dict: dict["replace_specific"]) {
+                replaceOption = .replaceSpecific(item: replaceSpecificItem)
+            } else {
+                replaceOption = .replaceAuto
+            }
+        case "skip":
+            replaceOption = .skip
+        default:
+            replaceOption = .replaceAuto
+        }
     }
 }

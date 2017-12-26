@@ -47,7 +47,7 @@ class TabChildVC: UIViewController {
         navigationItem.rightBarButtonItem = cartButton
         navigationItem.rightBarButtonItem?.badgeValue = "0"
         
-        NotificationCenter.default.addObserver(self, selector: #selector(updateCartBadge(_:)), name: NSNotification.Name(rawValue: C.Notification.CartBadgeUpdate), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateCartBadge(_:)), name: NSNotification.Name(rawValue: C.Notification.cartBadgeUpdate.value), object: nil)
         
     }
     

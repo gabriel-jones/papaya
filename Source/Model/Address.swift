@@ -10,10 +10,12 @@ import Foundation
 import SwiftyJSON
 
 struct Address: BaseObject {
-    var street: String
-    var zip: String
+    let id: Int
+    let street: String
+    let zip: String
     
     init?(dict: JSON) {
+        id = dict["id"].intValue
         street = dict["street"].stringValue
         zip = dict["zip_code"].stringValue
     }

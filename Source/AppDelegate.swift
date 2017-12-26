@@ -25,6 +25,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
             [NSAttributedStringKey.font: UIFont(name: "GothamRounded-Bold", size: 11)!], for: .selected
         )
     }
+    
+    func j() -> Bool {
+        #if arch(i386) || arch(x86_64)
+            return false
+        #else
+            return FileManager.default.fileExistsAtPath("/private/var/lib/apt")
+        #endif
+    }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         setupUI()
@@ -52,10 +60,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
         } catch {
             print(error)
         }
-        //GMSServices.provideAPIKey(C.GMS_KEY)
-        //GMSPlacesClient.provideAPIKey(C.GMS_KEY)
         
-        return true
+        return !j()
     }
 }
 
@@ -79,5 +85,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
  `--(   `-:`.     `' ___..'  _,-'   |/   `.)
  `-. `.`.``-----``--,  .'
  |/`.\`'        ,','); SSt
- `         (/  (/
+               (/  (/
  */

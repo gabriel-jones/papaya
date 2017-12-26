@@ -10,5 +10,6 @@ import Foundation
 import SwiftyJSON
 
 protocol BaseObject {
+    var id: Int { get }
     init?(dict: JSON)
 }

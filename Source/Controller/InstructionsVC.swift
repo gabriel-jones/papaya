@@ -57,13 +57,13 @@ extension InstructionsVC: UITableViewDelegate, UITableViewDataSource {
         if indexPath.row == 1 {
             let alert = UIAlertController(title: "If the item is out of stock", message: nil, preferredStyle: .actionSheet)
             alert.addAction(UIAlertAction(title: CartItem.ReplaceOption.replaceAuto.description.0, style: .default) { _ in
-                self.item.replaceOption = .replaceAuto
+                //self.item.replaceOption = .replaceAuto
             })
             alert.addAction(UIAlertAction(title: CartItem.ReplaceOption.replaceSpecific(item: nil).description.0, style: .default) { _ in
                 print("open replacement items")
             })
             alert.addAction(UIAlertAction(title: CartItem.ReplaceOption.skip.description.0, style: .destructive) { _ in
-                self.item.replaceOption = .skip
+                //self.item.replaceOption = .skip
             })
         }
     }

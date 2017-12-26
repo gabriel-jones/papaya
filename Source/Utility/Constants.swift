@@ -12,6 +12,7 @@ import KeychainAccess
 let keychain = Keychain(server: URL(string: "https://www.papaya.bm/")!, protocolType: .https)
 
 struct C {
+    static let domain = "bm.papaya"
     
     struct URL {
         static let main = development
@@ -21,9 +22,18 @@ struct C {
     
     static let GMS_KEY = "AIzaSyCFy56PBJTowmL5q6cTX-d_uT6HFydP0DM"
     
-    struct Notification {
-        static let base = "bm.papaya"
-        static let CartBadgeUpdate = base + ".cartBadgeUpdate"
+    enum Notification: String {
+        static let base = C.domain
+        
+        case cartBadgeUpdate
+        
+        var value: String {
+            get {
+                return Notification.base + "." + rawValue
+            }
+        }
+        
+        static let allNotifications = [cartBadgeUpdate]
     }
     
     struct KeychainStore {
