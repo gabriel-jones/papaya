@@ -8,106 +8,59 @@
 
 import Foundation
 import SwiftyJSON
+import RxSwift
 
 extension Request {
-    
-    @discardableResult
-    func getCart(completion: @escaping (Result<Cart>) -> ()) throws -> URLSessionDataTask {
-        do {
-            guard let request = URLRequest.get(path: "/cart")
-                else { throw RequestError.cannotBuildRequest }
-            
-            let handler = { (data: Data?, response: URLResponse?, error: NSError?) -> Result<Cart> in
-                return Result(from: Response(data: data, urlResponse: response), optional: error)
-                    .flatMap(response2Data)
-                    .flatMap(data2Json)
-                    .flatMap(json2Cart)
-            }
-            
-            return execute(request: request, handleResponse: handler, completion: completion)
-        } catch {
-            throw error
+    func getCart() -> Observable<Cart> {
+        if let request = URLRequest.get(path: "/cart") {
+            return Request.shared.fetch(request: request)
+                .observeOn(MainScheduler.instance)
+                .flatMap(json2Cart)
         }
+        return Observable.error(RequestError.unknown)
     }
     
-    @discardableResult
-    func addItem(to cart: Cart, item: Item, quantity: Int, completion: @escaping (Result<JSON>) -> ()) throws -> URLSessionDataTask {
-        do {
-            let body = [
-                "item_id": item.id,
-                "quantity": quantity
-            ]
-            guard let request = URLRequest.post(path: "/cart/item/add", body: body)
-                else { throw RequestError.cannotBuildRequest }
-            
-            let handler = { (data: Data?, response: URLResponse?, error: NSError?) -> Result<JSON> in
-                return Result(from: Response(data: data, urlResponse: response), optional: error)
-                    .flatMap(response2Data)
-                    .flatMap(data2Json)
-            }
-            
-            return execute(request: request, handleResponse: handler, completion: completion)
-        } catch {
-            throw error
+    func addItem(to cart: Cart, item: Item, quantity: Int) -> Observable<JSON> {
+        let body = [
+            "item_id": item.id,
+            "quantity": quantity
+        ]
+        if let request = URLRequest.post(path: "/cart/item/add", body: body) {
+            return Request.shared.fetch(request: request)
+                .observeOn(MainScheduler.instance)
         }
+        return Observable.error(RequestError.unknown)
     }
     
-    @discardableResult
-    func updateQuantity(with cartItem: CartItem, completion: @escaping (Result<JSON>) -> ()) throws -> URLSessionDataTask {
-        do {
-            let body = [
-                "item_id": cartItem.id,
-                "quantity": cartItem.quantity
-            ]
-            guard let request = URLRequest.patch(path: "/cart/item/update/quantity", body: body)
-                else { throw RequestError.cannotBuildRequest }
-            
-            let handler = { (data: Data?, response: URLResponse?, error: NSError?) -> Result<JSON> in
-                return Result(from: Response(data: data, urlResponse: response), optional: error)
-                    .flatMap(response2Data)
-                    .flatMap(data2Json)
-            }
-            
-            return execute(request: request, handleResponse: handler, completion: completion)
-        } catch {
-            throw error
+    func updateQuantity(with cartItem: CartItem) -> Observable<JSON> {
+        let body = [
+            "item_id": cartItem.id,
+            "quantity": cartItem.quantity
+        ]
+        if let request = URLRequest.put(path: "/cart/item/update/quantity", body: body) {
+            return Request.shared.fetch(request: request)
+                .observeOn(MainScheduler.instance)
         }
+        return Observable.error(RequestError.unknown)
     }
     
-    @discardableResult
-    func update(cartItem: CartItem, completion: @escaping (Result<JSON>) -> ()) throws -> URLSessionDataTask {
-        do {
-            let body = cartItem.rawdict
-            guard let request = URLRequest.patch(path: "/cart/item/update", body: body)
-                else { throw RequestError.cannotBuildRequest }
-            
-            let handler = { (data: Data?, response: URLResponse?, error: NSError?) -> Result<JSON> in
-                return Result(from: Response(data: data, urlResponse: response), optional: error)
-                    .flatMap(response2Data)
-                    .flatMap(data2Json)
-            }
-            
-            return execute(request: request, handleResponse: handler, completion: completion)
-        } catch {
-            throw error
+    func update(cartItem: CartItem) -> Observable<JSON> {
+        let body = cartItem.rawdict
+        if let request = URLRequest.put(path: "/cart/item/update", body: body) {
+            return Request.shared.fetch(request: request)
+                .observeOn(MainScheduler.instance)
         }
+        return Observable.error(RequestError.unknown)
     }
     
-    @discardableResult
-    func delete(cartItem: CartItem, completion: @escaping (Result<JSON>) -> ()) throws -> URLSessionDataTask {
-        do {
-            guard let request = URLRequest.delete(path: "/cart/item/delete", body: [:], urlParameters: ["item_id": "\(cartItem.id)"])
-                else { throw RequestError.cannotBuildRequest }
-            
-            let handler = { (data: Data?, response: URLResponse?, error: NSError?) -> Result<JSON> in
-                return Result(from: Response(data: data, urlResponse: response), optional: error)
-                    .flatMap(response2Data)
-                    .flatMap(data2Json)
-            }
-            
-            return execute(request: request, handleResponse: handler, completion: completion)
-        } catch {
-            throw error
+    func delete(cartItem: CartItem) -> Observable<JSON> {
+        let urlParameters = [
+            "item_id": String(cartItem.id)
+        ]
+        if let request = URLRequest.delete(path: "/cart/item/update/quantity", body: [:], urlParameters: urlParameters) {
+            return Request.shared.fetch(request: request)
+                .observeOn(MainScheduler.instance)
         }
+        return Observable.error(RequestError.unknown)
     }
 }

@@ -7,14 +7,71 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
+
+class MeVC_ViewModel {
+    var lists = Variable<[List]>([])
+    
+    let disposeBag = DisposeBag()
+    
+    public func getLists(_ completion: @escaping ([List]) -> Void, _ failure: @escaping (RequestError) -> Void) {
+        Request.shared.getAllLists()
+        .subscribe(onNext: { lists in
+            self.lists.value = lists
+            completion(self.lists.value)
+        }, onError: { error in
+            failure(error as? RequestError ?? .unknown)
+        }, onCompleted: {
+            print("Completed")
+        }, onDisposed: {
+            print("Disposed")
+        })
+        .disposed(by: disposeBag)
+    }
+}
 
 class MeVC: TabChildVC {
+    
+    let model = MeVC_ViewModel()
+    
+    var lists = [List]()
+    
+    @IBOutlet weak var tableView: UITableView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        buildViews()
+        buildConstraints()
         
+        model.getLists({ lists in
+            if let row = self.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? GroupTableViewCell {
+                row.collectionView.reloadData()
+            }
+        }, { error in
+            switch error {
+            case .networkOffline:
+                print("offline")
+            default:
+                print("Generic error")
+            }
+        })
+    }
+    
+    private func buildViews() {
+        
+        tableView.register(GroupTableViewCell.classForCoder(), forCellReuseIdentifier: C.ViewModel.CellIdentifier.listGroupCell.rawValue)
+        
+        // Settings Button
         let settingsButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Settings"), style: .plain, target: self, action: #selector(openSettings(_:)))
-        settingsButton.tintColor = Color.green
+        settingsButton.tintColor = UIColor(named: .green)
         navigationItem.leftBarButtonItem = settingsButton
+    }
+    
+    private func buildConstraints() {
+        tableView.snp.makeConstraints { make in
+            make.edges.equalTo(self.view)
+        }
     }
     
     @objc func openSettings(_ sender: UIBarButtonItem) {
@@ -28,47 +85,40 @@ extension MeVC: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "listSectionCell", for: indexPath) as! MeListCell
-        cell.sectionTitle.text = "Lists"
-        cell.viewAll = {
-            print("See all Lists")
+        let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.listGroupCell.rawValue, for: indexPath) as! GroupTableViewCell
+        cell.set(title: "Lists")
+        cell.delegate = self
+        
+        cell.collectionView.register(ListCollectionViewCell.classForCoder(), forCellWithReuseIdentifier: ListCollectionViewCell.identifier)
+        
+        model.lists
+        .asObservable()
+        .bind(to: cell.collectionView.rx.items(cellIdentifier: ListCollectionViewCell.identifier, cellType: ListCollectionViewCell.self)) { row, list, listCell in
+                listCell.load(list: list)
         }
+        
+        cell.collectionView
+            .rx.itemSelected
+            .subscribe { indexPath in
+                //self.open(list: self.model.lists.value[indexPath.element!.row])
+            }
+            .disposed(by: disposeBag)
+        
         return cell
         
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 150
+        return 250
     }
 }
 
-class MeListCell: UITableViewCell {
-    var lists = [Any]()
-    
-    var viewAll: (() -> ())? = nil
-    
-    @IBAction func seeAll(_ sender: Any) {
-        viewAll?()
-    }
-    
-    @IBOutlet weak var sectionTitle: UILabel!
-    
-    @IBOutlet weak var collectionView: UICollectionView!
-    
-}
-
-extension MeListCell: UICollectionViewDelegate, UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return lists.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! MeListItemCell
-        return cell
+extension MeVC: ViewAllDelegate {
+    func viewAll(sender: Any) {
+        print("View all for sender: \(sender)")
     }
 }
 
-class MeListItemCell: UICollectionViewCell {
-    @IBOutlet weak var name: UILabel!
-    @IBOutlet weak var subtitle: UILabel!
+protocol ViewAllDelegate: class {
+    func viewAll(sender: Any)
 }

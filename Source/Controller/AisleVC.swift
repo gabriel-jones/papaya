@@ -17,7 +17,7 @@ class AisleVC: TabChildVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tableView.register(UINib(nibName: C.ViewModel.Nib.itemGroupCell, bundle: nil), forCellReuseIdentifier: C.ViewModel.CellIdentifier.itemGroupCell)
+        tableView.register(UINib(nibName: C.ViewModel.Nib.itemGroupCell.rawValue, bundle: nil), forCellReuseIdentifier: C.ViewModel.CellIdentifier.itemGroupCell.rawValue)
         
         tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
         
@@ -33,7 +33,7 @@ class AisleVC: TabChildVC {
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.alwaysBounceHorizontal = true
         
-        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: C.ViewModel.CellIdentifier.aisleSectionBarCell)
+        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: C.ViewModel.CellIdentifier.aisleSectionBarCell.rawValue)
         
         sectionBar.addSubview(collectionView)
         
@@ -54,16 +54,20 @@ extension AisleVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.itemGroupCell, for: indexPath) as! ItemGroupTableViewCell
-        cell.setTitle(to: indexPath.row == 0 ? "Featured" : sections[indexPath.row-1])
-        cell.viewAllItems = { sectionId in
-            print("View All Items")
-        }
+        let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.itemGroupCell.rawValue, for: indexPath) as! GroupTableViewCell
+        cell.set(title: indexPath.row == 0 ? "Featured" : sections[indexPath.row-1])
+        cell.delegate = self
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 225
+    }
+}
+
+extension AisleVC: ViewAllDelegate {
+    func viewAll(sender: Any) {
+        print("View all from sender: \(sender)")
     }
 }
 
@@ -79,13 +83,13 @@ extension AisleVC: UICollectionViewDelegate, UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: C.ViewModel.CellIdentifier.aisleSectionBarCell, for: indexPath)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: C.ViewModel.CellIdentifier.aisleSectionBarCell.rawValue, for: indexPath)
         cell.backgroundColor = .groupTableViewBackground
         cell.cornerRadius = cell.frame.height / 2
         
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: cell.frame.width, height: cell.frame.height))
         button.setTitle(sections[indexPath.row], for: .normal)
-        button.setTitleColor(Color.green, for: .normal)
+        button.setTitleColor(UIColor(named: .green), for: .normal)
         button.addTarget(self, action: #selector(openSection(_:)), for: .touchUpInside)
         button.titleLabel?.textAlignment = .center
         button.titleLabel?.font = Font.gotham(size: 14)

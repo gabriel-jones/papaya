@@ -10,24 +10,24 @@ import Foundation
 
 extension C {
     struct ViewModel {
-        struct CellIdentifier {
-            static let itemCell = "itemCell"
-            static let cartItemCell = "cartItemCell"
-            static let cartEmptyCell = "cartEmptyCell"
-            static let aisleSectionBarCell = "aisleSectionBarCell"
-            static let itemGroupCell = "itemGroupCell"
-            static let instructionsItemCell = "instructionsItemCell"
-            static let instructionsReplaceCell = "instructionsReplaceCell"
+        enum CellIdentifier: String {
+            case cartItemCell, cartEmptyCell, aisleSectionBarCell, instructionsItemCell, instructionsReplaceCell
+            case itemGroupCell, itemCell
+            case listGroupCell, listCell, listItemGridCell
+            case itemDetailCell
         }
         
-        struct Nib {
-            static let itemGroupCell = "ItemGroupTableViewCell"
-            static let itemCell = "ItemCollectionViewCell"
+        enum Nib: String {
+            case itemGroupCell = "ItemGroupTableViewCell"
+            case itemCell = "ItemCollectionViewCell"
+            case listGroupCell = "ListGroupTableViewCell"
+            case listCell = "ListCollectionViewCell"
         }
         
-        struct StoryboardIdentifier {
-            static let homeTabBar = "HomeTabBarVC"
-            static let getStartedNav = "GetStartedNavVC"
+        enum StoryboardIdentifier: String {
+            case homeTabBar = "HomeTabBarVC"
+            case getStartedNav = "GetStartedNavVC"
+            case itemNav = "ItemNavVC"
         }
     }
 }

@@ -36,7 +36,8 @@ extension BrowseVC: UICollectionViewDelegate, UICollectionViewDataSource, UIColl
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "aisleCell", for: indexPath) as! BrowseAisleCell
         cell.aisleName.text = aisles[indexPath.row]
-        cell.imageView.pin_setPlaceholder(with: #imageLiteral(resourceName: "Placeholder"))
+        cell.imageView.pin_setPlaceholder(with: #imageLiteral(resourceName: "Picture").withRenderingMode(.alwaysTemplate))
+        cell.imageView.tintColor = UIColor(named: .mediumGrey)
         cell.imageView.pin_setImage(from: URL(string: C.URL.main + "/img/browse/\(aisles[indexPath.row].lowercased()).jpg")!)
         return cell
     }

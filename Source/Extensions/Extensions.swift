@@ -8,6 +8,32 @@
 
 import UIKit
 
+func UIColorFromRGB(_ hex: UInt32) -> UIColor {
+    return UIColor(
+        red: CGFloat((hex & 0xFF0000) >> 16) / 255.0,
+        green: CGFloat((hex & 0x00FF00) >> 8) / 255.0,
+        blue: CGFloat(hex & 0x0000FF) / 255.0,
+        alpha: CGFloat(1.0)
+    )
+}
+
+extension UIColor {
+    enum Name: String {
+        case green = "Green"
+        case yellow = "Yellow"
+        case red = "Red"
+        case darkGrey = "Dark Grey"
+        case mediumGrey = "Medium Grey"
+        case blue = "Blue"
+        case turquoise = "Turquoise"
+        case flatShadow = "Flat Shadow"
+    }
+    
+    convenience init(named: Name) {
+        self.init(named: named.rawValue)!
+    }
+}
+
 extension UIView {
     
     enum GradientPosition {
@@ -22,7 +48,7 @@ extension UIView {
         }
     }
     
-    func gradientBackground(colors: [UIColor] = [Color.green, Color.turquoise], position: (GradientPosition, GradientPosition) = (.bottomLeft, .topRight)) {
+    func gradientBackground(colors: [UIColor] = [UIColor(named: .green), UIColor(named: .turquoise)], position: (GradientPosition, GradientPosition) = (.bottomLeft, .topRight)) {
         let gradient = CAGradientLayer()
         gradient.frame = frame
         gradient.colors = colors.map { $0.cgColor }
@@ -109,7 +135,7 @@ extension Int {
 }
 
 extension Double {
-    var currency_format: String {
+    var currencyFormat: String {
         get {
             let f = NumberFormatter()
             f.numberStyle = .currency

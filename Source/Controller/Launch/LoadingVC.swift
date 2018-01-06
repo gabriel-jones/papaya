@@ -8,6 +8,7 @@
 
 import UIKit
 import Hero
+import RxSwift
 
 class LoadingVC: UIViewController {
 
@@ -21,7 +22,7 @@ class LoadingVC: UIViewController {
         super.viewDidLoad()
         logoLeft.constant = 79
         logoText.alpha = 0
-        textRight.constant = 81
+        textRight.constant = 40
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -31,39 +32,45 @@ class LoadingVC: UIViewController {
             self.logoText.alpha = 1
             self.view.layoutIfNeeded()
             
-        }, completion: nil)
-        
-        load()
+        }, completion: { _ in
+            self.load()
+        })
     }
     
+    let disposeBag = DisposeBag()
+    
     func load() {
-        try! Request.shared.checkAuthentication { result in
-            switch result {
-            case .failure(let error):
-                switch error {
-                case .networkOffline: // network offline, do something
-                    break
-                default: //other error, go to login page
-                    self.openGetStarted()
-                }
-            case .success(_): //Authenticated, go to home
-                self.openHomeScreen()
+        print("Loading...")
+        Request.shared.checkAuthentication()
+        .observeOn(MainScheduler.instance)
+        .subscribe(onNext: { _ in
+            self.openHomeScreen()
+        }, onError: { error in
+            let error = error as? RequestError
+            switch error {
+            case .networkOffline?:
+                break
+            case nil:
+                break
+            default:
+                self.openGetStarted()
             }
-        }
+        })
+        .disposed(by: disposeBag)
     }
     
     func openHomeScreen() {
-        let vc = Storyboard.main.viewController(name: C.ViewModel.StoryboardIdentifier.homeTabBar)
+        let vc = Storyboard.main.viewController(name: C.ViewModel.StoryboardIdentifier.homeTabBar.rawValue)
         vc.isHeroEnabled = true
         vc.heroModalAnimationType = .auto
         self.hero_replaceViewController(with: vc)
     }
     
     func openGetStarted() {
-        let vc = Storyboard.login.viewController(name: C.ViewModel.StoryboardIdentifier.getStartedNav)
+        let vc = Storyboard.login.viewController(name: C.ViewModel.StoryboardIdentifier.getStartedNav.rawValue)
         vc.isHeroEnabled = true
         vc.heroModalAnimationType = .fade
-        self.hero_replaceViewController(with: vc)
+        self.present(vc, animated: true, completion: nil)
     }
 
 }

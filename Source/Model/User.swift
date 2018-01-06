@@ -11,6 +11,8 @@ import SwiftyJSON
 
 struct User: BaseObject {
     
+    static var current: User?
+    
     let id: Int
     let email: String
     let fname: String

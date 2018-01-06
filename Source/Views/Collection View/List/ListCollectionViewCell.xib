@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="Gotham Rounded Medium.otf">
+            <string>GothamRounded-Medium</string>
+        </array>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="ListCollectionViewCell" customModule="Papaya" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="161" height="129"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="161" height="129"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="sgR-6c-3zX">
+                        <rect key="frame" x="0.0" y="0.0" width="161" height="70"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="70" id="LAj-dX-DXe"/>
+                        </constraints>
+                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="ax9-UW-8zL">
+                            <size key="itemSize" width="50" height="50"/>
+                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                        </collectionViewFlowLayout>
+                    </collectionView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LIST_NAME" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sd1-aR-kb3">
+                        <rect key="frame" x="8" y="74" width="149" height="15"/>
+                        <fontDescription key="fontDescription" name="GothamRounded-Medium" family="Gotham Rounded" pointSize="15"/>
+                        <color key="textColor" name="Dark Grey"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LIST_ITEM_COUNT" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rZT-g2-teq">
+                        <rect key="frame" x="8" y="93" width="149" height="15"/>
+                        <fontDescription key="fontDescription" name="GothamRounded-Medium" family="Gotham Rounded" pointSize="15"/>
+                        <color key="textColor" name="Medium Grey"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+            </view>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="sd1-aR-kb3" secondAttribute="trailing" constant="4" id="4cd-NG-xeH"/>
+                <constraint firstItem="rZT-g2-teq" firstAttribute="top" secondItem="sd1-aR-kb3" secondAttribute="bottom" constant="4" id="5Qj-cI-fiO"/>
+                <constraint firstItem="sgR-6c-3zX" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="9qV-Nt-IED"/>
+                <constraint firstAttribute="trailing" secondItem="rZT-g2-teq" secondAttribute="trailing" constant="4" id="FcC-cH-2hv"/>
+                <constraint firstAttribute="trailing" secondItem="sgR-6c-3zX" secondAttribute="trailing" id="Xb8-4G-hl5"/>
+                <constraint firstItem="sd1-aR-kb3" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="8" id="cVa-8z-QNs"/>
+                <constraint firstItem="sd1-aR-kb3" firstAttribute="top" secondItem="sgR-6c-3zX" secondAttribute="bottom" constant="4" id="f59-1n-6gW"/>
+                <constraint firstItem="sgR-6c-3zX" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="h4j-E3-SE7"/>
+                <constraint firstItem="rZT-g2-teq" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="8" id="tsm-3J-WvZ"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <size key="customSize" width="161" height="129"/>
+            <connections>
+                <outlet property="collectionView" destination="sgR-6c-3zX" id="xr1-FE-pez"/>
+                <outlet property="listItemCount" destination="rZT-g2-teq" id="xUn-fr-hG9"/>
+                <outlet property="listName" destination="sd1-aR-kb3" id="SVP-4W-k0a"/>
+            </connections>
+            <point key="canvasLocation" x="13.5" y="84.5"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <namedColor name="Dark Grey">
+            <color red="0.27058823529411763" green="0.31372549019607843" blue="0.32549019607843138" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="Medium Grey">
+            <color red="0.40784313725490196" green="0.47058823529411764" blue="0.48627450980392156" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>

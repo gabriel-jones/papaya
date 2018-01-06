@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import RxSwift
 
 class MainTabVC: UITabBarController, UITabBarControllerDelegate {
 
@@ -15,8 +16,8 @@ class MainTabVC: UITabBarController, UITabBarControllerDelegate {
         
         delegate = self
         
-        tabBar.barTintColor = Color.green
-        tabBar.tintColor = Color.yellow
+        tabBar.barTintColor = UIColor(named: .green)
+        tabBar.tintColor = UIColor(named: .yellow)
         tabBar.unselectedItemTintColor = .white
         tabBar.shadowImage = UIImage()
 
@@ -30,28 +31,36 @@ class TabChildVC: UIViewController {
         tabBarController?.performSegue(withIdentifier: "openCart", sender: self)
     }
     
-    @objc func updateCartBadge(_ sender: Notification) {
-        navigationItem.rightBarButtonItem?.badgeValue = sender.userInfo!["newValue"] as! String
-    }
-    
     override func viewDidLoad() {
         let b = UIButton(frame: CGRect(x: 0, y: 0, width: #imageLiteral(resourceName: "Cart").size.width, height: #imageLiteral(resourceName: "Cart").size.height))
         b.addTarget(self, action: #selector(openCart(_:)), for: .touchUpInside)
         b.setImage(#imageLiteral(resourceName: "Cart").withRenderingMode(.alwaysTemplate), for: .normal)
-        b.imageView?.tintColor = Color.green
+        b.imageView?.tintColor = UIColor(named: .green)
         let cartButton = UIBarButtonItem(customView: b)
         
-        cartButton.badgeBGColor = Color.red
+        cartButton.badgeBGColor = UIColor(named: .red)
         cartButton.badgeOriginY = -10
         
         navigationItem.rightBarButtonItem = cartButton
         navigationItem.rightBarButtonItem?.badgeValue = "0"
         
-        NotificationCenter.default.addObserver(self, selector: #selector(updateCartBadge(_:)), name: NSNotification.Name(rawValue: C.Notification.cartBadgeUpdate.value), object: nil)
+        self.buildObservers()
+    }
+    
+    let disposeBag = DisposeBag()
+    
+    private func buildObservers() {
+        /*
+        Cart.current.items
+            .asObservable()
+            .subscribe({ items in
+                self.navigationItem.rightBarButtonItem?.badgeValue = String(describing: items.element?.count)
+            })
+            .disposed(by: disposeBag)*/
         
     }
     
     deinit {
-        NotificationCenter.default.removeObserver(self)
+        
     }
 }

@@ -12,9 +12,11 @@ import SwiftyJSON
 struct List: BaseObject {
     let id: Int
     let name: String
+    let items: [Item]
     
     init?(dict: JSON) {
         id = dict["id"].intValue
         name = dict["name"].stringValue
+        items = [] //TODO: initialise
     }
 }

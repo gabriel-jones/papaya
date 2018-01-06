@@ -8,90 +8,49 @@
 
 import Foundation
 import SwiftyJSON
+import RxSwift
 
 extension Request {
-    
-    @discardableResult
-    func getAllLists(completion: @escaping (Result<[List]>) -> ()) throws -> URLSessionDataTask {
-        do {
-            guard let request = URLRequest.get(path: "/list/all")
-                else { throw RequestError.cannotBuildRequest }
-            
-            let handler = { (data: Data?, response: URLResponse?, error: NSError?) -> Result<[List]> in
-                return Result(from: Response(data: data, urlResponse: response), optional: error)
-                    .flatMap(response2Data)
-                    .flatMap(data2Json)
-                    .flatMap(json2Lists)
-            }
-            
-            return execute(request: request, handleResponse: handler, completion: completion)
-        } catch {
-            throw error
+    func getAllLists() -> Observable<[List]> {
+        if let request = URLRequest.get(path: "/list/all") {
+            return Request.shared.fetch(request: request)
+                .observeOn(MainScheduler.instance)
+                .flatMap(json2Lists)
         }
+        return Observable.error(RequestError.unknown)
     }
     
-    @discardableResult
-    func get(list id: Int, completion: @escaping (Result<List>) -> ()) throws -> URLSessionDataTask {
-        do {
-            guard let request = URLRequest.get(path: "/list/get/\(id)")
-                else { throw RequestError.cannotBuildRequest }
-            
-            let handler = { (data: Data?, response: URLResponse?, error: NSError?) -> Result<List> in
-                return Result(from: Response(data: data, urlResponse: response), optional: error)
-                    .flatMap(response2Data)
-                    .flatMap(data2Json)
-                    .flatMap(json2List)
-            }
-            
-            return execute(request: request, handleResponse: handler, completion: completion)
-        } catch {
-            throw error
+    func get(list id: Int) -> Observable<List> {
+        if let request = URLRequest.get(path: "/list/get/\(id)") {
+            return Request.shared.fetch(request: request)
+                .observeOn(MainScheduler.instance)
+                .flatMap(json2List)
         }
+        return Observable.error(RequestError.unknown)
     }
     
-    @discardableResult
-    func add(list name: String, items: [ListItem], completion: @escaping (Result<JSON>) -> ()) throws -> URLSessionDataTask {
-        do {
-            let body = [
-                "name": name,
-                "items": items.map { $0.rawdict }
-            ] as [String : Any]
-            
-            guard let request = URLRequest.post(path: "/list/add", body: body)
-                else { throw RequestError.cannotBuildRequest }
-            
-            let handler = { (data: Data?, response: URLResponse?, error: NSError?) -> Result<JSON> in
-                return Result(from: Response(data: data, urlResponse: response), optional: error)
-                    .flatMap(response2Data)
-                    .flatMap(data2Json)
-            }
-            
-            return execute(request: request, handleResponse: handler, completion: completion)
-        } catch {
-            throw error
+    func add(list name: String, items: [ListItem]) -> Observable<JSON> {
+        let body: [String:Any] = [
+            "name": name,
+            "items": items.map { $0.rawdict }
+        ]
+        if let request = URLRequest.post(path: "/list/add", body: body) {
+            return Request.shared.fetch(request: request)
+                .observeOn(MainScheduler.instance)
         }
+        return Observable.error(RequestError.unknown)
     }
     
-    @discardableResult
-    func addItem(to list: List, item: ListItem, completion: @escaping (Result<JSON>) -> ()) throws -> URLSessionDataTask {
-        do {
-            let body = item.rawdict
-            
-            guard let request = URLRequest.post(path: "/list/get/\(list.id)/item/add", body: body)
-                else { throw RequestError.cannotBuildRequest }
-            
-            let handler = { (data: Data?, response: URLResponse?, error: NSError?) -> Result<JSON> in
-                return Result(from: Response(data: data, urlResponse: response), optional: error)
-                    .flatMap(response2Data)
-                    .flatMap(data2Json)
-            }
-            
-            return execute(request: request, handleResponse: handler, completion: completion)
-        } catch {
-            throw error
+    func addItem(to list: List, item: ListItem) -> Observable<JSON> {
+        let body = item.rawdict
+        if let request = URLRequest.post(path: "/list/get/\(list.id)/item/add", body: body) {
+            return Request.shared.fetch(request: request)
+                .observeOn(MainScheduler.instance)
         }
+        return Observable.error(RequestError.unknown)
     }
     
+    /*
     @discardableResult
     func updateItem(for list: List, item: ListItem, completion: @escaping (Result<JSON>) -> ()) throws -> URLSessionDataTask {
         do {
@@ -110,64 +69,44 @@ extension Request {
         } catch {
             throw error
         }
+    }*/
+    
+    func updateItem(for list: List, item: ListItem) -> Observable<JSON> {
+        let body = item.rawdict
+        if let request = URLRequest.put(path: "/list/get/\(list.id)/item/update", body: body) {
+            return Request.shared.fetch(request: request)
+                .observeOn(MainScheduler.instance)
+        }
+        return Observable.error(RequestError.unknown)
     }
     
-    @discardableResult
-    func deleteItem(for list: List, item: ListItem, completion: @escaping (Result<JSON>) -> ()) throws -> URLSessionDataTask {
-        do {
-            guard let request = URLRequest.delete(path: "/list/get/\(list.id)/item/delete", body: [:], urlParameters: ["item_id": "\(item.id)"])
-                else { throw RequestError.cannotBuildRequest }
-            
-            let handler = { (data: Data?, response: URLResponse?, error: NSError?) -> Result<JSON> in
-                return Result(from: Response(data: data, urlResponse: response), optional: error)
-                    .flatMap(response2Data)
-                    .flatMap(data2Json)
-            }
-            
-            return execute(request: request, handleResponse: handler, completion: completion)
-        } catch {
-            throw error
+    func deleteItem(from list: List, item: ListItem) -> Observable<JSON> {
+        let urlParameters = [
+            "item_id": String(item.id)
+        ]
+        if let request = URLRequest.delete(path: "/list/add", body: [:], urlParameters: urlParameters) {
+            return Request.shared.fetch(request: request)
+                .observeOn(MainScheduler.instance)
         }
+        return Observable.error(RequestError.unknown)
     }
     
-    @discardableResult
-    func update(list: List, completion: @escaping (Result<JSON>) -> ()) throws -> URLSessionDataTask {
-        do {
-            let body = [
-                "name": list.name
-            ]
-            
-            guard let request = URLRequest.put(path: "/list/get/\(list.id)/update", body: body)
-                else { throw RequestError.cannotBuildRequest }
-            
-            let handler = { (data: Data?, response: URLResponse?, error: NSError?) -> Result<JSON> in
-                return Result(from: Response(data: data, urlResponse: response), optional: error)
-                    .flatMap(response2Data)
-                    .flatMap(data2Json)
-            }
-            
-            return execute(request: request, handleResponse: handler, completion: completion)
-        } catch {
-            throw error
+    func update(list: List) -> Observable<JSON> {
+        let body = [
+            "name": list.name
+        ]
+        if let request = URLRequest.put(path: "/list/get/\(list.id)/update", body: body) {
+            return Request.shared.fetch(request: request)
+                .observeOn(MainScheduler.instance)
         }
+        return Observable.error(RequestError.unknown)
     }
     
-    @discardableResult
-    func delete(list: List, completion: @escaping (Result<JSON>) -> ()) throws -> URLSessionDataTask {
-        do {
-            
-            guard let request = URLRequest.delete(path: "/list/get/\(list.id)/delete")
-                else { throw RequestError.cannotBuildRequest }
-            
-            let handler = { (data: Data?, response: URLResponse?, error: NSError?) -> Result<JSON> in
-                return Result(from: Response(data: data, urlResponse: response), optional: error)
-                    .flatMap(response2Data)
-                    .flatMap(data2Json)
-            }
-            
-            return execute(request: request, handleResponse: handler, completion: completion)
-        } catch {
-            throw error
+    func delete(list: List) -> Observable<JSON> {
+        if let request = URLRequest.delete(path: "/list/get/\(list.id)/delete") {
+            return Request.shared.fetch(request: request)
+                .observeOn(MainScheduler.instance)
         }
+        return Observable.error(RequestError.unknown)
     }
 }

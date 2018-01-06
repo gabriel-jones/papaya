@@ -20,7 +20,7 @@ class _CartVC: UIViewController {
         super.viewDidLoad()
     }
 }
-
+/*
 extension _CartVC: CartItemDelegate {
     func quantity(item: CartItem, new: Int) {
         Cart.current.changeQuantity(for: item, new: new)
@@ -39,24 +39,24 @@ extension _CartVC: CartItemDelegate {
 
 extension _CartVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if Cart.current.items.isEmpty {
+        if Cart.current.items.value.isEmpty {
             tableView.separatorStyle = .none
             return 1
         }
         tableView.separatorStyle = .singleLine
-        return Cart.current.items.count
+        return Cart.current.items.value.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if Cart.current.items.isEmpty {
-            let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.cartEmptyCell, for: indexPath) as! CartEmptyCell
+        if Cart.current.items.value.isEmpty {
+            let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.cartEmptyCell.rawValue, for: indexPath) as! CartEmptyCell
             cell.action = {
                 self.close(cell)
             }
             return cell
         }
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.cartItemCell, for: indexPath) as! CartItemCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.cartItemCell.rawValue, for: indexPath) as! CartItemCell
         cell.delegate = self
         cell.load(item: Cart.current.items[indexPath.row])
         return cell
@@ -126,7 +126,7 @@ class CartItemCell: UITableViewCell {
     func load(item: CartItem) {
         _item = item
         name.text = _item?.item.name
-        price.text = _item?.item.price.currency_format
+        price.text = _item?.item.price.currencyFormat
         itemImage.pin_setPlaceholder(with: #imageLiteral(resourceName: "Picture Grey"))
         itemImage.pin_setImage(from: URL(string: C.URL.main + "/img/items/\(_item!.item.id).png")!)
         quantity.text = String(describing: _item?.quantity)
@@ -138,3 +138,4 @@ class CartItemCell: UITableViewCell {
     }
     
 }
+*/

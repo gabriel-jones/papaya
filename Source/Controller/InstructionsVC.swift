@@ -35,13 +35,13 @@ extension InstructionsVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.row == 0 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.instructionsItemCell, for: indexPath) as! InstructionsItemCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.instructionsItemCell.rawValue, for: indexPath) as! InstructionsItemCell
             cell.nameLabel.text = item.item.name
-            cell.priceLabel.text = item.item.price.currency_format
+            cell.priceLabel.text = item.item.price.currencyFormat
             cell.itemImage.pin_setImage(from: URL(string: C.URL.main + "/img/items/\(item.item.id).png")!, placeholderImage: #imageLiteral(resourceName: "Placeholder").withRenderingMode(.alwaysTemplate))
             return cell
         } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.instructionsReplaceCell, for: indexPath) as! InstructionsReplaceCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.instructionsReplaceCell.rawValue, for: indexPath) as! InstructionsReplaceCell
             let labelOptions = item.replaceOption.description
             cell.optionLabel.text = labelOptions.0
             cell.optionLabel.textColor = labelOptions.1

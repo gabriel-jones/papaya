@@ -32,10 +32,11 @@ class LoginVC: UIViewController {
     }
     
     @IBAction func back(_ sender: Any) {
-        self.hero_dismissViewController()
+        self.navigationController?.popViewController(animated: true)
     }
     
     @IBAction func login(_ sender: LoadingButton) {
+        view.endEditing(true)
         sender.showLoading()
         
         let email = emailField.text!
@@ -53,30 +54,72 @@ class LoginVC: UIViewController {
             return
         }
         
-        try! Request.shared.reauthorise { result in
-            sender.hideLoading()
-            
-            switch result {
-            case .failure(let error):
-                // Handle Error
-                switch error {
-                case .userNotFound: // Email incorrect
-                    self.showLoginError(message: "Incorrect email")
-                case .unauthorised: // Password incorrect
-                    self.showLoginError(message: "Incorrect password")
-                default: // Generic error
-                    self.showLoginError(message: "An error occurred.")
+        /*
+        try! Request.shared.login(email: email, password: password) { result in
+            DispatchQueue.main.async {
+                sender.hideLoading()
+                
+                switch result {
+                case .failure(let error):
+                    // Handle Error
+                    switch error {
+                    case .userNotFound: // Email incorrect
+                        self.showLoginError(message: "Incorrect email")
+                    case .unauthorised: // Password incorrect
+                        self.showLoginError(message: "Incorrect password")
+                    default: // Generic error
+                        print(error)
+                        self.showLoginError(message: "An error occurred.")
+                    }
+                case .success(_):
+                    // return to loading screen
+                    print("Successfully logged in")
+                    self.navigationController?.dismiss(animated: true, completion: nil)
                 }
-                break
-            case .success(_):
-                // return to home screen
-                print("Successfully logged in")
-                break
             }
-        }
+        }*/
     }
     
-    @IBAction func forgotPassword(_ sender: Any) {
+    @IBAction func forgotPassword() {
+        loginButton.showLoading()
+        
+        let email = emailField.text!
+        
+        guard !email.isEmpty else {
+            loginButton.hideLoading()
+            let alert = UIAlertController(title: "Error", message: "Please enter an email.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+            return
+        }
+        /*
+        do {
+            try Request.shared.forgotPassword(email: email) { result in
+                DispatchQueue.main.async {
+                    self.loginButton.hideLoading()
+                    switch result {
+                    case .failure(let error):
+                        var alert: UIAlertController!
+                        switch error {
+                        case .userNotFound: // invalid email
+                            alert = UIAlertController(title: "Invalid email", message: "That email doesn't belong to any user account.", preferredStyle: .alert)
+                        default:
+                            alert = UIAlertController(title: "There was an error", message: "Please try again.", preferredStyle: .alert)
+                        }
+                        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
+                    case .success(_):
+                        let alert = UIAlertController(title: "Success", message: "Please check your email for a password reset link.", preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                }
+            }
+        } catch {
+            let alert = UIAlertController(title: "There was an error", message: "Please try again.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+        }*/
         
     }
     

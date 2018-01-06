@@ -26,16 +26,16 @@ class SearchVC: TabChildVC {
         
         let filterButton = UIButton(type: .custom)
         filterButton.setTitle("Filter", for: .normal)
-        filterButton.setImage(#imageLiteral(resourceName: "Filter").withRenderingMode(.alwaysTemplate), for: .normal)
-        filterButton.tintColor = Color.green
-        filterButton.setTitleColor(Color.green, for: .normal)
+        filterButton.setImage(#imageLiteral(resourceName: "Sort").withRenderingMode(.alwaysTemplate), for: .normal)
+        filterButton.tintColor = UIColor(named: .green)
+        filterButton.setTitleColor(UIColor(named: .green), for: .normal)
         filterButton.titleLabel?.font = Font.gotham(size: 15)
         
         let sortButton = UIButton(type: .custom)
         sortButton.setTitle("Sort", for: .normal)
         sortButton.setImage(#imageLiteral(resourceName: "Sort").withRenderingMode(.alwaysTemplate), for: .normal)
-        sortButton.tintColor = Color.green
-        sortButton.setTitleColor(Color.green, for: .normal)
+        sortButton.tintColor = UIColor(named: .green)
+        sortButton.setTitleColor(UIColor(named: .green), for: .normal)
         sortButton.titleLabel?.font = Font.gotham(size: 15)
         
         let filter = UIBarButtonItem(customView: filterButton)
@@ -62,7 +62,7 @@ class SearchVC: TabChildVC {
         
         searchController.searchBar.searchBarStyle = .minimal
         searchController.searchBar.placeholder = "Search..."
-        searchController.searchBar.tintColor = Color.grey.3
+        searchController.searchBar.tintColor = UIColor(named: .mediumGrey)
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: searchController.searchBar)
         

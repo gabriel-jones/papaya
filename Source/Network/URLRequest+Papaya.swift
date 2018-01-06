@@ -19,6 +19,10 @@ extension URLRequest {
         self.setValue(Config.shared.userAgent, forHTTPHeaderField: "User-Agent")
     }
     
+    mutating func setContentType() {
+        self.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+    }
+    
     static func get(path: String, urlParameters: [String:String] = [:]) -> URLRequest? {
         return self.build(path: path, method: .get, urlParameters: urlParameters, body: [:])
     }
@@ -40,6 +44,7 @@ extension URLRequest {
     }
     
     static private func build(path: String, method: Request.HTTPMethod, urlParameters: [String:String], body: [String: Any]) -> URLRequest? {
+        print("Building request:")
         let parameters = urlParameters.urlQueryString
         let urlWithParameters = parameters.isEmpty ? path : path + "?" + parameters
         guard let url = URL(string: C.URL.main + urlWithParameters) else {
@@ -51,6 +56,7 @@ extension URLRequest {
         request.httpMethod = method.rawValue
         request.setUserAgent()
         
+        print(AuthenticationStore.token)
         if let token = AuthenticationStore.token {
             request.setAuthorisation(token: token)
         }
@@ -58,6 +64,7 @@ extension URLRequest {
         if !body.isEmpty {
             do {
                 request.httpBody = try JSON(body).rawData()
+                request.setContentType()
             } catch {
                 print("Could not construct HTTP body")
             }

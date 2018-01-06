@@ -8,6 +8,7 @@
 
 import UIKit
 import SwiftyJSON
+import RxSwift
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
@@ -36,6 +37,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         setupUI()
+        /*
+        _ = Observable<Int>
+            .interval(1, scheduler: MainScheduler.instance)
+            .subscribe { _ in
+                print("Resource count: \(RxSwift.Resources.total).")
+            }
+        */
         
         //TODO: remove in production
         NSSetUncaughtExceptionHandler { exception in

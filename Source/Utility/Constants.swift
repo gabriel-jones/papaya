@@ -18,6 +18,7 @@ struct C {
         static let main = development
         static let production = "https://www.papaya.bm"
         static let development = "http://localhost:5000"
+        static let developmentTunnel = "https://nmxrkzkkxa.localtunnel.me"
     }
     
     static let GMS_KEY = "AIzaSyCFy56PBJTowmL5q6cTX-d_uT6HFydP0DM"

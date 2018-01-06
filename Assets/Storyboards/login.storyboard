@@ -63,9 +63,6 @@
                                     <constraint firstItem="Aeg-qS-fXe" firstAttribute="leading" secondItem="AKY-dR-gCG" secondAttribute="leading" constant="8" id="sqc-Pu-4vs"/>
                                     <constraint firstItem="20a-Ua-SWU" firstAttribute="centerY" secondItem="Aeg-qS-fXe" secondAttribute="centerY" id="w2y-Ug-TUy"/>
                                 </constraints>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="string" keyPath="heroID" value="logoView"/>
-                                </userDefinedRuntimeAttributes>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -721,6 +718,9 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="iR9-Q3-RYd">
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="isHeroEnabled" value="YES"/>
+                    </userDefinedRuntimeAttributes>
                     <connections>
                         <segue destination="lsM-F2-wAi" kind="relationship" relationship="rootViewController" id="d2R-Cq-KCM"/>
                     </connections>
