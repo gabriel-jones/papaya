@@ -8,7 +8,7 @@
 
 import Foundation
 
-class GroupModel: NSObject, UICollectionViewDataSource, UICollectionViewDelegate {
+class GroupModel: NSObject, UICollectionViewDataSource {
     
     var delegate: GroupDelegateAction?
     
@@ -19,15 +19,14 @@ class GroupModel: NSObject, UICollectionViewDataSource, UICollectionViewDelegate
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         return UICollectionViewCell()
     }
-    
 }
 
 protocol GroupDelegateAction {
-    func open(item: Item)
-    func open(list: List)
+    func open(item: Item, imageId: String)
+    func open(list: List, imageIds: [String])
 }
 
 extension GroupDelegateAction {
-    func open(item: Item) {}
-    func open(list: List) {}
+    func open(item: Item, imageId: String) {}
+    func open(list: List, imageIds: [String]) {}
 }

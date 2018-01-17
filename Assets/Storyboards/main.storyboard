@@ -630,13 +630,13 @@
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Item Name" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mUv-3f-gVR">
-                                                    <rect key="frame" x="101" y="11" width="251" height="17"/>
+                                                    <rect key="frame" x="101" y="11" width="251" height="20"/>
                                                     <fontDescription key="fontDescription" name="GothamRounded-Medium" family="Gotham Rounded" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$9.99" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="63b-0O-l1C">
-                                                    <rect key="frame" x="101" y="28" width="259" height="20"/>
+                                                    <rect key="frame" x="101" y="31" width="259" height="20"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="20" id="cLL-XJ-aMs"/>
                                                     </constraints>
