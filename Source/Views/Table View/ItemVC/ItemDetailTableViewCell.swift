@@ -6,9 +6,11 @@
 //  Copyright © 2017 Papaya. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 class ItemDetailTableViewCell: UITableViewCell {
+    
+    static let identifier: String = C.ViewModel.CellIdentifier.itemDetailCell.rawValue
     
     var itemImage = UIImageView(frame: .zero)
     var itemName = UILabel(frame: .zero)
@@ -30,12 +32,12 @@ class ItemDetailTableViewCell: UITableViewCell {
         itemImage.contentMode = .scaleAspectFit
         addSubview(itemImage)
         
-        itemName.font = Font.gotham(size: 17.0)
+        itemName.font = Font.gotham(size: 18.0)
         itemName.numberOfLines = 0
         itemName.textColor = UIColor.black
         addSubview(itemName)
         
-        itemPrice.font = Font.gotham(size: 14.0)
+        itemPrice.font = Font.gotham(size: 16.0)
         itemPrice.textColor = UIColor(named: .mediumGrey)
         addSubview(itemPrice)
     }
@@ -49,22 +51,23 @@ class ItemDetailTableViewCell: UITableViewCell {
         }
         
         itemName.snp.makeConstraints { make in
-            make.top.equalTo(itemImage.snp.bottom).offset(16)
+            make.top.equalTo(itemImage.snp.bottom).offset(24)
             make.left.equalTo(24)
-            make.right.equalTo(16)
-            make.height.greaterThanOrEqualTo(17)
+            make.right.equalTo(-16)
+            make.height.greaterThanOrEqualTo(20)
         }
         
         itemPrice.snp.makeConstraints { make in
-            make.top.equalTo(itemName).offset(8)
+            make.top.equalTo(itemName.snp.bottom).offset(4)
             make.left.equalTo(24)
-            make.right.equalTo(16)
-            make.bottom.equalTo(8)
+            make.right.equalTo(-16)
+            make.height.equalTo(18)
+            make.bottom.equalTo(-16)
         }
     }
     
-    func set(item: Item, indexPath: IndexPath) {
-        itemImage.heroID = "item_img_\(item.id)_\(indexPath.section)_\(indexPath.row)"
+    func set(item: Item, id: String) {
+        itemImage.heroID = id
         
         itemImage.pin_setPlaceholder(with: #imageLiteral(resourceName: "Picture"))
         if let url = item.img {

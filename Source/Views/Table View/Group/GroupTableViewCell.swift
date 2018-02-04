@@ -9,18 +9,37 @@
 import UIKit
 
 class GroupTableViewCell: UITableViewCell {
-
-    var collectionView: UICollectionView!
-    var titleLabel = UILabel(frame: .zero)
-    var viewAllButton = UIButton(frame: .zero)
     
-    var delegate: ViewAllDelegate?
+    public static let identifier: String = C.ViewModel.CellIdentifier.itemGroupCell.rawValue
+
+    private var collectionView: UICollectionView!
+    private let titleLabel = UILabel()
+    private let viewAllButton = UIButton()
+
+    public var delegate: ViewAllDelegate?
     
     public var model: GroupModel? {
         didSet {
             collectionView.dataSource = model
             collectionView.delegate = model
             collectionView.reloadData()
+        }
+    }
+    
+    public func register(class: AnyClass?, identifier: String) {
+        collectionView.register(`class`, forCellWithReuseIdentifier: identifier)
+    }
+    
+    public func reload() {
+        collectionView.performBatchUpdates({
+            self.collectionView.reloadSections(IndexSet(integer: 0))
+        }, completion: nil)
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        if model != nil {
+            collectionView.isUserInteractionEnabled = !model!.isEmpty
         }
     }
     
@@ -36,25 +55,26 @@ class GroupTableViewCell: UITableViewCell {
     
     private func buildViews() {
         backgroundColor = .clear
+        masksToBounds = false
         
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.itemSize = CGSize(width: 150, height: 200)
         
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.delegate = model
-        collectionView.dataSource = model
         collectionView.alwaysBounceHorizontal = true
         collectionView.backgroundColor = .clear
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24)
         collectionView.delaysContentTouches = true
+        collectionView.masksToBounds = false
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.showsVerticalScrollIndicator = false
         addSubview(collectionView)
         
         titleLabel.font = Font.gotham(size: 15)
         addSubview(titleLabel)
         
         viewAllButton.setTitle("View All", for: .normal)
-        viewAllButton.setImage(#imageLiteral(resourceName: "Right Arrow").withRenderingMode(.alwaysTemplate), for: .normal)
+        viewAllButton.setImage(#imageLiteral(resourceName: "Right Arrow").tintable, for: .normal)
         viewAllButton.tintColor = UIColor(named: .green)
         viewAllButton.contentEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
         viewAllButton.setTitleColor(UIColor(named: .green), for: .normal)
@@ -75,20 +95,16 @@ class GroupTableViewCell: UITableViewCell {
         }
         
         viewAllButton.snp.makeConstraints { make in
-            make.right.equalTo(0)
+            make.right.equalToSuperview()
             make.top.equalTo(8)
         }
         
         collectionView.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(8)
-            make.left.equalTo(0)
-            make.right.equalTo(0)
-            make.bottom.equalTo(0)
+            make.left.equalToSuperview()
+            make.right.equalToSuperview()
+            make.bottom.equalTo(-8)
         }
-    }
-    
-    public func model(with: GroupModel) {
-        
     }
     
     public func set(title: String) {
@@ -96,7 +112,7 @@ class GroupTableViewCell: UITableViewCell {
     }
     
     @objc func viewAll(_ sender: Any) {
-        delegate?.viewAll(sender: sender)
+        delegate?.viewAll(identifier: model?.identifier)
     }
     
 }

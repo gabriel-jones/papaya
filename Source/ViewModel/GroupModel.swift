@@ -8,9 +8,20 @@
 
 import Foundation
 
-class GroupModel: NSObject, UICollectionViewDataSource {
+class GroupModel: NSObject, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
-    var delegate: GroupDelegateAction?
+    public var delegate: GroupDelegateAction?
+    public var identifier: Int?
+    
+    public var isEmpty: Bool {
+        get {
+            return true
+        }
+    }
+    
+    public func set(new: [Any]) {
+        
+    }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 0
@@ -18,6 +29,11 @@ class GroupModel: NSObject, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         return UICollectionViewCell()
+    }
+    
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: 150, height: collectionView.frame.height)
     }
 }
 

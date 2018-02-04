@@ -20,24 +20,18 @@ extension Request {
         }
         
         func jsonArray2Array<T: BaseObject>(from json: JSON, to type: T.Type) -> Observable<[T]> {
-            return Observable<[T]>.create { observer in
-                if let json = json.array {
-                    var array = [T]()
-                    for element in json {
-                        if let object = T(dict: element) {
-                            array.append(object)
-                        } else {
-                            observer.onError(RequestError.failedToParseJson)
-                            break
-                        }
+            if let json = json.array {
+                var array = [T]()
+                for element in json {
+                    if let object = T(dict: element) {
+                        array.append(object)
+                    } else {
+                        return Observable.error(RequestError.failedToParseJson)
                     }
-                    observer.onNext(array)
-                } else {
-                    observer.onError(RequestError.failedToParseJson)
                 }
-                
-                return Disposables.create()
+                return Observable.just(array)
             }
+            return Observable.error(RequestError.failedToParseJson)
         }
         
         func json2User(from json: JSON) -> Observable<User> {
@@ -65,11 +59,23 @@ extension Request {
         }
         
         func json2Token(from json: JSON) -> Observable<String?> {
-            return Variable(json["auth_token"].string).asObservable()
+            return Observable.just(json["auth_token"].string)
         }
         
         func json2Items(from json: JSON) -> Observable<[Item]> {
             return jsonArray2Array(from: json["items"], to: Item.self)
+        }
+        
+        func json2Category(from json: JSON) -> Observable<Category> {
+            return jsonDict2Object(from: json["category"], to: Category.self)
+        }
+        
+        func json2Categories(from json: JSON) -> Observable<[Category]> {
+            return jsonArray2Array(from: json["categories"], to: Category.self)
+        }
+        
+        func json2Subcategories(from json: JSON) -> Observable<[Category]> {
+            return jsonArray2Array(from: json["subcategories"], to: Category.self)
         }
 
     }

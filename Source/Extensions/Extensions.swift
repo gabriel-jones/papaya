@@ -27,6 +27,7 @@ extension UIColor {
         case blue = "Blue"
         case turquoise = "Turquoise"
         case flatShadow = "Flat Shadow"
+        case backgroundGrey = "Background Grey"
     }
     
     convenience init(named: Name) {
@@ -145,38 +146,6 @@ extension Double {
 }
 
 @IBDesignable extension UIView {
-    @IBInspectable var cornerRadius: CGFloat {
-        get {
-            return layer.cornerRadius
-        } set {
-            layer.cornerRadius = newValue
-        }
-    }
-    
-    @IBInspectable var borderColor: UIColor {
-        get {
-            return UIColor(cgColor: layer.borderColor ?? UIColor.clear.cgColor)
-        } set {
-            layer.borderColor = newValue.cgColor
-        }
-    }
-    
-    @IBInspectable var borderWidth: CGFloat {
-        get {
-            return layer.borderWidth
-        } set {
-            layer.borderWidth = newValue
-        }
-    }
-
-    @IBInspectable var flatShadowColor: UIColor {
-        get {
-            return UIColor(cgColor: self.layer.shadowColor!)
-        } set {
-            self.layer.shadowColor = newValue.cgColor
-        }
-    }
-
     @IBInspectable var flatShadow: Bool {
         get {
             return self.layer.shadowOpacity == 1.0
@@ -274,16 +243,12 @@ extension String {
         }
     }
     
-    var length: Int {
-        return self.characters.count
-    }
-    
     subscript (i: Int) -> String {
         return self[Range(i ..< i + 1)]
     }
     
     func substring(from: Int) -> String {
-        return self[Range(min(from, length) ..< length)]
+        return self[Range(min(from, count) ..< count)]
     }
     
     func substring(to: Int) -> String {
@@ -291,8 +256,8 @@ extension String {
     }
     
     subscript (r: Range<Int>) -> String {
-        let range = Range(uncheckedBounds: (lower: max(0, min(length, r.lowerBound)),
-                                            upper: min(length, max(0, r.upperBound))))
+        let range = Range(uncheckedBounds: (lower: max(0, min(count, r.lowerBound)),
+                                            upper: min(count, max(0, r.upperBound))))
         let start = index(startIndex, offsetBy: range.lowerBound)
         let end = index(start, offsetBy: range.upperBound - range.lowerBound)
         return String(self[Range(start ..< end)])

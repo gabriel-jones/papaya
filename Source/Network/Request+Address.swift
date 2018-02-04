@@ -12,21 +12,21 @@ import RxSwift
 
 extension Request {
     func getAllAddresses() -> Observable<[Address]> {
-        if let request = URLRequest.get(path: "/address/all") {
-            return Request.shared.fetch(request: request)
-                .observeOn(MainScheduler.instance)
-                .flatMap(json2Addresses)
+        guard let request = URLRequest.get(path: "/address/all") else {
+            return Observable.error(RequestError.cannotBuildRequest)
         }
-        return Observable.error(RequestError.unknown)
+    
+        return self.fetch(request: request)
+            .flatMap(parse.json2Addresses)
     }
     
     func get(address id: Int) -> Observable<Address> {
-        if let request = URLRequest.get(path: "/address/get/\(id)") {
-            return Request.shared.fetch(request: request)
-                .observeOn(MainScheduler.instance)
-                .flatMap(json2Address)
+        guard let request = URLRequest.get(path: "/address/get/\(id)") else {
+            return Observable.error(RequestError.cannotBuildRequest)
         }
-        return Observable.error(RequestError.unknown)
+    
+        return self.fetch(request: request)
+            .flatMap(parse.json2Address)
     }
     
     func add(street: String, zipCode: String) -> Observable<JSON> {
@@ -34,11 +34,12 @@ extension Request {
             "street": street,
             "zip_code": zipCode
         ]
-        if let request = URLRequest.post(path: "/address/all", body: body) {
-            return Request.shared.fetch(request: request)
-                .observeOn(MainScheduler.instance)
+        
+        guard let request = URLRequest.post(path: "/address/all", body: body) else {
+            return Observable.error(RequestError.cannotBuildRequest)
         }
-        return Observable.error(RequestError.unknown)
+        
+        return self.fetch(request: request)
     }
     
     func update(address: Address) -> Observable<JSON> {
@@ -46,18 +47,19 @@ extension Request {
             "street": address.street,
             "zip_code": address.zip
         ]
-        if let request = URLRequest.put(path: "/address/get/\(address.id)/update", body: body) {
-            return Request.shared.fetch(request: request)
-                .observeOn(MainScheduler.instance)
+        
+        guard let request = URLRequest.put(path: "/address/get/\(address.id)/update", body: body) else {
+            return Observable.error(RequestError.cannotBuildRequest)
         }
-        return Observable.error(RequestError.unknown)
+        
+        return self.fetch(request: request)
     }
     
     func delete(address: Address) -> Observable<JSON> {
-        if let request = URLRequest.delete(path: "/address/get/\(address.id)/delete") {
-            return Request.shared.fetch(request: request)
-                .observeOn(MainScheduler.instance)
+        guard let request = URLRequest.delete(path: "/address/get/\(address.id)/delete") else {
+            return Observable.error(RequestError.cannotBuildRequest)
         }
-        return Observable.error(RequestError.unknown)
+        
+        return self.fetch(request: request)
     }
 }

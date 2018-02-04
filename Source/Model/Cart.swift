@@ -8,13 +8,10 @@
 
 import Foundation
 import SwiftyJSON
-import RxSwift
 
-struct Cart: BaseObject {
-    static var current: Cart!
-    
+struct Cart: BaseObject {    
     let id: Int
-    var items: Variable<[CartItem]> = Variable([])
+    var items: [CartItem]
     
     init?(dict: JSON) {
         guard let items = dict["items"].array, let id = dict["id"].int else {
@@ -22,17 +19,20 @@ struct Cart: BaseObject {
         }
         
         self.id = id
+        
+        var itemsBuffer = [CartItem]()
         for item in items {
             if let item = CartItem(dict: item) {
-                self.items.value.append(item)
+                itemsBuffer.append(item)
             }
         }
+        self.items = itemsBuffer
     }
 
     var total: Double {
         get {
             var t = 0.0
-            for cartItem in items.value {
+            for cartItem in items {
                 t += cartItem.item.price * Double(cartItem.quantity)
             }
             return t

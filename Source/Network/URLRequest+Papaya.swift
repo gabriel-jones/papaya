@@ -44,7 +44,6 @@ extension URLRequest {
     }
     
     static private func build(path: String, method: Request.HTTPMethod, urlParameters: [String:String], body: [String: Any]) -> URLRequest? {
-        print("Building request:")
         let parameters = urlParameters.urlQueryString
         let urlWithParameters = parameters.isEmpty ? path : path + "?" + parameters
         guard let url = URL(string: C.URL.main + urlWithParameters) else {
@@ -56,7 +55,6 @@ extension URLRequest {
         request.httpMethod = method.rawValue
         request.setUserAgent()
         
-        print(AuthenticationStore.token)
         if let token = AuthenticationStore.token {
             request.setAuthorisation(token: token)
         }

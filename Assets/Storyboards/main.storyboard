@@ -509,7 +509,7 @@
                                                 <constraint firstItem="iY7-AI-DaI" firstAttribute="top" secondItem="jht-oM-iKI" secondAttribute="topMargin" id="oBV-dP-cb8"/>
                                                 <constraint firstItem="ko3-Es-MGZ" firstAttribute="leading" secondItem="DIg-NW-ySe" secondAttribute="trailing" constant="4" id="sIc-sm-TOi"/>
                                                 <constraint firstItem="H8H-TB-dLs" firstAttribute="bottom" secondItem="jht-oM-iKI" secondAttribute="bottomMargin" id="t4S-Oq-bFH"/>
-                                                <constraint firstAttribute="bottom" secondItem="YZN-a5-U4m" secondAttribute="bottom" constant="10.5" id="xMo-mC-Let"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="YZN-a5-U4m" secondAttribute="bottom" id="xMo-mC-Let"/>
                                                 <constraint firstItem="6gt-iq-rgE" firstAttribute="leading" secondItem="iY7-AI-DaI" secondAttribute="trailing" constant="-7" id="yil-Px-v2h"/>
                                             </constraints>
                                         </tableViewCellContentView>
@@ -630,13 +630,13 @@
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Item Name" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mUv-3f-gVR">
-                                                    <rect key="frame" x="101" y="11" width="251" height="20"/>
+                                                    <rect key="frame" x="101" y="11" width="251" height="17"/>
                                                     <fontDescription key="fontDescription" name="GothamRounded-Medium" family="Gotham Rounded" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$9.99" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="63b-0O-l1C">
-                                                    <rect key="frame" x="101" y="31" width="259" height="20"/>
+                                                    <rect key="frame" x="101" y="28" width="259" height="20"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="20" id="cLL-XJ-aMs"/>
                                                     </constraints>

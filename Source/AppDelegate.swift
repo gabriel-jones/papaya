@@ -17,13 +17,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
     
     func setupUI() {
         UINavigationBar.appearance().titleTextAttributes = [
-            NSAttributedStringKey.font: UIFont(name: "GothamRounded-Medium", size: 20)!
+            NSAttributedStringKey.font: UIFont(name: "GothamRounded-Medium", size: 17)!
         ]
+        /*
         UITabBarItem.appearance().setTitleTextAttributes(
-            [NSAttributedStringKey.font: UIFont(name: "GothamRounded-Medium", size: 11)!], for: .normal
-        )
+            [NSAttributedStringKey.font: UIFont(name: "GothamRounded-Medium", size: 14)!], for: .normal
+        )*/
         UITabBarItem.appearance().setTitleTextAttributes(
-            [NSAttributedStringKey.font: UIFont(name: "GothamRounded-Bold", size: 11)!], for: .selected
+            [NSAttributedStringKey.font: UIFont(name: "GothamRounded-Bold", size: 14)!], for: .selected
         )
     }
     
@@ -37,19 +38,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         setupUI()
-        /*
-        _ = Observable<Int>
-            .interval(1, scheduler: MainScheduler.instance)
+        
+        _ = Observable<Int>.interval(1, scheduler: MainScheduler.instance)
             .subscribe { _ in
-                print("Resource count: \(RxSwift.Resources.total).")
+                //print("Resource count \(RxSwift.Resources.total)")
             }
-        */
         
         //TODO: remove in production
+        /**/
         NSSetUncaughtExceptionHandler { exception in
             print(exception)
             print(exception.callStackSymbols)
         }
+        /**/
         
         if UserDefaults.standard.object(forKey: "useLessData") == nil {
             UserDefaults.standard.set(true, forKey: "useLessData")
@@ -69,6 +70,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
             print(error)
         }
         
+        NotificationRouter.shared.setupObservers()
+        
+        window = UIWindow(frame: UIScreen.main.bounds)
+        let loadingVC = LoadingVC()
+        window?.rootViewController = loadingVC
+        window?.makeKeyAndVisible()
         return !j()
     }
 }

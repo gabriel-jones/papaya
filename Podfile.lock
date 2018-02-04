@@ -1,6 +1,5 @@
 PODS:
   - CHIPageControl/Jaloro (0.1.4)
-  - Differentiator (3.0.2)
   - DSGradientProgressView (1.0.0)
   - FLAnimatedImage (1.0.12)
   - Hero (1.0.0-alpha.4)
@@ -15,13 +14,6 @@ PODS:
     - FLAnimatedImage (>= 1.0)
     - PINRemoteImage/Core
   - PMAlertController (3.1.0)
-  - RMPZoomTransitionAnimator (1.0.3)
-  - RxCocoa (4.0.0):
-    - RxSwift (~> 4.0)
-  - RxDataSources (3.0.2):
-    - Differentiator (~> 3.0)
-    - RxCocoa (~> 4.0)
-    - RxSwift (~> 4.0)
   - RxSwift (4.0.0)
   - SnapKit (4.0.0)
   - SocketRocket (0.5.1)
@@ -36,9 +28,6 @@ DEPENDENCIES:
   - KeychainAccess
   - PINRemoteImage
   - PMAlertController
-  - RMPZoomTransitionAnimator
-  - RxCocoa (~> 4.0)
-  - RxDataSources (~> 3.0)
   - RxSwift (~> 4.0)
   - SnapKit (~> 4.0.0)
   - SocketRocket
@@ -47,7 +36,6 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   CHIPageControl: 032b5ab68506c00711d5a61bd83e9fdf2a7ecb22
-  Differentiator: a87be69eba49ec4ab460c7671143ee3a9eececfd
   DSGradientProgressView: b591b4dfc6a7491fbd1f8dedee7a6ce02b23640f
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
   Hero: 6ab58fdfb16c75ce9c6bfad48ef6abb54780b263
@@ -56,15 +44,12 @@ SPEC CHECKSUMS:
   PINCache: ce36ed282031b92fc7733ffe831f474ff80fddc2
   PINRemoteImage: 4ac4011c5caefd6befd99758e09becede05d3226
   PMAlertController: 2c9f27b318e5adf685ba10737ff84be0a3ac5618
-  RMPZoomTransitionAnimator: 33ded739d91052810c05c8e553663cc9ec79275b
-  RxCocoa: d62846ca96495d862fa4c59ea7d87e5031d7340e
-  RxDataSources: cb7c31e652a87ebb919da45f716bbb87b3765f6b
   RxSwift: fd680d75283beb5e2559486f3c0ff852f0d35334
   SnapKit: a42d492c16e80209130a3379f73596c3454b7694
   SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
   SwiftyJSON: 070dabdcb1beb81b247c65ffa3a79dbbfb3b48aa
   TOMSMorphingLabel: 3e88a2bf5257f8993ebc51fb3109187a0bfb2c4d
 
-PODFILE CHECKSUM: 222bff62132d601dc5fb92313e78910afb2fbbbc
+PODFILE CHECKSUM: 6cb319f5c0eaf61f730b4631a00d9f7a34eb4b01
 
 COCOAPODS: 1.3.1

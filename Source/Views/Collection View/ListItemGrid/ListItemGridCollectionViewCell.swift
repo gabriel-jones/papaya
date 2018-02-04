@@ -10,13 +10,32 @@ import UIKit
 
 class ListItemGridCollectionViewCell: UICollectionViewCell {
     
-    @IBOutlet weak private var imageView: UIImageView!
+    public static let identifier: String = C.ViewModel.CellIdentifier.listItemGridCell.rawValue
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
+    private let imageView = UIImageView()
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.buildViews()
+        self.buildConstraints()
     }
     
-    func load(item: Item) {
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    
+    private func buildViews() {
+        imageView.contentMode = .scaleAspectFit
+        addSubview(imageView)
+    }
+    
+    private func buildConstraints() {
+        imageView.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(2)
+        }
+    }
+    
+    public func load(item: Item) {
         imageView.pin_setImage(from: item.img)
     }
 

@@ -9,46 +9,24 @@
 import Foundation
 import SwiftyJSON
 
-class Item: PPObj {
-    var name: String
-    var shop_id: Int
-    var price: Double
-    var stock: Int
-    var category: String
-    var isLiked: Bool
-    var hasImage: Bool?
+struct Item: BaseObject {
+    let id: Int
+    let name: String
+    let img: URL?
+    let price: Double
+    let category: Category?
+    let size: String?
     
-    var shop: Shop {
-        get {
-            print(Shop.all)
-            print(self.shop_id)
-            return Shop.from(id: self.shop_id)!
+    init?(dict: JSON) {
+        guard let _id = dict["id"].int, let _name = dict["name"].string, let _price = dict["price"].double else {
+            return nil
         }
-    }
-    
-    init(dict: JSON) {
-        self.name = dict["name"].stringValue
-        self.shop_id = dict["shop_id"].intValue
-        self.price = dict["price"].doubleValue
-        self.stock = dict["stock"].intValue
-        self.category = dict["category"].stringValue
-        self.isLiked = dict["isLiked"].boolValue
-        if let i = dict["hasImage"].string {
-            self.hasImage = Int(i)! == 1
-        }
-        super.init(id:dict["id"].intValue)
-    }
-    
-    func toJSON() -> JSON {
-        return JSON([
-            "name": self.name,
-            "shop_id": self.shop_id,
-            "price": self.price,
-            "stock": self.stock,
-            "category": self.category,
-            "id": self.id,
-            "isLiked": self.isLiked,
-            "hasImage": self.hasImage ?? false
-        ])
+        
+        id = _id
+        name = _name
+        img = URL(string: dict["img_url"].stringValue)
+        price = _price
+        category = Category(dict: dict)
+        size = dict["size"].string
     }
 }

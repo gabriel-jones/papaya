@@ -10,72 +10,108 @@ import Foundation
 import SwiftyJSON
 import RxSwift
 
-func json2Object<T: BaseObject>(json: JSON, type: T.Type) -> T? {
-    return T(dict: json)
-}
-
 extension Request {
     func getUserDetails() -> Observable<User> {
-        if let request = URLRequest.get(path: "/user") {
-            return Request.shared.fetch(request: request)
-                .observeOn(MainScheduler.instance)
-                .flatMap { (json: JSON) -> Observable<User> in
-                    if let user = User(dict: json["user"]) {
-                        return Observable.just(user)
-                    }
-                    return Observable<User>.error(RequestError.failedToParseJson)
-                }
+        guard let request = URLRequest.get(path: "/user") else {
+            return Observable.error(RequestError.cannotBuildRequest)
         }
-        return Observable.error(RequestError.unknown)
+    
+        return self.fetch(request: request)
+            .flatMap(parse.json2User)
+    }
+    
+    func getLikedItems() -> Observable<[Item]> {
+        guard let request = URLRequest.get(path: "/user/liked/all") else {
+            return Observable.error(RequestError.cannotBuildRequest)
+        }
+        return self.fetch(request: request)
+            .flatMap(parse.json2Items)
     }
     
     func checkAuthentication() -> Observable<JSON> {
-        if let request = URLRequest.get(path: "/search/popular") {
-            return Request.shared.fetch(request: request)
-                .observeOn(MainScheduler.instance)
-        }
-        return Observable.error(RequestError.unknown)
-    }
-    /*
-    func login(email: String, password: String, completion: @escaping (Result<String>) -> Void) throws {
-        guard let url = URL(string: C.URL.main + "/user/login") else {
-            throw RequestError.cannotBuildRequest
+        print("check auth")
+        guard let request = URLRequest.get(path: "/user/auth") else {
+            return Observable.error(RequestError.cannotBuildRequest)
         }
         
-        let parameters = [
+        return self.fetch(request: request)
+    }
+    
+    func update(user: User) -> Observable<JSON> {
+        let body = [
+            "email": user.email,
+            "fname": user.fname,
+            "lname": user.lname,
+            "phone": user.phone
+        ]
+        
+        guard let request = URLRequest.put(path: "/user/update", body: body) else {
+            return Observable.error(RequestError.cannotBuildRequest)
+        }
+        
+        return self.task(request: request)
+    }
+    
+    func updateNotifications(values: [String: Bool]) -> Observable<JSON> {
+        guard let request = URLRequest.post(path: "/user/update/notification", body: values) else {
+            return Observable.error(RequestError.cannotBuildRequest)
+        }
+        
+        return self.task(request: request)
+    }
+    
+    func login(email: String, password: String) -> Observable<String> {
+        let body = [
             "email": email,
             "password": password
         ]
         
-        var authoriseRequest = URLRequest(url: url)
-        authoriseRequest.httpMethod = HTTPMethod.post.stringValue
-        authoriseRequest.httpBody = try JSON(parameters).rawData()
-        authoriseRequest.setContentType()
-        session.dataTask(with: authoriseRequest) { data, response, error in
-            let result = Result(value: Response(data: data, urlResponse: response))
-                .flatMap(response2Data)
-                .flatMap(data2Json)
-                .flatMap(json2Token)
-            if case .success(let token) = result {
-                AuthenticationStore.set(token: token)
-            }
-            completion(result)
-        }.resume()
-    }
-    
-    func forgotPassword(email: String, completion: @escaping (Result<JSON>) -> Void) throws {
-        guard let url = URL(string: C.URL.main + "/user/forgot?email=\(email)") else {
-            throw RequestError.cannotBuildRequest
+        guard let request = URLRequest.post(path: "/user/login", body: body) else {
+            return Observable.error(RequestError.cannotBuildRequest)
         }
         
-        var request = URLRequest(url: url)
-        request.httpMethod = HTTPMethod.get.stringValue
-        session.dataTask(with: request) { data, response, error in
-            completion(
-                Result(value: Response(data: data, urlResponse: response))
-                    .flatMap(response2Data)
-                    .flatMap(data2Json)
-            )
-        }.resume()
-    }*/
+        return self.task(request: request)
+            .flatMap { json -> Observable<String> in
+                if let token = json["auth_token"].string {
+                    AuthenticationStore.set(token: token)
+                    return Observable.just(token)
+                }
+                return Observable.error(RequestError.failedToParseJson)
+            }
+    }
+    
+    func signup(email: String, password: String, fname: String, lname: String) -> Observable<JSON> {
+        let body = [
+            "email": email,
+            "password": password,
+            "fname": fname,
+            "lname": lname
+        ]
+        
+        guard let request = URLRequest.post(path: "/user/signup", body: body) else {
+            return Observable.error(RequestError.cannotBuildRequest)
+        }
+        
+        return self.task(request: request)
+    }
+    
+    func forgotPassword(email: String) -> Observable<JSON> {
+        let urlParameters = [
+            "email": email
+        ]
+        
+        guard let request = URLRequest.get(path: "/user/forgot", urlParameters: urlParameters) else {
+            return Observable.error(RequestError.cannotBuildRequest)
+        }
+
+        return self.task(request: request)
+    }
+    
+    func logout() -> Observable<JSON> {
+        guard let request = URLRequest.get(path: "/user/logout") else {
+            return Observable.error(RequestError.cannotBuildRequest)
+        }
+        
+        return self.task(request: request)
+    }
 }

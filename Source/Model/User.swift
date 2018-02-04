@@ -14,10 +14,10 @@ struct User: BaseObject {
     static var current: User?
     
     let id: Int
-    let email: String
-    let fname: String
-    let lname: String
-    let phone: String?
+    var email: String
+    var fname: String
+    var lname: String
+    var phone: String?
     
     var name: String {
         get {

@@ -10,8 +10,6 @@ target 'Papaya' do
   
   #ReactiveX
   pod 'RxSwift', '~> 4.0'
-  pod 'RxCocoa', '~> 4.0'
-  pod 'RxDataSources', '~> 3.0'
   
   post_install do |installer|
       installer.pods_project.targets.each do |target|
@@ -43,7 +41,7 @@ target 'Papaya' do
   #Animations
   pod 'Hero', '1.0.0-alpha.4'
   
-  #Other
+  #Security
   pod 'KeychainAccess'
   
 end

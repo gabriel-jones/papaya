@@ -13,6 +13,7 @@ class Config {
     
     let version: String
     let bundleIdentifier: String
+    let buildNumber: String
     
     var userAgent: String {
         get {
@@ -23,6 +24,7 @@ class Config {
     init() {
         version =  Bundle.infoValueInMainBundle(for: "CFBundleShortVersionString") as? String ?? ""
         bundleIdentifier = Bundle.infoValueInMainBundle(for: "CFBundleIdentifier") as? String ?? ""
+        buildNumber = Bundle.infoValueInMainBundle(for: "CFBundleVersion") as? String ?? ""
     }
 }
 

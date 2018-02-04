@@ -38,7 +38,7 @@ struct CartItem: BaseObject {
                 case .replaceAuto:
                     return ("Find Best Match", UIColor(named: .green))
                 case .replaceSpecific(let item):
-                    return ("Replace with \(item!.name)", UIColor(named: .green))
+                    return ("Replace with \(item?.name ?? "unknown")", UIColor(named: .green))
                 case .skip:
                     return ("Don't Replace", UIColor(named: .red))
                 }
@@ -49,11 +49,11 @@ struct CartItem: BaseObject {
             get {
                 switch self {
                 case .replaceAuto:
-                    return (#imageLiteral(resourceName: "Replace").withRenderingMode(.alwaysTemplate), UIColor(named: .green))
+                    return (#imageLiteral(resourceName: "Replace").tintable, UIColor(named: .green))
                 case .replaceSpecific(_):
-                    return (#imageLiteral(resourceName: "Replace").withRenderingMode(.alwaysTemplate), UIColor(named: .green))
+                    return (#imageLiteral(resourceName: "Replace").tintable, UIColor(named: .green))
                 case .skip:
-                    return (#imageLiteral(resourceName: "Skip").withRenderingMode(.alwaysTemplate), UIColor(named: .green))
+                    return (#imageLiteral(resourceName: "Skip").tintable, UIColor(named: .red))
                 }
             }
         }

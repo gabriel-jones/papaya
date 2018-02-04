@@ -12,23 +12,23 @@ import RxSwift
 
 class Request: NSObject, URLSessionDelegate, URLSessionDataDelegate {
     
-    let disposeBag = DisposeBag()
     
     /* TEMP */
     //TOOD: DELETE
     
     func getAllItemsTemp() -> Observable<[Item]> {
-        if let request = URLRequest.get(path: "/search/popular") {
+        if let request = URLRequest.get(path: "/temp_items") {
             return Request.shared.fetch(request: request)
                 .observeOn(MainScheduler.instance)
-                .flatMap(json2Items)
+                .flatMap(parse.json2Items)
         }
         return Observable.error(RequestError.unknown)
     }
 
-    public static var shared = Request()
-
-    internal var session = URLSession(configuration: URLSessionConfiguration.default)
+    public static let shared = Request()
+    
+    internal let parse = Parse()
+    internal let session = URLSession(configuration: URLSessionConfiguration.default)
 
     public enum HTTPMethod: String {
         case get, post, put, patch, delete
@@ -39,11 +39,31 @@ class Request: NSObject, URLSessionDelegate, URLSessionDataDelegate {
             }
         }
     }
-
+    
     internal func fetch(request: URLRequest) -> Observable<JSON> {
-        print("Fetch: \(request.url!.absoluteString)")
+        return self.task(request: request)
+            .catchError { error in
+                switch error as? RequestError {
+                case .unauthorised?:
+                    return self.reauthorise()
+                        .catchErrorJustReturn("")
+                        .flatMap { str -> Observable<JSON> in
+                            if str == "" {
+                                return self.task(request: request)
+                            }
+                            return Observable.error(error)
+                        }
+                default:
+                    return Observable.error(error)
+                }
+            }
+    }
+    
+    internal func task(request: URLRequest) -> Observable<JSON> {
+        print("TASK")
         return Observable.create { observer in
             let task = self.session.dataTask(with: request) { (data: Data?, response: URLResponse?, error: Error?) -> Void in
+                print("callback: \(error, response)")
                 guard error == nil, let _ = response as? HTTPURLResponse, let data = data else {
                     observer.onError(RequestError.unknown)
                     return
@@ -71,20 +91,17 @@ class Request: NSObject, URLSessionDelegate, URLSessionDataDelegate {
             task.resume()
             return Disposables.create(with: task.cancel)
         }
-        .retryWhen { errorObservable -> Observable<Error> in
-            print("retry when")
-            return errorObservable.flatMap { error -> Observable<Error> in
-                print("flat map \(error)")
-                if case RequestError.unauthorised = error {
-                    print("Handle reauthentication")
-                    //TODO: reauthenticate. Possibly separate to 2 functions - one base request w/out authentication checks, the other a wrapper of that request with authentication. Then login and auth functions can call base request, and main authenticated function can use auth function with reauthentication built in so no loops are created.
-                    // observable<data> flatMap to observable<json> with error checks flatMap to observable<T> ???
-                    return errorObservable
-                }
-                return errorObservable.flatMap { Observable.error($0) }
-            }
-        }
     }
+    
+    internal func reauthorise() -> Observable<String> {
+        print("reauth")
+        guard let email = AuthenticationStore.email, let password = AuthenticationStore.password else {
+            return Observable.error(RequestError.unknown)
+        }
+        print("reauth task")
+        return self.login(email: email, password: password)
+    }
+    
     /*
      public func reauthorise(_ completion: @escaping (Result<String>) -> Void) throws {
      guard let email = AuthenticationStore.email, let password = AuthenticationStore.password else {
