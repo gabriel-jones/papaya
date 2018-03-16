@@ -24,7 +24,7 @@ target 'Papaya' do
   end
   
   #UI
-  pod 'SnapKit', '~> 4.0.0'
+  pod 'SnapKit', '~> 3.2.0'
   
   #Custom Controls / Views
   pod 'CHIPageControl/Jaloro'
@@ -32,6 +32,7 @@ target 'Papaya' do
   pod 'TOMSMorphingLabel', '~> 0.5'
   pod 'PMAlertController'
   pod 'DSGradientProgressView'
+  pod 'Mandoline'
   
   #HTTP
   pod 'SwiftyJSON'

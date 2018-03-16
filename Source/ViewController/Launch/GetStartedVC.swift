@@ -20,6 +20,10 @@ class GetStartedVC: UIViewController {
     private let pageIndicator = CHIPageControlJaloro()
     private let getStartedButton = UIButton()
 
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.buildViews()
@@ -78,9 +82,7 @@ class GetStartedVC: UIViewController {
         }
         
         logoName.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.bottom.equalToSuperview()
-            make.centerY.equalToSuperview()
+            make.top.bottom.centerY.equalToSuperview()
             make.width.equalTo(92)
             make.left.equalTo(logoImage.snp.right).offset(16)
         }
@@ -122,19 +124,13 @@ class GetStartedVC: UIViewController {
     
     @objc func login(_ sender: UIButton) {
         let loginVC = LoginVC()
-        loginVC.heroModalAnimationType = .push(direction: .left)
+        loginVC.heroModalAnimationType = .cover(direction: .right)
         self.navigationController?.pushViewController(loginVC, animated: true)
     }
     
     @objc func signup(_ sender: UIButton) {
         let signupVC = SignupVC()
-        signupVC.heroModalAnimationType = .push(direction: .right)
+        signupVC.heroModalAnimationType = .cover(direction: .left)
         self.navigationController?.pushViewController(signupVC, animated: true)
     }
-    
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
-    
-
 }

@@ -57,7 +57,7 @@ extension AboutViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .default, reuseIdentifier: C.ViewModel.CellIdentifier.aboutCell.rawValue)
-        cell.textLabel?.text = ["Legal", "Terms of Service", "Privacy Policy"][indexPath.row]
+        cell.textLabel?.text = ["3rd Party Libraries", "Terms of Service", "Privacy Policy"][indexPath.row]
         cell.textLabel?.font = Font.gotham(size: 16)
         cell.accessoryType = .disclosureIndicator
         return cell
@@ -76,6 +76,7 @@ extension AboutViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         switch indexPath.row {
         case 0: // Legal
             navigationController?.pushViewController(LegalViewController(), animated: true)

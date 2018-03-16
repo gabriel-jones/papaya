@@ -33,7 +33,7 @@ class CartItemTableViewCell: UITableViewCell {
     private var itemImage = UIImageView()
     private let itemName = UILabel()
     private let itemPrice = UILabel()
-    private let stepper = Stepper()
+    public let stepper = Stepper()
     private let removeButton = UIButton()
     private let instructionButton = UIButton()
     

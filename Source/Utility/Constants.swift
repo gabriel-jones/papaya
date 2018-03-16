@@ -15,7 +15,7 @@ struct C {
     public static let domain = "bm.papaya"
     
     struct URL {
-        public static let main = developmentTunnel
+        public static let main = development
         static let production = "https://www.papaya.bm"
         static let development = "http://localhost:5000"
         static let developmentTunnel = "https://papaya.localtunnel.me"

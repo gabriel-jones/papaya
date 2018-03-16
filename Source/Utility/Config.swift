@@ -6,7 +6,7 @@
 //  Copyright © 2017 Papaya. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 class Config {
     static let shared = Config()
@@ -14,10 +14,11 @@ class Config {
     let version: String
     let bundleIdentifier: String
     let buildNumber: String
+    let deviceVendorId: String
     
     var userAgent: String {
         get {
-            return "iOS:" + bundleIdentifier + ":v" + version
+            return "Papaya iOS/\(version)(\(bundleIdentifier))"
         }
     }
     
@@ -25,6 +26,7 @@ class Config {
         version =  Bundle.infoValueInMainBundle(for: "CFBundleShortVersionString") as? String ?? ""
         bundleIdentifier = Bundle.infoValueInMainBundle(for: "CFBundleIdentifier") as? String ?? ""
         buildNumber = Bundle.infoValueInMainBundle(for: "CFBundleVersion") as? String ?? ""
+        deviceVendorId = UIDevice.current.identifierForVendor?.uuidString ?? ""
     }
 }
 

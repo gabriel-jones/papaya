@@ -11,7 +11,7 @@ import Foundation
 extension C {
     struct ViewModel {
         enum CellIdentifier: String {
-            case cartItemCell, cartEmptyCell, cartDetailCell
+            case cartItemCell, emptyCell, cartDetailCell
             case browseCell
             case aisleSectionBarCell
             case instructionsItemCell, instructionsReplaceCell
@@ -24,6 +24,8 @@ extension C {
             case aboutCell, libraryCell
             case searchPopularCell, searchRecommendCell
             case similarItemCell
+            case deliveryTimeCell, deliveryLocationCell
+            case checkoutCartCell, checkoutTotalCell, checkoutMapCell
         }
         
         enum Nib: String {

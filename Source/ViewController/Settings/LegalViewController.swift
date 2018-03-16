@@ -40,7 +40,7 @@ class LegalViewController: UIViewController {
     private func buildViews() {
         view.backgroundColor = UIColor(named: .backgroundGrey)
         
-        navigationItem.title = "Legal"
+        navigationItem.title = "3rd Party Libraries"
         navigationItem.backBarButtonItem = UIBarButtonItem(title: " ", style: .done, target: self, action: nil)
         
         tableView.delegate = self
@@ -82,6 +82,7 @@ extension LegalViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         self.openURL(libs[indexPath.row].url)
     }
 }

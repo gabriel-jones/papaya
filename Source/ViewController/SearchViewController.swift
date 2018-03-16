@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import RxSwift
 
 class SearchViewController: ViewControllerWithCart {
     
@@ -19,11 +20,33 @@ class SearchViewController: ViewControllerWithCart {
     private let popularModel = SearchPopularModel()
     private let recommendModel = SearchRecommendModel()
     private let itemsModel = SearchItemsModel()
+    
+    private var isLoadingPopular = false
+    private let disposeBag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.buildViews()
         self.buildConstraints()
+        self.buildModels()
+        
+        isLoadingPopular = true
+        Request.shared.popularSearches()
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { searches in
+                self.isLoadingPopular = false
+                self.popularModel.searches = searches
+                self.popularTableView.reloadData()
+            }, onError: { error in
+                
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func buildModels() {
+        popularModel.delegate = self
+        recommendModel.delegate = self
+        itemsModel.delegate = self
     }
     
     private func buildViews() {
@@ -32,23 +55,26 @@ class SearchViewController: ViewControllerWithCart {
         popularTableView.backgroundColor = .clear
         popularTableView.delegate = popularModel
         popularTableView.dataSource = popularModel
-        popularTableView.register(UITableViewCell.self, forCellReuseIdentifier: C.ViewModel.CellIdentifier.searchPopularCell.rawValue)
+        popularTableView.register(SearchTableViewCell.classForCoder(), forCellReuseIdentifier: SearchTableViewCell.identifier)
         view.addSubview(popularTableView)
         
         recommendTableView.backgroundColor = .clear
         recommendTableView.isHidden = true
         recommendTableView.delegate = recommendModel
         recommendTableView.dataSource = recommendModel
-        recommendTableView.register(UITableViewCell.self, forCellReuseIdentifier: C.ViewModel.CellIdentifier.searchRecommendCell.rawValue)
+        recommendTableView.register(SearchTableViewCell.classForCoder(), forCellReuseIdentifier: SearchTableViewCell.identifier)
         view.addSubview(recommendTableView)
         
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
+        layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
         collectionView.isHidden = true
         collectionView.delegate = itemsModel
         collectionView.dataSource = itemsModel
+        collectionView.alwaysBounceVertical = true
+        collectionView.register(ItemCollectionViewCell.classForCoder(), forCellWithReuseIdentifier: ItemCollectionViewCell.identifier)
         view.addSubview(collectionView)
         
         searchBar.placeholder = "Search for an item..."
@@ -78,14 +104,34 @@ class SearchViewController: ViewControllerWithCart {
     
     private func changeToSearchDetail() {
         navigationItem.leftBarButtonItem = backButton
+        collectionView.isHidden = true
+        popularTableView.isHidden = true
+        recommendTableView.isHidden = false
     }
     
     private func changeToSearchMain() {
         navigationItem.leftBarButtonItem = nil
+        collectionView.isHidden = true
+        popularTableView.isHidden = false
+        recommendTableView.isHidden = true
     }
     
-    private func changeToSearchItems() {
-        
+    private func changeToSearchItems(search: String) {
+        navigationItem.leftBarButtonItem = backButton
+        collectionView.isHidden = false
+        popularTableView.isHidden = true
+        recommendTableView.isHidden = true
+        searchBar.text = search
+        Request.shared.search(query: search)
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { searchItems in
+                print("got back: \(searchItems.count)")
+                self.itemsModel.items = searchItems
+                self.collectionView.reloadData()
+            }, onError: { error in
+                
+            })
+            .disposed(by: disposeBag)
     }
     
     @objc private func back(_ sender: UIBarButtonItem) {
@@ -95,7 +141,8 @@ class SearchViewController: ViewControllerWithCart {
 
 extension SearchViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        self.changeToSearchItems()
+        searchBar.resignFirstResponder()
+        self.changeToSearchItems(search: searchBar.text!)
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
@@ -107,9 +154,31 @@ extension SearchViewController: UISearchBarDelegate {
     }
 }
 
-protocol SearchModelDelegate {
+extension SearchViewController: SearchModelDelegate {
+    func selectPopular(keyword: String) {
+        self.changeToSearchItems(search: keyword)
+    }
+    
+    func selectRecommended(keyword: String) {
+        self.changeToSearchItems(search: keyword)
+    }
+    
+    func open(item: Item, imageId: String?) {
+        let vc = ItemVC.instantiate(from: .main)
+        vc.item = item
+        vc.imageId = imageId
+        heroModalAnimationType = .cover(direction: .up)
+        
+        let nav = UINavigationController(rootViewController: vc)
+        nav.isHeroEnabled = true
+        present(nav, animated: true, completion: nil)
+    }
+}
+
+protocol SearchModelDelegate: class {
     func selectPopular(keyword: String)
     func selectRecommended(keyword: String)
+    func open(item: Item, imageId: String?)
 }
 
 class SearchModel: NSObject {
@@ -117,23 +186,31 @@ class SearchModel: NSObject {
 }
 
 class SearchPopularModel: SearchModel, UITableViewDelegate, UITableViewDataSource {
+    
+    public var searches = [String]()
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return searches.isEmpty ? 16 : searches.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.searchPopularCell.rawValue, for: indexPath)
-        cell.textLabel?.text = "search thing"
-        cell.textLabel?.font = Font.gotham(size: cell.textLabel!.font.pointSize)
-        cell.accessoryType = .disclosureIndicator
-        cell.imageView?.image = #imageLiteral(resourceName: "Search").tintable
-        cell.imageView?.tintColor = UIColor.darkGray
-        cell.separatorInset.left = 0
+        let cell = tableView.dequeueReusableCell(withIdentifier: SearchTableViewCell.identifier, for: indexPath) as! SearchTableViewCell
+        if searches.isEmpty {
+            cell.loadTemplate()
+        } else {
+            cell.load(search: searches[indexPath.row])
+        }
         return cell
     }
     
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        if searches.isEmpty { return nil }
+        return indexPath
+    }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        delegate?.selectPopular(keyword: "") // TODO:
+        tableView.deselectRow(at: indexPath, animated: true)
+        delegate?.selectPopular(keyword: searches[indexPath.row])
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -144,6 +221,10 @@ class SearchPopularModel: SearchModel, UITableViewDelegate, UITableViewDataSourc
         let header = view as! UITableViewHeaderFooterView
         header.textLabel?.font = Font.gotham(size: header.textLabel!.font.pointSize)
     }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 44
+    }
 }
 
 class SearchRecommendModel: SearchModel, UITableViewDelegate, UITableViewDataSource {
@@ -152,29 +233,45 @@ class SearchRecommendModel: SearchModel, UITableViewDelegate, UITableViewDataSou
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.searchRecommendCell.rawValue, for: indexPath)
-        cell.textLabel?.text = "search thing"
-        cell.textLabel?.font = Font.gotham(size: cell.textLabel!.font.pointSize)
-        cell.accessoryType = .disclosureIndicator
-        cell.imageView?.image = #imageLiteral(resourceName: "Search").tintable
-        cell.imageView?.tintColor = UIColor.darkGray
-        cell.separatorInset.left = 0
+        let cell = tableView.dequeueReusableCell(withIdentifier: SearchTableViewCell.identifier, for: indexPath) as! SearchTableViewCell
+        cell.loadTemplate()
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         delegate?.selectRecommended(keyword: "") // TODO:
     }
 }
 
-class SearchItemsModel: SearchModel, UICollectionViewDelegate, UICollectionViewDataSource {
+class SearchItemsModel: SearchModel, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    public var items = [Item]()
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 0
+        return items.isEmpty ? 8 : items.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ItemCollectionViewCell.identifier, for: indexPath) as! ItemCollectionViewCell
-        
+        if items.isEmpty {
+            cell.loadTemplate()
+        } else {
+            cell.load(item: items[indexPath.row])
+        }
         return cell
     }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: (collectionView.frame.width / 2) - 24, height: 200)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let item = items[indexPath.row]
+        var imageId: String?
+        if let cell = collectionView.cellForItem(at: indexPath) as? ItemCollectionViewCell {
+            imageId = cell.getImageId()
+        }
+        delegate?.open(item: item, imageId: imageId)
+    }
+    
 }

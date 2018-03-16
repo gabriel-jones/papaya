@@ -18,6 +18,7 @@ class AddressListViewController: UIViewController {
     
     private var addresses = [Address]()
     private let disposeBag = DisposeBag()
+    private var isLoading = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,21 +26,23 @@ class AddressListViewController: UIViewController {
         self.buildConstraints()
     }
     
-    @objc private func add(_ sender: UIBarButtonItem) {
+    @objc private func add(_ sender: UIBarButtonItem?) {
         let vc = AddressDetailViewController()
         let nav = UINavigationController(rootViewController: vc)
         present(nav, animated: true, completion: nil)
     }
     
     private func loadAddresses(_ completion: @escaping () -> Void) {
+        isLoading = true
         Request.shared.getAllAddresses()
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [unowned self] addresses in
+                self.isLoading = false
                 self.addresses = addresses
                 self.tableView.reloadData()
                 completion()
             }, onError: { [unowned self] error in
-                    
+                self.isLoading = false
             })
             .disposed(by: disposeBag)
     }
@@ -52,12 +55,14 @@ class AddressListViewController: UIViewController {
         
         addButton = UIBarButtonItem(title: "Add", style: .done, target: self, action: #selector(add(_:)))
         addButton.setTitleTextAttributes([.font: Font.gotham(size: 17)], for: .normal)
+        addButton.setTitleTextAttributes([.font: Font.gotham(size: 17)], for: .highlighted)
         addButton.tintColor = UIColor(named: .green)
         navigationItem.rightBarButtonItem = addButton
         
         tableView.delegate = self
         tableView.dataSource = self
         tableView.backgroundColor = .clear
+        tableView.register(EmptyTableViewCell.classForCoder(), forCellReuseIdentifier: EmptyTableViewCell.identifier)
         view.addSubview(tableView)
 
         refreshControl.addTarget(self, action: #selector(refreshTable), for: .valueChanged)
@@ -96,10 +101,20 @@ class AddressListViewController: UIViewController {
 
 extension AddressListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return addresses.count
+        if isLoading { return 0 }
+        return addresses.isEmpty ? 1 : addresses.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if addresses.isEmpty {
+            tableView.separatorColor = .clear
+            let cell = tableView.dequeueReusableCell(withIdentifier: EmptyTableViewCell.identifier, for: indexPath) as! EmptyTableViewCell
+            cell.buttonText = "Add an address"
+            cell.emptyText = "You have no saved addresses."
+            cell.img = #imageLiteral(resourceName: "Address")
+            cell.delegate = self
+            return cell
+        }
         let address = addresses[indexPath.row]
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: C.ViewModel.CellIdentifier.addressCell.rawValue)
         cell.textLabel?.text = address.street
@@ -114,13 +129,20 @@ extension AddressListViewController: UITableViewDelegate, UITableViewDataSource 
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 65
+        return addresses.isEmpty ? 300 : 65
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if addresses.isEmpty { return }
         let address = addresses[indexPath.row]
         let vc = AddressDetailViewController()
         vc.address = address
         navigationController?.pushViewController(vc, animated: true)
+    }
+}
+
+extension AddressListViewController: EmptyTableViewCellDelegate {
+    func tappedButton() {
+        self.add(nil)
     }
 }

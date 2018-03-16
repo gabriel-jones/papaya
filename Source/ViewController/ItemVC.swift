@@ -12,11 +12,7 @@ import RxSwift
 class ItemVC: UIViewController {
     
     //MARK: - Properties
-    public var item: Item? {
-        didSet {
-            
-        }
-    }
+    public var item: Item?
     public var imageId: String?
     public var isOnNavigationStack = false
     
@@ -29,10 +25,12 @@ class ItemVC: UIViewController {
     private let tableView = UITableView()
     private let toolbar = UIView()
     private let toolbarBorder = UIView()
-    private let addToCart = UIButton()
+    private let addToCart = LoadingButton()
     private let stepper = Stepper()
     
     private var isLiked: Bool?
+    private var isInCart: Bool?
+    private var numberInCart: Int?
     private var items = [Item]()
     
     //MARK: - Methods
@@ -43,10 +41,14 @@ class ItemVC: UIViewController {
         
         let getDetail = Request.shared.getDetail(item: self.item!).observeOn(MainScheduler.instance)
         let getSimilarItems = Request.shared.getAllItemsTemp().observeOn(MainScheduler.instance)
-        
+        self.addToCart.showLoading()
         Observable.combineLatest(getDetail, getSimilarItems) { detail, similarItems in
+            self.addToCart.hideLoading()
             self.isLoading = false
-            self.isLiked = detail["is_liked"].bool
+            self.isLiked = detail["item"]["is_liked"].bool
+            self.isInCart = detail["item"]["in_cart"].bool
+            self.numberInCart = detail["item"]["number_in_cart"].int
+            self.updateCartButtons()
             self.items = similarItems
             self.tableView.reloadData()
         }
@@ -59,6 +61,15 @@ class ItemVC: UIViewController {
             }
         })
         .disposed(by: disposeBag)
+    }
+    
+    private func updateCartButtons() {
+        self.addToCart.tag = (self.isInCart ?? false) ? 1 : 0
+        self.addToCart.isEnabled = self.addToCart.tag == 0
+        self.addToCart.alpha = self.addToCart.tag == 0 ? 1 : 0.75
+        if self.numberInCart ?? 0 > 0 {
+            self.stepper.value = self.numberInCart!
+        }
     }
     
     private func buildViews() {
@@ -87,6 +98,7 @@ class ItemVC: UIViewController {
         tableView.dataSource = self
         tableView.estimatedRowHeight = 200
         tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.tableFooterView = nil
         view.addSubview(tableView)
         
         // Toolbar
@@ -101,12 +113,14 @@ class ItemVC: UIViewController {
         addToCart.backgroundColor = UIColor(named: .green)
         addToCart.layer.cornerRadius = 5
         addToCart.setTitle("Add to cart", for: .normal)
+        addToCart.setTitle("In cart", for: .disabled)
         addToCart.titleLabel?.textColor = .white
         addToCart.titleLabel?.font = Font.gotham(size: 17)
         addToCart.addTarget(self, action: #selector(addToCart(_:)), for: .touchUpInside)
         toolbar.addSubview(addToCart)
         
         stepper.backgroundColor = .white
+        stepper.delegate = self
         toolbar.addSubview(stepper)
         
         activityIndicator.hidesWhenStopped = true
@@ -116,16 +130,12 @@ class ItemVC: UIViewController {
     
     private func buildConstraints() {
         toolbar.snp.makeConstraints { make in
-            make.bottom.equalToSuperview()
-            make.right.equalToSuperview()
-            make.left.equalToSuperview()
+            make.bottom.right.left.equalToSuperview()
             make.height.equalTo(60)
         }
         
         toolbarBorder.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.left.equalToSuperview()
-            make.right.equalToSuperview()
+            make.top.left.right.equalToSuperview()
             make.height.equalTo(0.33)
         }
         
@@ -137,10 +147,8 @@ class ItemVC: UIViewController {
         }
         
         tableView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
             make.bottom.equalTo(toolbar.snp.top)
-            make.left.equalToSuperview()
-            make.right.equalToSuperview()
+            make.left.right.top.equalToSuperview()
         }
         
         stepper.snp.makeConstraints { make in
@@ -156,16 +164,53 @@ class ItemVC: UIViewController {
     }
     
     @objc private func addToCart(_ sender: UIButton) {
-        print("add Item to cart")
+        DispatchQueue.main.async { self.addToCart.showLoading() }
+        self.numberInCart = self.stepper.value
+        self.isInCart = true
+        Request.shared.addItemToCart(item: self.item!, quantity: self.stepper.value)
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { _ in
+                self.addToCart.hideLoading()
+                self.updateCartButtons()
+            }, onError: { error in
+                self.addToCart.hideLoading()
+            })
+            .disposed(by: disposeBag)
+        
+        
     }
     
     @objc private func share(_ sender: UIBarButtonItem) {
         let shareable = URL(string: C.URL.production)
-        print(shareable)
         let activity = UIActivityViewController(activityItems: [item!.name, item!.img], applicationActivities: nil)
         activity.popoverPresentationController?.sourceView = self.view
         activity.excludedActivityTypes = [.airDrop]
         present(activity, animated: true, completion: nil)
+    }
+}
+
+extension ItemVC: StepperDelegate {
+    func changedQuantity(to: Int) {
+        if !(self.isInCart ?? false) {
+            return
+        }
+        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
+            if to == self.stepper.value {
+                self.stepper.showLoading()
+                Request.shared.updateQuantity(with: self.item!.id, new: to)
+                    .observeOn(MainScheduler.instance)
+                    .subscribe(onNext: { _ in
+                        self.stepper.hideLoading()
+                    }, onError: { error in
+                        self.stepper.hideLoading()
+                    })
+                    .disposed(by: self.disposeBag)
+            }
+        }
+    }
+    
+    func delete() {
+        
     }
 }
 
@@ -182,10 +227,13 @@ extension ItemVC: UIScrollViewDelegate {
 
 extension ItemVC: ItemActionDelegate {
     internal func set(liked: Bool) {
+        print("like: \(liked)")
         if let item = self.item {
             Request.shared.setLiked(item: item, to: liked)
                 .subscribe()
                 .disposed(by: disposeBag)
+            isLiked = liked
+            tableView.reloadData()
         }
     }
     
@@ -234,7 +282,7 @@ extension ItemVC: UITableViewDelegate, UITableViewDataSource {
         } else if indexPath.row == 1 {
             let cell = tableView.dequeueReusableCell(withIdentifier: ItemActionTableViewCell.identifier, for: indexPath) as! ItemActionTableViewCell
             cell.delegate = self
-            cell.load(actions: [.like, .addToList])
+            cell.load(actions: [(isLiked ?? false) ? .liked : .like, .addToList])
             cell.separatorInset = UIEdgeInsets.zero
             return cell
         } else if indexPath.row == 2 || indexPath.row == 3 {
@@ -249,11 +297,18 @@ extension ItemVC: UITableViewDelegate, UITableViewDataSource {
             return cell
         } else if indexPath.row == 4 {
             let cell = UITableViewCell(style: .default, reuseIdentifier: "disclaimerCell")
-            cell.textLabel?.text = "Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer"
+            cell.backgroundColor = UIColor(named: .backgroundGrey)
+            cell.textLabel?.text = "\nDisclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer\n"
             cell.textLabel?.font = Font.gotham(size: 12)
             cell.textLabel?.textAlignment = .center
             cell.textLabel?.textColor = .gray
             cell.textLabel?.numberOfLines = 0
+            let background = UIView()
+            background.backgroundColor = UIColor(named: .backgroundGrey)
+            background.frame = CGRect(x: 0, y: 0, width: tableView.frame.width, height: cell.frame.height + 1000)
+            background.layer.zPosition = -1
+            cell.addSubview(background)
+            cell.masksToBounds = false
             return cell
         }
         return UITableViewCell()
@@ -261,10 +316,11 @@ extension ItemVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.row == 2 || indexPath.row == 3 { return 250 }
-        else { return UITableViewAutomaticDimension }
+        return UITableViewAutomaticDimension
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        print(isLoading)
         if isLoading {
             let container = UIView()
             container.addSubview(activityIndicator)
@@ -275,10 +331,20 @@ extension ItemVC: UITableViewDelegate, UITableViewDataSource {
         }
         return nil
     }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        if isLoading {
+            return UITableViewAutomaticDimension
+        }
+        return 0.3
+    }
 }
 
 extension ItemVC: GroupDelegateAction {
     internal func open(item: Item, imageId: String) {
+        if item.id == self.item!.id {
+            return
+        }
         let vc = ItemVC()
         vc.item = item
         vc.isOnNavigationStack = true

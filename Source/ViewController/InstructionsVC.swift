@@ -42,6 +42,7 @@ class InstructionsViewController: UIViewController {
         saveButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(save(_:)))
         saveButton.tintColor = UIColor(named: .green)
         saveButton.setTitleTextAttributes([.font: Font.gotham(size: 17)], for: .normal)
+        saveButton.setTitleTextAttributes([.font: Font.gotham(size: 17)], for: .highlighted)
         navigationItem.leftBarButtonItem = saveButton
         
         tableView.allowsSelection = true

@@ -27,6 +27,12 @@ class LoginVC: UIViewController {
         return .lightContent
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.buildViews()
+        self.buildConstraints()
+    }
+    
     private func buildViews() {
         view.gradientBackground()
         
@@ -102,8 +108,7 @@ class LoginVC: UIViewController {
     private func buildConstraints() {
         backButton.snp.makeConstraints { make in
             make.left.equalTo(view.snp.leftMargin)
-            make.height.equalTo(50)
-            make.width.equalTo(50)
+            make.height.width.equalTo(50)
             make.centerY.equalTo(logoView.snp.centerY)
         }
         
@@ -115,9 +120,7 @@ class LoginVC: UIViewController {
         }
         
         logoName.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.bottom.equalToSuperview()
-            make.centerY.equalToSuperview()
+            make.top.bottom.centerY.equalToSuperview()
             make.width.equalTo(92)
             make.left.equalTo(logoImage.snp.right).offset(16)
         }
@@ -138,8 +141,7 @@ class LoginVC: UIViewController {
         emailField.snp.makeConstraints { make in
             make.top.equalTo(subtitle.snp.bottom).offset(30)
             make.height.equalTo(44)
-            make.left.equalTo(24)
-            make.right.equalTo(-24)
+            make.left.right.equalToSuperview().inset(24)
         }
         
         passwordField.snp.makeConstraints { make in
@@ -158,45 +160,8 @@ class LoginVC: UIViewController {
         
         forgotButton.snp.makeConstraints { make in
             make.top.equalTo(loginButton.snp.bottom).offset(30)
-            make.left.equalToSuperview()
-            make.right.equalToSuperview()
+            make.left.right.equalToSuperview()
         }
-    }
-    private func buildBindings() {
-        
-        /*
-        emailField.rx.text
-            .orEmpty
-            .bind(to: viewModel.email)
-            .disposed(by: disposeBag)
-        
-        passwordField.rx.text
-            .orEmpty
-            .bind(to: viewModel.password)
-            .disposed(by: disposeBag)
-        
-        viewModel.isValid
-            .bind(to: loginButton.rx.isEnabled)
-            .disposed(by: disposeBag)
- 
-        
-        loginButton.rx.tap
-            .debug("xxx")
-            .flatMapLatest(viewModel.login)
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [unowned self] token in
-                self.navigationController?.hero_dismissViewController()
-            }, onError: { [unowned self] error in
-                switch error as? RequestError {
-                case .userNotFound?:
-                    self.showLoginError(message: "Incorrect email.")
-                case .unauthorised?:
-                    self.showLoginError(message: "Incorrect password.")
-                default:
-                    self.showLoginError(message: "Please try again.")
-                }
-            })
-            .disposed(by: disposeBag)*/
     }
     
     //MARK: - Actions
@@ -205,14 +170,6 @@ class LoginVC: UIViewController {
         let alert = UIAlertController(title: "Login Failed", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        self.buildViews()
-        self.buildConstraints()
-        self.buildBindings()
-        navigationController?.interactivePopGestureRecognizer?.delegate = self
     }
     
     @objc func back(_ sender: UIButton) {
@@ -251,7 +208,7 @@ class LoginVC: UIViewController {
                     self.showLoginError(message: "Incorrect password")
                 default: // Generic error
                     print(error)
-                    self.showLoginError(message: "An error occurred.")
+                    self.showLoginError(message: "An error occurred")
                 }
             }, onCompleted: {
                 sender.hideLoading()
@@ -293,10 +250,4 @@ class LoginVC: UIViewController {
         
     }
     
-}
-
-extension LoginVC: UIGestureRecognizerDelegate {
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return true
-    }
 }

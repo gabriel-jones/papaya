@@ -29,6 +29,18 @@ extension Request {
             .flatMap(parse.json2Address)
     }
     
+    public func getAddressImage(address: Address, completion: @escaping (UIImage) -> Void) {
+        guard let request = URLRequest.get(path: "/address/get/\(address.id)/img") else {
+            return
+        }
+        
+        self.session.dataTask(with: request) { data, response, error in
+            if let data = data, let img = UIImage(data: data) {
+                completion(img)
+            }
+        }.resume()
+    }
+    
     func add(street: String, zipCode: String) -> Observable<JSON> {
         let body = [
             "street": street,

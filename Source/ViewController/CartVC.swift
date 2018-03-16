@@ -41,8 +41,8 @@ class CartViewController: UIViewController {
                 self.cart = cart
                 self.update()
                 completion?(true)
-            }, onError: { error in
-                completion?(false)
+                }, onError: { error in
+                    completion?(false)
             })
             .disposed(by: disposeBag)
     }
@@ -76,6 +76,7 @@ class CartViewController: UIViewController {
     private func buildViews() {
         isHeroEnabled = true
         view.backgroundColor = UIColor(named: .backgroundGrey)
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: " ", style: .done, target: self, action: nil)
 
         closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Close").tintable, style: .done, target: self, action: #selector(close(_:)))
         closeButton.tintColor = UIColor(named: .green)
@@ -84,7 +85,7 @@ class CartViewController: UIViewController {
         
         tableView.separatorInset = UIEdgeInsets.zero
         tableView.backgroundColor = .clear
-        tableView.register(CartDetailTableViewCell.classForCoder(), forCellReuseIdentifier: CartDetailTableViewCell.identifier)
+        tableView.register(EmptyTableViewCell.classForCoder(), forCellReuseIdentifier: EmptyTableViewCell.identifier)
         tableView.register(CartItemTableViewCell.classForCoder(), forCellReuseIdentifier: CartItemTableViewCell.identifier)
         tableView.delegate = self
         tableView.dataSource = self
@@ -115,7 +116,7 @@ class CartViewController: UIViewController {
         checkoutPrice.layer.cornerRadius = 5
         checkoutPrice.isHidden = true
         checkoutButton.addSubview(checkoutPrice)
-
+        
         checkoutPriceLabel.textColor = .white
         checkoutPriceLabel.textAlignment = .center
         checkoutPriceLabel.font = Font.gotham(size: 14)
@@ -133,20 +134,20 @@ class CartViewController: UIViewController {
     
     @objc private func checkout(_ sender: LoadingButton) {
         sender.showLoading()
+        
+        sender.hideLoading()
+        let vc = CheckoutSchedulerViewController()
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     private func buildConstraints() {
         toolbar.snp.makeConstraints { make in
-            make.bottom.equalToSuperview()
-            make.right.equalToSuperview()
-            make.left.equalToSuperview()
+            make.left.right.bottom.equalToSuperview()
             make.height.equalTo(65)
         }
         
         toolbarBorder.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.left.equalToSuperview()
-            make.right.equalToSuperview()
+            make.top.left.right.equalToSuperview()
             make.height.equalTo(1)
         }
         
@@ -155,10 +156,8 @@ class CartViewController: UIViewController {
         }
         
         tableView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
             make.bottom.equalTo(toolbar.snp.top)
-            make.left.equalToSuperview()
-            make.right.equalToSuperview()
+            make.left.right.top.equalToSuperview()
         }
         
         checkoutPrice.snp.makeConstraints { make in
@@ -169,14 +168,14 @@ class CartViewController: UIViewController {
         }
         
         checkoutPriceLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(4)
-            make.bottom.equalToSuperview().offset(-4)
+            make.top.equalTo(4)
+            make.bottom.equalTo(-4)
             make.left.equalTo(8)
             make.right.equalTo(-8)
         }
     }
     
-    @objc func close(_ sender: UIBarButtonItem) {
+    @objc func close(_ sender: UIBarButtonItem?) {
         heroModalAnimationType = .pageOut(direction: .right)
         navigationController?.dismiss(animated: true, completion: nil)
     }
@@ -184,7 +183,21 @@ class CartViewController: UIViewController {
 
 extension CartViewController: CartItemTableViewCellDelegate {
     func changeQuantity(new: Int, selectedItem: CartItem) {
-        
+        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
+            if let items = self.cart?.items, let index = items.index(where: { $0.id == selectedItem.id }), let row = self.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? CartItemTableViewCell {
+                if new == row.stepper.value {
+                    row.stepper.showLoading()
+                    Request.shared.updateQuantity(with: selectedItem.id, new: new)
+                        .observeOn(MainScheduler.instance)
+                        .subscribe(onNext: { _ in
+                            row.stepper.hideLoading()
+                        }, onError: { error in
+                            row.stepper.hideLoading()
+                        })
+                        .disposed(by: self.disposeBag)
+                }
+            }
+        }
     }
     
     func delete(selectedItem: CartItem) {
@@ -207,29 +220,32 @@ extension CartViewController: InstructionsViewControllerDelegate {
 
 extension CartViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let cart = cart {
-            return 1 + cart.items.count
+        if cart?.items.isEmpty ?? false {
+            tableView.separatorColor = .clear
+            return 1
         }
-        return 0
+        tableView.separatorColor = nil
+        return cart?.items.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.row == 0 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: CartDetailTableViewCell.identifier, for: indexPath) as! CartDetailTableViewCell
-            cell.selectionStyle = .none
-            cell.load(cart: self.cart!)
+        if indexPath.row == 0 && cart?.items.isEmpty ?? true {
+            let cell = tableView.dequeueReusableCell(withIdentifier: EmptyTableViewCell.identifier, for: indexPath) as! EmptyTableViewCell
+            cell.delegate = self
+            cell.emptyImageView.transform = CGAffineTransform(rotationAngle: CGFloat.pi * -20 / 180)
+            cell.buttonText = "Add some items"
+            cell.emptyText = "Your cart is empty!"
+            cell.img = #imageLiteral(resourceName: "Cart")
             return cell
         }
         let cell = tableView.dequeueReusableCell(withIdentifier: CartItemTableViewCell.identifier, for: indexPath) as! CartItemTableViewCell
         cell.selectionStyle = .none
-        cell.load(cartItem: cart!.items[indexPath.row-1])
+        cell.load(cartItem: cart!.items[indexPath.row])
         cell.delegate = self
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("select: \(indexPath)")
-        if indexPath.row == 0 { return }
         let item = ItemVC.instantiate(from: .main)
         item.item = cart!.items[indexPath.row-1].item
         item.imageId = (tableView.cellForRow(at: indexPath) as? CartItemTableViewCell)?.getImageId()
@@ -241,143 +257,164 @@ extension CartViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return indexPath.row == 0 ? 75 : 100
+        return (indexPath.row == 0 && cart?.items.isEmpty ?? true) ? 300 : 100
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 75
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        return cart?.items.isEmpty ?? true ? UIView() : nil
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return nil
+        
+        guard let _cart = self.cart else {
+            return nil
+        }
+        let header = CartHeaderView()
+        header.load(cart: _cart)
+        return header
+    }
+}
+
+extension CartViewController: EmptyTableViewCellDelegate {
+    func tappedButton() {
+        self.close(nil)
     }
 }
 
 /*
-class _CartVC: UIViewController {
-    
-    @IBOutlet weak var tableView: UITableView!
-    
-    @IBAction func close(_ sender: Any) {
-        dismiss(animated: false, completion: nil)
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-}
+ class _CartVC: UIViewController {
+ 
+ @IBOutlet weak var tableView: UITableView!
+ 
+ @IBAction func close(_ sender: Any) {
+ dismiss(animated: false, completion: nil)
+ }
+ 
+ override func viewDidLoad() {
+ super.viewDidLoad()
+ }
+ }
+ 
+ extension _CartVC: CartItemDelegate {
+ func quantity(item: CartItem, new: Int) {
+ Cart.current.changeQuantity(for: item, new: new)
+ tableView.reloadData()
+ }
+ 
+ func delete(item: CartItem) {
+ Cart.current.remove(item: item)
+ tableView.reloadData()
+ }
+ 
+ func addInstructions(item: CartItem) {
+ print("Add INstructions")
+ }
+ }
+ 
+ extension _CartVC: UITableViewDelegate, UITableViewDataSource {
+ func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+ if Cart.current.items.value.isEmpty {
+ tableView.separatorStyle = .none
+ return 1
+ }
+ tableView.separatorStyle = .singleLine
+ return Cart.current.items.value.count
+ }
+ 
+ func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+ if Cart.current.items.value.isEmpty {
+ let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.cartEmptyCell.rawValue, for: indexPath) as! CartEmptyCell
+ cell.action = {
+ self.close(cell)
+ }
+ return cell
+ }
+ 
+ let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.cartItemCell.rawValue, for: indexPath) as! CartItemCell
+ cell.delegate = self
+ cell.load(item: Cart.current.items[indexPath.row])
+ return cell
+ }
+ 
+ func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+ if Cart.current.items.isEmpty {
+ return
+ }
+ 
+ print("open item detail")
+ }
+ }
+ 
+ protocol CartItemDelegate {
+ func delete(item: CartItem)
+ func quantity(item: CartItem, new: Int)
+ func addInstructions(item: CartItem)
+ }
+ 
+ class CartEmptyCell: UITableViewCell {
+ var action: (() -> ())? = nil
+ 
+ @IBAction func shopNow(_ sender: Any) {
+ action?()
+ }
+ }
+ 
+ class CartItemCell: UITableViewCell {
+ 
+ var delegate: CartItemDelegate?
+ private var _item: CartItem?
+ 
+ @IBOutlet weak var itemImage: UIImageView!
+ @IBOutlet weak var name: UILabel!
+ 
+ @IBOutlet weak var quantity: UILabel!
+ @IBOutlet weak var price: UILabel!
+ @IBOutlet weak var editDetailsButton: UIButton!
+ 
+ @IBOutlet weak var deleteButton: UIButton!
+ 
+ @IBAction func reduceQuantity(_ sender: Any) {
+ if let item = _item {
+ delegate?.quantity(item: item, new: max(1, item.quantity - 1))
+ }
+ }
+ 
+ @IBAction func increaseQuantity(_ sender: Any) {
+ if let item = _item {
+ delegate?.quantity(item: item, new: item.quantity + 1)
+ }
+ }
+ 
+ @IBAction func editDetails(_ sender: Any) {
+ if let item = _item {
+ delegate?.addInstructions(item: item)
+ }
+ }
+ 
+ @IBAction func deleteItem(_ sender: Any) {
+ if let item = _item {
+ delegate?.delete(item: item)
+ }
+ }
+ 
+ func load(item: CartItem) {
+ _item = item
+ name.text = _item?.item.name
+ price.text = _item?.item.price.currencyFormat
+ itemImage.pin_setPlaceholder(with: #imageLiteral(resourceName: "Picture Grey"))
+ itemImage.pin_setImage(from: URL(string: C.URL.main + "/img/items/\(_item!.item.id).png")!)
+ quantity.text = String(describing: _item?.quantity)
+ }
+ 
+ override func awakeFromNib() {
+ editDetailsButton.setImage(#imageLiteral(resourceName: "Note").withRenderingMode(.alwaysTemplate), for: .normal)
+ deleteButton.setImage(#imageLiteral(resourceName: "Delete").withRenderingMode(.alwaysTemplate), for: .normal)
+ }
+ 
+ }
+ */
 
-extension _CartVC: CartItemDelegate {
-    func quantity(item: CartItem, new: Int) {
-        Cart.current.changeQuantity(for: item, new: new)
-        tableView.reloadData()
-    }
-    
-    func delete(item: CartItem) {
-        Cart.current.remove(item: item)
-        tableView.reloadData()
-    }
-    
-    func addInstructions(item: CartItem) {
-        print("Add INstructions")
-    }
-}
-
-extension _CartVC: UITableViewDelegate, UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if Cart.current.items.value.isEmpty {
-            tableView.separatorStyle = .none
-            return 1
-        }
-        tableView.separatorStyle = .singleLine
-        return Cart.current.items.value.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if Cart.current.items.value.isEmpty {
-            let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.cartEmptyCell.rawValue, for: indexPath) as! CartEmptyCell
-            cell.action = {
-                self.close(cell)
-            }
-            return cell
-        }
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.cartItemCell.rawValue, for: indexPath) as! CartItemCell
-        cell.delegate = self
-        cell.load(item: Cart.current.items[indexPath.row])
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if Cart.current.items.isEmpty {
-            return
-        }
-        
-        print("open item detail")
-    }
-}
-
-protocol CartItemDelegate {
-    func delete(item: CartItem)
-    func quantity(item: CartItem, new: Int)
-    func addInstructions(item: CartItem)
-}
-
-class CartEmptyCell: UITableViewCell {
-    var action: (() -> ())? = nil
-    
-    @IBAction func shopNow(_ sender: Any) {
-        action?()
-    }
-}
-
-class CartItemCell: UITableViewCell {
-    
-    var delegate: CartItemDelegate?
-    private var _item: CartItem?
-    
-    @IBOutlet weak var itemImage: UIImageView!
-    @IBOutlet weak var name: UILabel!
-    
-    @IBOutlet weak var quantity: UILabel!
-    @IBOutlet weak var price: UILabel!
-    @IBOutlet weak var editDetailsButton: UIButton!
-    
-    @IBOutlet weak var deleteButton: UIButton!
-    
-    @IBAction func reduceQuantity(_ sender: Any) {
-        if let item = _item {
-            delegate?.quantity(item: item, new: max(1, item.quantity - 1))
-        }
-    }
-    
-    @IBAction func increaseQuantity(_ sender: Any) {
-        if let item = _item {
-            delegate?.quantity(item: item, new: item.quantity + 1)
-        }
-    }
-    
-    @IBAction func editDetails(_ sender: Any) {
-        if let item = _item {
-            delegate?.addInstructions(item: item)
-        }
-    }
-    
-    @IBAction func deleteItem(_ sender: Any) {
-        if let item = _item {
-            delegate?.delete(item: item)
-        }
-    }
-    
-    func load(item: CartItem) {
-        _item = item
-        name.text = _item?.item.name
-        price.text = _item?.item.price.currencyFormat
-        itemImage.pin_setPlaceholder(with: #imageLiteral(resourceName: "Picture Grey"))
-        itemImage.pin_setImage(from: URL(string: C.URL.main + "/img/items/\(_item!.item.id).png")!)
-        quantity.text = String(describing: _item?.quantity)
-    }
-    
-    override func awakeFromNib() {
-        editDetailsButton.setImage(#imageLiteral(resourceName: "Note").withRenderingMode(.alwaysTemplate), for: .normal)
-        deleteButton.setImage(#imageLiteral(resourceName: "Delete").withRenderingMode(.alwaysTemplate), for: .normal)
-    }
-    
-}
-*/

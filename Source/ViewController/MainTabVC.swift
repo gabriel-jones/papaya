@@ -32,6 +32,7 @@ class ViewControllerWithCart: UIViewController {
         let nav = UINavigationController(rootViewController: cart)
         nav.isHeroEnabled = true
         heroModalAnimationType = .pageIn(direction: .left)
+        nav.navigationBar.tintColor = UIColor(named: .green)
         present(nav, animated: true, completion: nil)
     }
     

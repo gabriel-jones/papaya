@@ -32,7 +32,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
         #if arch(i386) || arch(x86_64)
             return false
         #else
-            return FileManager.default.fileExistsAtPath("/private/var/lib/apt")
+            return FileManager.default.fileExists(atPath: "/private/var/lib/apt")
         #endif
     }
 
@@ -47,8 +47,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
         //TODO: remove in production
         /**/
         NSSetUncaughtExceptionHandler { exception in
-            print(exception)
             print(exception.callStackSymbols)
+            print(exception.name)
         }
         /**/
         

@@ -28,24 +28,23 @@ class ItemActionTableViewCell: UITableViewCell {
     public static let identifier: String = C.ViewModel.CellIdentifier.itemActionCell.rawValue
     
     public var delegate: ItemActionDelegate?
-    private var hasLoaded = false
     
     public enum ItemActions {
         case like, liked, addToList, rate, instructions
         
-        public var descriptor: (String, UIImage) {
+        public var descriptor: (String, UIImage, Selector) {
             get {
                 switch self {
                 case .like:
-                    return ("Like", #imageLiteral(resourceName: "Heart Outline").tintable)
+                    return ("Like", #imageLiteral(resourceName: "Heart Outline").tintable, #selector(like(_:)))
                 case .liked:
-                    return ("Liked", #imageLiteral(resourceName: "Heart").tintable)
+                    return ("Liked", #imageLiteral(resourceName: "Heart").tintable, #selector(unlike(_:)))
                 case .addToList:
-                    return ("Add to List", #imageLiteral(resourceName: "Plus").tintable)
+                    return ("Add to List", #imageLiteral(resourceName: "Plus").tintable, #selector(addToList(_:)))
                 case .instructions:
-                    return ("Instructions", #imageLiteral(resourceName: "Note").tintable)
+                    return ("Instructions", #imageLiteral(resourceName: "Note").tintable, #selector(addInstructions(_:)))
                 default:
-                    return (String(), UIImage())
+                    return (String(), UIImage(), #selector(endHighlight(_:)))
                 }
             }
         }
@@ -64,30 +63,34 @@ class ItemActionTableViewCell: UITableViewCell {
     }
     
     public func load(actions: [ItemActions]) {
-        if hasLoaded {
-            return
+        for v in stack.arrangedSubviews {
+            v.removeFromSuperview()
         }
-        hasLoaded = true
         for action in actions {
-            let button = self.buildActionView()
-            button.setTitle(action.descriptor.0, for: .normal)
+            let button = self.buildActionView(action: action.descriptor.2)
+            button.setTitle(" "+action.descriptor.0, for: .normal)
             button.setImage(action.descriptor.1, for: .normal)
+            if action == .liked {
+                button.imageView?.tintColor = UIColor(named: .red)
+                button.setTitleColor(UIColor(named: .red), for: .normal)
+            }
             stack.addArrangedSubview(button)
         }
     }
     
-    private func buildActionView() -> UIButton {
+    private func buildActionView(action: Selector) -> UIButton {
         let button = UIButton()
         button.setTitleColor(UIColor(named: .green), for: .normal)
         button.titleLabel?.font = Font.gotham(size: 16)
         button.imageView?.tintColor = UIColor(named: .green)
+        button.adjustsImageWhenHighlighted = false
         button.addTarget(self, action: #selector(startHighlight(_:)), for: .touchDown)
         button.addTarget(self, action: #selector(endHighlight(_:)), for: .touchCancel)
         button.addTarget(self, action: #selector(endHighlight(_:)), for: .touchUpOutside)
-        button.addTarget(self, action: #selector(like(_:)), for: .touchUpInside)
+        button.addTarget(self, action: action, for: .touchUpInside)
         button.layer.cornerRadius = 5
         button.alignVertical()
-        //button.contentEdgeInsets = UIEdgeInsets(top: 16, left: 0, bottom: 16, right: 0)
+        button.contentEdgeInsets = UIEdgeInsets(top: 16, left: 0, bottom: 16, right: 0)
         return button
     }
     
@@ -103,10 +106,8 @@ class ItemActionTableViewCell: UITableViewCell {
     
     private func buildConstraints() {
         stack.snp.makeConstraints { make in
-            make.left.equalTo(8)
-            make.right.equalTo(-8)
-            make.top.equalTo(4)
-            make.bottom.equalTo(-4)
+            make.left.right.equalToSuperview().inset(16)
+            make.top.bottom.equalToSuperview().inset(4)
         }
     }
 
@@ -124,9 +125,20 @@ class ItemActionTableViewCell: UITableViewCell {
     
     @objc private func like(_ sender: UIButton) {
         endHighlight(sender)
+        delegate?.set(liked: true)
+    }
+    
+    @objc private func unlike(_ sender: UIButton) {
+        endHighlight(sender)
+        delegate?.set(liked: false)
     }
     
     @objc private func addToList(_ sender: UIButton) {
         endHighlight(sender)
+    }
+    
+    @objc private func addInstructions(_ sender: UIButton) {
+        endHighlight(sender)
+        delegate?.addInstructions()
     }
 }

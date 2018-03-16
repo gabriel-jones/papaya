@@ -7,18 +7,43 @@
 //
 
 import UIKit
+import RxSwift
 
 class BrowseVC: ViewControllerWithCart {
     
+    private var departments = [Category]()
+    
     private var collectionView: UICollectionView!
-    private var departments: [Category] = BaseStore.categories
+    private let activityIndicator = UIActivityIndicatorView()
+
+    private let disposeBag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.buildViews()
         self.buildConstraints()
+        
+        DispatchQueue.main.async { self.activityIndicator.startAnimating() }
+        self.loadCategories { _ in
+            self.collectionView.isHidden = false
+            self.activityIndicator.stopAnimating()
+        }
     }
     
+    private func loadCategories(_ completion: @escaping (Bool) -> Void) {
+        Request.shared.getAllCategories()
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { categories in
+                self.departments = categories
+                self.collectionView.reloadData()
+                completion(true)
+            }, onError: { error in
+                print(error.localizedDescription)
+                completion(false)
+            })
+            .disposed(by: disposeBag)
+    }
+
     private func buildViews() {
         view.backgroundColor = UIColor(named: .backgroundGrey)
         
@@ -35,12 +60,21 @@ class BrowseVC: ViewControllerWithCart {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.alwaysBounceVertical = true
+        collectionView.isHidden = true
         view.addSubview(collectionView)
+        
+        activityIndicator.activityIndicatorViewStyle = .gray
+        activityIndicator.hidesWhenStopped = true
+        view.addSubview(activityIndicator)
     }
     
     private func buildConstraints() {
         collectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+        
+        activityIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
         }
     }
 }

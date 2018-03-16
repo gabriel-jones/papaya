@@ -77,6 +77,10 @@ extension Request {
         func json2Subcategories(from json: JSON) -> Observable<[Category]> {
             return jsonArray2Array(from: json["subcategories"], to: Category.self)
         }
+        
+        func json2Searches(from json: JSON) -> Observable<[String]> {
+            return Observable.just(json["searches"].arrayValue.map { $0.stringValue })
+        }
 
     }
 }

@@ -19,7 +19,7 @@ extension Request {
             .flatMap(parse.json2Cart)
     }
     
-    func addItem(to cart: Cart, item: Item, quantity: Int) -> Observable<JSON> {
+    func addItemToCart(item: Item, quantity: Int) -> Observable<JSON> {
         let body = [
             "item_id": item.id,
             "quantity": quantity
@@ -30,11 +30,12 @@ extension Request {
         return self.fetch(request: request)
     }
     
-    func updateQuantity(with cartItem: CartItem) -> Observable<JSON> {
+    func updateQuantity(with itemId: Int, new quantity: Int) -> Observable<JSON> {
         let body = [
-            "item_id": cartItem.id,
-            "quantity": cartItem.quantity
+            "item_id": itemId,
+            "quantity": quantity
         ]
+        print(body)
         guard let request = URLRequest.put(path: "/cart/item/update/quantity", body: body) else {
             return Observable.error(RequestError.cannotBuildRequest)
         }
@@ -53,7 +54,7 @@ extension Request {
         let urlParameters = [
             "item_id": String(cartItem.id)
         ]
-        guard let request = URLRequest.delete(path: "/cart/item/update/quantity", body: [:], urlParameters: urlParameters) else {
+        guard let request = URLRequest.delete(path: "/cart/item/delete", body: [:], urlParameters: urlParameters) else {
             return Observable.error(RequestError.cannotBuildRequest)
         }
         return self.fetch(request: request)

@@ -43,6 +43,7 @@ class AddressDetailViewController: UIViewController {
         saveButton = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(save(_:)))
         saveButton.tintColor = UIColor(named: .green)
         saveButton.setTitleTextAttributes([.font: Font.gotham(size: 17)], for: .normal)
+        saveButton.setTitleTextAttributes([.font: Font.gotham(size: 17)], for: .highlighted)
         navigationItem.rightBarButtonItem = saveButton
         
         if address == nil {

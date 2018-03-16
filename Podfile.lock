@@ -5,6 +5,8 @@ PODS:
   - Hero (1.0.0-alpha.4)
   - JVFloatLabeledTextField (1.2.1)
   - KeychainAccess (3.1.0)
+  - Mandoline (1.0.0):
+    - SnapKit (~> 3.2.0)
   - PINCache (2.3)
   - PINRemoteImage (2.1.4):
     - PINRemoteImage/FLAnimatedImage (= 2.1.4)
@@ -15,9 +17,10 @@ PODS:
     - PINRemoteImage/Core
   - PMAlertController (3.1.0)
   - RxSwift (4.0.0)
-  - SnapKit (4.0.0)
+  - SnapKit (3.2.0)
   - SocketRocket (0.5.1)
   - SwiftyJSON (4.0.0)
+  - TBEmptyDataSet (2.6)
   - TOMSMorphingLabel (0.5.1)
 
 DEPENDENCIES:
@@ -26,12 +29,14 @@ DEPENDENCIES:
   - Hero (= 1.0.0-alpha.4)
   - JVFloatLabeledTextField
   - KeychainAccess
+  - Mandoline
   - PINRemoteImage
   - PMAlertController
   - RxSwift (~> 4.0)
-  - SnapKit (~> 4.0.0)
+  - SnapKit (~> 3.2.0)
   - SocketRocket
   - SwiftyJSON
+  - TBEmptyDataSet
   - TOMSMorphingLabel (~> 0.5)
 
 SPEC CHECKSUMS:
@@ -41,15 +46,17 @@ SPEC CHECKSUMS:
   Hero: 6ab58fdfb16c75ce9c6bfad48ef6abb54780b263
   JVFloatLabeledTextField: cfc44e3c4d493b2ed92ede8035e8e89c2912ba64
   KeychainAccess: 94c5540b32eabf7bc32bfb976a268e8ea05fd6da
+  Mandoline: 5f0c7b5bb52ce3b2757328a59e0206a003911e77
   PINCache: ce36ed282031b92fc7733ffe831f474ff80fddc2
   PINRemoteImage: 4ac4011c5caefd6befd99758e09becede05d3226
   PMAlertController: 2c9f27b318e5adf685ba10737ff84be0a3ac5618
   RxSwift: fd680d75283beb5e2559486f3c0ff852f0d35334
-  SnapKit: a42d492c16e80209130a3379f73596c3454b7694
+  SnapKit: 1ca44df72cfa543218d177cb8aab029d10d86ea7
   SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
   SwiftyJSON: 070dabdcb1beb81b247c65ffa3a79dbbfb3b48aa
+  TBEmptyDataSet: 7383c353092f33dc572084cfa9182678a132dac7
   TOMSMorphingLabel: 3e88a2bf5257f8993ebc51fb3109187a0bfb2c4d
 
-PODFILE CHECKSUM: 6cb319f5c0eaf61f730b4631a00d9f7a34eb4b01
+PODFILE CHECKSUM: 26f71834383825e2b39c0153200614d95bf0751e
 
 COCOAPODS: 1.3.1

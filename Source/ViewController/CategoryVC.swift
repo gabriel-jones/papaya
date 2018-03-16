@@ -78,9 +78,8 @@ class CategoryVC: ViewControllerWithCart {
         super.viewDidLoad()
         self.buildViews()
         self.buildConstraints()
-        DispatchQueue.main.async {
-            self.activityIndicator.startAnimating()
-        }
+        
+        DispatchQueue.main.async { self.activityIndicator.startAnimating() }
         self.loadCategory { _ in
             self.tableView.isHidden = false
             self.activityIndicator.stopAnimating()
@@ -124,6 +123,8 @@ class CategoryVC: ViewControllerWithCart {
         activityIndicator.activityIndicatorViewStyle = .gray
         activityIndicator.hidesWhenStopped = true
         view.addSubview(activityIndicator)
+        
+        
     }
     
     private func buildConstraints() {
@@ -137,17 +138,17 @@ class CategoryVC: ViewControllerWithCart {
         
         bottomBorder.snp.makeConstraints { make in
             make.height.equalTo(0.33)
-            make.bottom.equalToSuperview()
-            make.left.equalToSuperview()
-            make.right.equalToSuperview()
+            make.bottom.left.right.equalToSuperview()
         }
         
         activityIndicator.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.centerY.equalToSuperview()
+            make.center.equalToSuperview()
         }
     }
     
+    @objc private func openSection(_ sender: UIButton) {
+        self.viewAll(identifier: sender.tag)
+    }
 }
 
 extension CategoryVC: UITableViewDelegate, UITableViewDataSource {
@@ -229,7 +230,8 @@ extension CategoryVC: UICollectionViewDelegate, UICollectionViewDataSource {
         let button = UIButton()
         button.setTitle(sections[indexPath.row].category.name, for: .normal)
         button.setTitleColor(UIColor(named: .green), for: .normal)
-        //button.addTarget(self, action: #selector(openSection(_:)), for: .touchUpInside)
+        button.tag = sections[indexPath.row].category.id
+        button.addTarget(self, action: #selector(openSection(_:)), for: .touchUpInside)
         button.titleLabel?.textAlignment = .center
         button.titleLabel?.font = Font.gotham(size: 14)
         cell.addSubview(button)
@@ -242,9 +244,5 @@ extension CategoryVC: UICollectionViewDelegate, UICollectionViewDataSource {
         }
         
         return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("open section: \(sections[indexPath.row])")
     }
 }

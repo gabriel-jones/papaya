@@ -10,13 +10,33 @@ import UIKit
 import PINRemoteImage
 import Hero
 
+class TopAlignedLabel: UILabel {
+    override func drawText(in rect: CGRect) {
+        if let stringText = text {
+            let stringTextAsNSString = stringText as NSString
+            let labelStringSize = stringTextAsNSString.boundingRect(with: CGSize(width: self.frame.width,height: CGFloat.greatestFiniteMagnitude),
+                                                                    options: NSStringDrawingOptions.usesLineFragmentOrigin,
+                                                                    attributes: [NSAttributedStringKey.font: font],
+                                                                    context: nil).size
+            super.drawText(in: CGRect(x:0,y: 0,width: self.frame.width, height:ceil(labelStringSize.height)))
+        } else {
+            super.drawText(in: rect)
+        }
+    }
+    override func prepareForInterfaceBuilder() {
+        super.prepareForInterfaceBuilder()
+        layer.borderWidth = 1
+        layer.borderColor = UIColor.black.cgColor
+    }
+}
+
 class ItemCollectionViewCell: UICollectionViewCell {
     
     public static let identifier: String = C.ViewModel.CellIdentifier.itemCell.rawValue
     
     private var itemImage = UIImageView()
     private let itemPrice = UILabel()
-    private let itemName = UILabel()
+    private let itemName = TopAlignedLabel()
     private var priceTemplate: UIView!
     private var name1Template: UIView!
     private var name2Template: UIView!
@@ -49,9 +69,7 @@ class ItemCollectionViewCell: UICollectionViewCell {
         
         itemImage.pin_setPlaceholder(with: #imageLiteral(resourceName: "Picture").tintable)
         itemImage.tintColor = .gray
-        itemImage.contentMode = .center
-        itemImage.backgroundColor = UIColor(named: .backgroundGrey)
-        itemImage.layer.cornerRadius = 5
+        self.setImageTemplate(to: true)
         addSubview(itemImage)
         
         itemPrice.font = Font.gotham(size: 16)
@@ -60,7 +78,7 @@ class ItemCollectionViewCell: UICollectionViewCell {
         itemName.font = Font.gotham(size: 13)
         itemName.numberOfLines = 0
         itemName.textColor = UIColor(named: .darkGrey)
-        itemName.masksToBounds = false
+        itemName.lineBreakMode = .byTruncatingTail
         addSubview(itemName)
         
         priceTemplate = buildTemplate()
@@ -94,7 +112,7 @@ class ItemCollectionViewCell: UICollectionViewCell {
             make.top.equalTo(itemPrice.snp.bottom).offset(4)
             make.left.equalTo(16)
             make.right.equalTo(-8)
-            make.height.lessThanOrEqualToSuperview().dividedBy(2).offset(8)
+            make.bottom.equalTo(-8)
         }
         
         priceTemplate.snp.makeConstraints { make in
@@ -137,17 +155,17 @@ class ItemCollectionViewCell: UICollectionViewCell {
             itemImage.pin_updateWithProgress = true
             itemImage.pin_setImage(from: url)
             itemImage.pin_setImage(from: url, placeholderImage: #imageLiteral(resourceName: "Picture").tintable) { result in
-                if result.error != nil { // Error
-                    self.itemImage.contentMode = .center
-                } else {
-                    self.itemImage.backgroundColor = .clear
-                    self.itemImage.layer.cornerRadius = 0
-                    self.itemImage.contentMode = .scaleAspectFit
-                }
+                self.setImageTemplate(to: result.error != nil)
             }
             
             itemImage.heroID = self.getImageId()
         }
+    }
+    
+    private func setImageTemplate(to: Bool) {
+        itemImage.contentMode = to ? .center : .scaleAspectFit
+        itemImage.backgroundColor = to ? UIColor(named: .backgroundGrey) : .clear
+        itemImage.layer.cornerRadius = to ? 5 : 0
     }
     
     
@@ -183,7 +201,7 @@ class ItemCollectionViewCell: UICollectionViewCell {
     }
     
     override func prepareForReuse() {
-        itemImage.image = #imageLiteral(resourceName: "Picture").tintable
+        self.setImageTemplate(to: true)
         super.prepareForReuse()
     }
 }

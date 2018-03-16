@@ -12,7 +12,7 @@ import SwiftyJSON
 extension URLRequest {
     
     mutating func setAuthorisation(token: String) {
-        self.setValue(token, forHTTPHeaderField: "Authorization")
+        self.setValue("Bearer " + token, forHTTPHeaderField: "Authorization")
     }
     
     private mutating func setUserAgent() {
@@ -21,6 +21,10 @@ extension URLRequest {
     
     mutating func setContentType() {
         self.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+    }
+    
+    private mutating func setDeviceId() {
+        self.setValue(Config.shared.deviceVendorId, forHTTPHeaderField: "X-Device-Id")
     }
     
     static func get(path: String, urlParameters: [String:String] = [:]) -> URLRequest? {
@@ -54,6 +58,7 @@ extension URLRequest {
         
         request.httpMethod = method.rawValue
         request.setUserAgent()
+        request.setDeviceId()
         
         if let token = AuthenticationStore.token {
             request.setAuthorisation(token: token)

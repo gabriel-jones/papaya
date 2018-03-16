@@ -8,6 +8,11 @@
 
 import UIKit
 
+protocol StepperDelegate {
+    func changedQuantity(to: Int)
+    func delete()
+}
+
 class Stepper: UIView {
     public var maximum = 100
     public var minimum = 1
@@ -17,9 +22,12 @@ class Stepper: UIView {
         }
     }
     
+    public var delegate: StepperDelegate?
+    
     private let valueLabel = UILabel()
     private let decreaseButton = UIButton()
     private let increaseButton = UIButton()
+    private let activityIndicator = UIActivityIndicatorView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -56,6 +64,10 @@ class Stepper: UIView {
         valueLabel.font = Font.gotham(size: 15)
         addSubview(valueLabel)
         
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.activityIndicatorViewStyle = .gray
+        addSubview(activityIndicator)
+        
         value = minimum
     }
     
@@ -80,14 +92,43 @@ class Stepper: UIView {
             make.bottom.equalToSuperview()
             make.width.equalTo(increaseButton.snp.height)
         }
+        
+        activityIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+    }
+    
+    public func showLoading() {
+        valueLabel.isHidden = true
+        activityIndicator.startAnimating()
+        self.increaseButton.isEnabled = false
+        self.decreaseButton.isEnabled = false
+    }
+    
+    public func hideLoading() {
+        valueLabel.isHidden = false
+        activityIndicator.stopAnimating()
+        self.increaseButton.isEnabled = true
+        self.decreaseButton.isEnabled = true
     }
     
     @objc func decrease(_ sender: UIButton) {
-        value = max(self.minimum, value-1)
+        if value-1 == minimum { // show trash
+            decreaseButton.setImage(#imageLiteral(resourceName: "Delete").tintable, for: .normal)
+        } else if value-1 < minimum {
+            delegate?.delete()
+            return
+        }
+        value = max(minimum, value-1)
+        delegate?.changedQuantity(to: value)
     }
     
     @objc func increase(_ sender: UIButton) {
-        value = min(self.maximum, value+1)
+        value = min(maximum, value+1)
+        if value > minimum {
+            decreaseButton.setImage(#imageLiteral(resourceName: "Minus").tintable, for: .normal)
+        }
+        delegate?.changedQuantity(to: value)
     }
     
 }

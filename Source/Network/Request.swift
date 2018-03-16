@@ -17,7 +17,7 @@ class Request: NSObject, URLSessionDelegate, URLSessionDataDelegate {
     //TOOD: DELETE
     
     func getAllItemsTemp() -> Observable<[Item]> {
-        if let request = URLRequest.get(path: "/temp_items") {
+        if let request = URLRequest.get(path: "/item/all") {
             return Request.shared.fetch(request: request)
                 .observeOn(MainScheduler.instance)
                 .flatMap(parse.json2Items)
@@ -62,6 +62,7 @@ class Request: NSObject, URLSessionDelegate, URLSessionDataDelegate {
     internal func task(request: URLRequest) -> Observable<JSON> {
         print("TASK")
         return Observable.create { observer in
+            print("creating")
             let task = self.session.dataTask(with: request) { (data: Data?, response: URLResponse?, error: Error?) -> Void in
                 print("callback: \(error, response)")
                 guard error == nil, let _ = response as? HTTPURLResponse, let data = data else {

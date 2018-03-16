@@ -83,8 +83,10 @@ class SettingsVC: UIViewController {
         let confirmAlert = UIAlertController(title: "Log out?", message: nil, preferredStyle: .alert)
         confirmAlert.addAction(UIAlertAction(title: "Yes", style: .default) { _ in
             AuthenticationStore.logout { didLogout in
+                print(didLogout)
                 if didLogout {
-                    self.tabBarController?.dismiss(animated: true, completion: nil)
+                    self.navigationController?.isNavigationBarHidden = true
+                    self.hero_replaceViewController(with: LoadingVC())
                 }
             }
         })
@@ -137,6 +139,7 @@ extension SettingsVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         if let vc = settings[indexPath.row].getViewController(self) {
             if vc is SFSafariViewController {
                 present(vc, animated: true, completion: nil)

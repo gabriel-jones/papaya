@@ -54,9 +54,7 @@ class LoadingVC: UIViewController {
         }
         
         logoName.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.bottom.equalToSuperview()
-            make.centerY.equalToSuperview()
+            make.top.bottom.centerY.equalToSuperview()
             make.width.equalTo(92)
             make.left.equalTo(logoImage.snp.right).offset(50)
         }
@@ -88,26 +86,22 @@ class LoadingVC: UIViewController {
     }
     
     private func load() {
-        let user: Observable<User> = Request.shared.getUserDetails()
-            .observeOn(MainScheduler.instance)
-        let categories: Observable<[Category]> = Request.shared.getAllCategories()
-            .observeOn(MainScheduler.instance)
-        Observable.combineLatest(user, categories) { user, categories in
-            User.current = user
-            BaseStore.categories = categories
-            self.openHomeScreen()
-        }
-        .subscribe(onError: { [unowned self] error in
-            switch error as? RequestError {
-            case .networkOffline?:
-                break
-            case nil:
-                break
-            default:
-                self.openGetStarted()
-            }
-        })
-        .disposed(by: disposeBag)
+        Request.shared.getUserDetails()
+        .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { user in
+                User.current = user
+                self.openHomeScreen()
+            }, onError: { error in
+                switch error as? RequestError {
+                case .networkOffline?:
+                    break
+                case nil:
+                    break
+                default:
+                    self.openGetStarted()
+                }
+            })
+            .disposed(by: disposeBag)
     }
     
     private func openHomeScreen() {

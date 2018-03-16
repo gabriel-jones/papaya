@@ -8,16 +8,14 @@
 
 import UIKit
 
-class CartDetailTableViewCell: UITableViewCell {
-    
-    public static let identifier: String = C.ViewModel.CellIdentifier.cartDetailCell.rawValue
+class CartHeaderView: UIView {
     
     private let shopName = UILabel()
     private let deliveryTime = UILabel()
     private let total = UILabel()
-
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         self.buildViews()
         self.buildConstraints()
     }
@@ -25,20 +23,20 @@ class CartDetailTableViewCell: UITableViewCell {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        var i = 0
-        for subview in self.contentView.superview!.subviews {
-            if NSStringFromClass(type(of: subview)) == "_UITableViewCellSeparatorView" {
-                if i == 1 {
-                    subview.removeFromSuperview()
-                    return
-                }
-                i += 1
-            }
-        }
-    }
+
+//    override func layoutSubviews() {
+//        super.layoutSubviews()
+//        var i = 0
+//        for subview in self.contentView.superview!.subviews {
+//            if NSStringFromClass(type(of: subview)) == "_UITableViewCellSeparatorView" {
+//                if i == 1 {
+//                    subview.removeFromSuperview()
+//                    return
+//                }
+//                i += 1
+//            }
+//        }
+//    }
     
     private func buildViews() {
         backgroundColor = .clear
