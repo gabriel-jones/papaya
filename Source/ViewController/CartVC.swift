@@ -134,10 +134,17 @@ class CartViewController: UIViewController {
     
     @objc private func checkout(_ sender: LoadingButton) {
         sender.showLoading()
-        
-        sender.hideLoading()
-        let vc = CheckoutSchedulerViewController()
-        navigationController?.pushViewController(vc, animated: true)
+        Request.shared.createCheckout()
+        .observeOn(MainScheduler.instance)
+        .subscribe(onNext: { checkout in
+            sender.hideLoading()
+            let vc = CheckoutSchedulerViewController()
+            vc.checkout = checkout
+            self.navigationController?.pushViewController(vc, animated: true)
+        }, onError: { error in
+            print("HANDLE ERROR")
+        })
+        .disposed(by: disposeBag)
     }
     
     private func buildConstraints() {

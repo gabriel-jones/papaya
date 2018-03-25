@@ -11,5 +11,6 @@
 
 #import "UIViewController+BackButtonHandler.h"
 #import "UIBarButtonItem+Badge.h"
+#import <UIScrollView_InfiniteScroll/UIScrollView+InfiniteScroll.h>
 
 #endif /* Papaya_Bridging_Header_h */

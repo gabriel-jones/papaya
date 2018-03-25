@@ -27,6 +27,8 @@ class CheckoutCartTableViewCell: UITableViewCell {
     }
     
     private func buildViews() {
+        selectionStyle = .none
+
         cartImage.image = #imageLiteral(resourceName: "Cart").tintable
         cartImage.tintColor = .gray
         addSubview(cartImage)
@@ -57,6 +59,10 @@ class CheckoutCartTableViewCell: UITableViewCell {
             make.right.equalTo(-8)
             make.centerY.equalTo(cartLabel.snp.centerY)
         }
+    }
+    
+    public func load(cart: Cart) {
+        cartItemCountLabel.text = "\(cart.items.count) items"
     }
 
 }

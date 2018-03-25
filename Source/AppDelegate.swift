@@ -26,6 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
         UITabBarItem.appearance().setTitleTextAttributes(
             [NSAttributedStringKey.font: UIFont(name: "GothamRounded-Bold", size: 14)!], for: .selected
         )
+        UITabBarItem.appearance().titlePositionAdjustment.vertical = -4
     }
     
     func j() -> Bool {

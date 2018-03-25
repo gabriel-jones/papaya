@@ -32,6 +32,7 @@ class ItemVC: UIViewController {
     private var isInCart: Bool?
     private var numberInCart: Int?
     private var items = [Item]()
+    private var disclaimer: String?
     
     //MARK: - Methods
     override func viewDidLoad() {
@@ -48,6 +49,7 @@ class ItemVC: UIViewController {
             self.isLiked = detail["item"]["is_liked"].bool
             self.isInCart = detail["item"]["in_cart"].bool
             self.numberInCart = detail["item"]["number_in_cart"].int
+            self.disclaimer = detail["item"]["disclaimer"].string
             self.updateCartButtons()
             self.items = similarItems
             self.tableView.reloadData()
@@ -298,7 +300,7 @@ extension ItemVC: UITableViewDelegate, UITableViewDataSource {
         } else if indexPath.row == 4 {
             let cell = UITableViewCell(style: .default, reuseIdentifier: "disclaimerCell")
             cell.backgroundColor = UIColor(named: .backgroundGrey)
-            cell.textLabel?.text = "\nDisclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer Disclaimer\n"
+            cell.textLabel?.text = disclaimer
             cell.textLabel?.font = Font.gotham(size: 12)
             cell.textLabel?.textAlignment = .center
             cell.textLabel?.textColor = .gray

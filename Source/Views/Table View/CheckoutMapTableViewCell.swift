@@ -9,8 +9,13 @@
 import UIKit
 import RxSwift
 
+protocol CheckoutMapDelegate {
+    func changeAddress()
+}
+
 class CheckoutMapTableViewCell: UITableViewCell {
     public static let identifier: String = C.ViewModel.CellIdentifier.checkoutMapCell.rawValue
+    public var delegate: CheckoutMapDelegate?
     
     public let addressLabel = UILabel()
     public let zipLabel = UILabel()
@@ -18,6 +23,7 @@ class CheckoutMapTableViewCell: UITableViewCell {
     private let addressImage = UIImageView()
     private let addressMap = UIImageView()
     private let addressFadeGradient = CAGradientLayer()
+    private let mapLoading = UIActivityIndicatorView()
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -30,6 +36,8 @@ class CheckoutMapTableViewCell: UITableViewCell {
     }
     
     private func buildViews() {
+        selectionStyle = .none
+        
         addressImage.image = #imageLiteral(resourceName: "Address").tintable
         addressImage.contentMode = .scaleAspectFit
         addressImage.tintColor = UIColor.gray
@@ -49,12 +57,20 @@ class CheckoutMapTableViewCell: UITableViewCell {
         changeButton.tintColor = UIColor(named: .green)
         changeButton.titleLabel?.font = Font.gotham(size: 16)
         changeButton.semanticContentAttribute = .forceRightToLeft
+        changeButton.addTarget(self, action: #selector(change(_:)), for: .touchUpInside)
         addSubview(changeButton)
         
         addressMap.contentMode = .scaleAspectFill
         addressMap.masksToBounds = true
         addressMap.backgroundColor = .clear
         addSubview(addressMap)
+        
+        mapLoading.hidesWhenStopped = true
+        addSubview(mapLoading)
+    }
+    
+    @objc private func change(_ sender: UIButton) {
+        delegate?.changeAddress()
     }
     
     private func buildConstraints() {
@@ -85,9 +101,14 @@ class CheckoutMapTableViewCell: UITableViewCell {
             make.top.right.bottom.equalToSuperview()
             make.width.equalToSuperview().dividedBy(2)
         }
+        
+        mapLoading.snp.makeConstraints { make in
+            make.center.equalTo(addressMap.snp.center)
+        }
     }
     
     override func layoutSubviews() {
+        super.layoutSubviews()
         addressFadeGradient.frame = addressMap.bounds
         addressFadeGradient.colors = [UIColor.clear.cgColor, UIColor.white.cgColor]
         addressFadeGradient.startPoint = CGPoint(x: 0, y: 1)
@@ -98,8 +119,11 @@ class CheckoutMapTableViewCell: UITableViewCell {
     public func load(address: Address) {
         addressLabel.text = address.street
         zipLabel.text = address.zip
+        addressMap.image = nil
+        mapLoading.startAnimating()
         Request.shared.getAddressImage(address: address) { image in
             DispatchQueue.main.async {
+                self.mapLoading.stopAnimating()
                 self.addressMap.image = image
             }
         }

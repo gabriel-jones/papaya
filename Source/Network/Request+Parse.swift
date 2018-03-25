@@ -34,6 +34,19 @@ extension Request {
             return Observable.error(RequestError.failedToParseJson)
         }
         
+        func jsonArray2RawArray<T: BaseObject>(from json: JSON, to type: T.Type) -> [T]? {
+            if let json = json.array {
+                var array = [T]()
+                for element in json {
+                    if let object = T(dict: element) {
+                        array.append(object)
+                    }
+                }
+                return array
+            }
+            return nil
+        }
+
         func json2User(from json: JSON) -> Observable<User> {
             return jsonDict2Object(from: json["user"], to: User.self)
         }
@@ -80,6 +93,17 @@ extension Request {
         
         func json2Searches(from json: JSON) -> Observable<[String]> {
             return Observable.just(json["searches"].arrayValue.map { $0.stringValue })
+        }
+        
+        func json2Checkout(from json: JSON) -> Observable<Checkout> {
+            return jsonDict2Object(from: json["checkout"], to: Checkout.self)
+        }
+        
+        func json2Paginated<T: BaseObject>(from json: JSON) -> Observable<PaginatedResults<T>> {
+            let arr = jsonArray2RawArray(from: json, to: T.self)
+            let isLast = json["is_last"].boolValue
+            let page = PaginatedResults(isLast: isLast, results: arr)
+            return Observable.just(page)
         }
 
     }

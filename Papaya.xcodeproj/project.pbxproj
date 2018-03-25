@@ -43,6 +43,8 @@
 		C02D5CD2205C334600293095 /* Request+Checkout.swift in Sources */ = {isa = PBXBuildFile; fileRef = C02D5CD1205C334600293095 /* Request+Checkout.swift */; };
 		C04167A920279BC500946CE2 /* CheckoutSchedulerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04167A820279BC500946CE2 /* CheckoutSchedulerVC.swift */; };
 		C0452ED21FB5120400240CFF /* MainTabVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0452ED11FB5120400240CFF /* MainTabVC.swift */; };
+		C046DEC4205F493100574CD4 /* Checkout.swift in Sources */ = {isa = PBXBuildFile; fileRef = C046DEC3205F493100574CD4 /* Checkout.swift */; };
+		C046DEC620640DEB00574CD4 /* CartMinimalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C046DEC520640DEB00574CD4 /* CartMinimalViewController.swift */; };
 		C04FDF3B2001B3E400FEC1BC /* ItemActionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04FDF3A2001B3E400FEC1BC /* ItemActionTableViewCell.swift */; };
 		C050DC1E1FF96256001B33B2 /* GroupModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C050DC1D1FF96256001B33B2 /* GroupModel.swift */; };
 		C05B96F820103CF40030CD7B /* CartItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C05B96F720103CF40030CD7B /* CartItemTableViewCell.swift */; };
@@ -155,6 +157,8 @@
 		C02D5CD1205C334600293095 /* Request+Checkout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Request+Checkout.swift"; sourceTree = "<group>"; };
 		C04167A820279BC500946CE2 /* CheckoutSchedulerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutSchedulerVC.swift; sourceTree = "<group>"; };
 		C0452ED11FB5120400240CFF /* MainTabVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabVC.swift; sourceTree = "<group>"; };
+		C046DEC3205F493100574CD4 /* Checkout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Checkout.swift; sourceTree = "<group>"; };
+		C046DEC520640DEB00574CD4 /* CartMinimalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartMinimalViewController.swift; sourceTree = "<group>"; };
 		C04FDF3A2001B3E400FEC1BC /* ItemActionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemActionTableViewCell.swift; sourceTree = "<group>"; };
 		C050DC1D1FF96256001B33B2 /* GroupModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupModel.swift; sourceTree = "<group>"; };
 		C05B96F720103CF40030CD7B /* CartItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartItemTableViewCell.swift; sourceTree = "<group>"; };
@@ -298,6 +302,7 @@
 				C06BE63C1FBD3F6A00302D8A /* InstructionsVC.swift */,
 				C06BE63E1FBE8A1300302D8A /* ItemVC.swift */,
 				C0E619522024BB1700F03EEE /* ListDetailViewController.swift */,
+				C046DEC520640DEB00574CD4 /* CartMinimalViewController.swift */,
 				C0E6194E2020EB0B00F03EEE /* SimilarItemsViewController.swift */,
 				C0C6C7A71FB8ECCC00EF9968 /* CategoryVC.swift */,
 				C085A3812029FDFC00AB83C6 /* CheckoutViewController.swift */,
@@ -350,6 +355,7 @@
 				C063DE441FEF5D05001D19BE /* Address.swift */,
 				C063DE461FEF73EE001D19BE /* List.swift */,
 				C063DE401FEF483F001D19BE /* Item.swift */,
+				C046DEC3205F493100574CD4 /* Checkout.swift */,
 				C01F9AE72017F11300B9A6B4 /* Category.swift */,
 				C063DE501FF04A41001D19BE /* ListItem.swift */,
 				C00A214C1FAEC27D007B04B7 /* Cart.swift */,
@@ -664,6 +670,7 @@
 				"${BUILT_PRODUCTS_DIR}/CHIPageControl/CHIPageControl.framework",
 				"${BUILT_PRODUCTS_DIR}/DSGradientProgressView/DSGradientProgressView.framework",
 				"${BUILT_PRODUCTS_DIR}/FLAnimatedImage/FLAnimatedImage.framework",
+				"${BUILT_PRODUCTS_DIR}/HCSStarRatingView/HCSStarRatingView.framework",
 				"${BUILT_PRODUCTS_DIR}/Hero/Hero.framework",
 				"${BUILT_PRODUCTS_DIR}/JVFloatLabeledTextField/JVFloatLabeledTextField.framework",
 				"${BUILT_PRODUCTS_DIR}/KeychainAccess/KeychainAccess.framework",
@@ -671,18 +678,21 @@
 				"${BUILT_PRODUCTS_DIR}/PINCache/PINCache.framework",
 				"${BUILT_PRODUCTS_DIR}/PINRemoteImage/PINRemoteImage.framework",
 				"${BUILT_PRODUCTS_DIR}/PMAlertController/PMAlertController.framework",
+				"${BUILT_PRODUCTS_DIR}/Presentr/Presentr.framework",
 				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SocketRocket/SocketRocket.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
-				"${BUILT_PRODUCTS_DIR}/TBEmptyDataSet/TBEmptyDataSet.framework",
+				"${BUILT_PRODUCTS_DIR}/TCProgressBar/TCProgressBar.framework",
 				"${BUILT_PRODUCTS_DIR}/TOMSMorphingLabel/TOMSMorphingLabel.framework",
+				"${BUILT_PRODUCTS_DIR}/UIScrollView-InfiniteScroll/UIScrollView_InfiniteScroll.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CHIPageControl.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DSGradientProgressView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FLAnimatedImage.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/HCSStarRatingView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Hero.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JVFloatLabeledTextField.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/KeychainAccess.framework",
@@ -690,12 +700,14 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PINCache.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PINRemoteImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PMAlertController.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Presentr.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SocketRocket.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TBEmptyDataSet.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TCProgressBar.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TOMSMorphingLabel.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/UIScrollView_InfiniteScroll.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -760,6 +772,7 @@
 			files = (
 				C00A21B51FAEC27D007B04B7 /* Reachability.swift in Sources */,
 				C06331A01FB6A48100FA8EFC /* ItemGroupModel.swift in Sources */,
+				C046DEC620640DEB00574CD4 /* CartMinimalViewController.swift in Sources */,
 				C085A3822029FDFC00AB83C6 /* CheckoutViewController.swift in Sources */,
 				C00A21C21FAEC27D007B04B7 /* Font.swift in Sources */,
 				C0FA39BD1FB7C37000F0DC40 /* CartVC.swift in Sources */,
@@ -803,6 +816,7 @@
 				C05B9713201623E30030CD7B /* NotificationSettingsViewController.swift in Sources */,
 				C05B97072011940F0030CD7B /* ChangePasswordViewController.swift in Sources */,
 				C04167A920279BC500946CE2 /* CheckoutSchedulerVC.swift in Sources */,
+				C046DEC4205F493100574CD4 /* Checkout.swift in Sources */,
 				C00A21B31FAEC27D007B04B7 /* Extensions.swift in Sources */,
 				C05B9703201170160030CD7B /* SettingsButtonTableViewCell.swift in Sources */,
 				C063DE3F1FEF4834001D19BE /* Shop.swift in Sources */,

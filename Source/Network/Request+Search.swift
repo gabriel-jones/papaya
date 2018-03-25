@@ -10,13 +10,18 @@ import Foundation
 import RxSwift
 import SwiftyJSON
 
+struct PaginatedResults<T> {
+    let isLast: Bool
+    let results: Array<T>
+}
+
 extension Request {
-    public func search(query: String) -> Observable<[Item]> {
+    public func search(query: String) -> Observable<PaginatedResults<Item>> {
         guard let request = URLRequest.get(path: "/search/q/\(query)") else {
             return Observable.error(RequestError.cannotBuildRequest)
         }
         return self.fetch(request: request)
-            .flatMap(parse.json2Items)
+            .flatMap(parse.json2Paginated<Item>)
     }
     
     public func popularSearches() -> Observable<[String]> {

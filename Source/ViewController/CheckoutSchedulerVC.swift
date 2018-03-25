@@ -8,6 +8,7 @@
 
 import Foundation
 import Mandoline
+import RxSwift
 
 class DayCell: UICollectionViewCell {
     
@@ -147,10 +148,14 @@ class CheckoutSchedulerViewController: UIViewController {
     private let toolbar = UIView()
     private let toolbarBorder = UIView()
     private let scheduleButton = LoadingButton()
-    private var closeButton: UIBarButtonItem!
+    private var closeButton: UIBarButtonItem?
     
-    let dayModel = PickerDayModel()
-    let timeModel = PickerTimeModel()
+    public var checkout: Checkout!
+    public var isModal: Bool = false
+    
+    private let dayModel = PickerDayModel()
+    private let timeModel = PickerTimeModel()
+    private let disposeBag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -169,6 +174,7 @@ class CheckoutSchedulerViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.showsVerticalScrollIndicator = false
+        tableView.bounces = false
         view.addSubview(tableView)
         
         toolbarBorder.backgroundColor = UIColor(red: 0.796, green: 0.796, blue: 0.812, alpha: 1.0)
@@ -182,18 +188,44 @@ class CheckoutSchedulerViewController: UIViewController {
         scheduleButton.titleLabel?.font = Font.gotham(size: 17)
         scheduleButton.addTarget(self, action: #selector(schedule(_:)), for: .touchUpInside)
         toolbar.addSubview(scheduleButton)
+        
+        if isModal {
+            closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Close").tintable, style: .done, target: self, action: #selector(close(_:)))
+            navigationItem.leftBarButtonItem = closeButton
+            
+            navigationController?.navigationBar.backgroundColor = .white
+            
+            navigationItem.title = "Friday 24th at 1pm - 2pm"
+        }
+    }
+    
+    @objc private func close(_ sender: UIBarButtonItem?) {
+        navigationController?.dismiss(animated: true, completion: nil)
     }
     
     @objc private func schedule(_ sender: LoadingButton) {
-        print("sched")
-        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .done, target: self, action: nil)
-        let vc = CheckoutViewController()
-        navigationController?.pushViewController(vc, animated: true)
+        sender.showLoading()
+        Request.shared.updateCheckout(orderDate: Date()) // TODO
+        .observeOn(MainScheduler.instance)
+        .subscribe(onNext: { _ in
+            sender.hideLoading()
+            if self.isModal {
+                self.navigationController?.dismiss(animated: true, completion: nil)
+                return
+            }
+            self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .done, target: self, action: nil)
+            let vc = CheckoutViewController()
+            vc.checkout = self.checkout
+            self.navigationController?.pushViewController(vc, animated: true)
+        }, onError: { error in
+            print("ERROR HANDLE")
+        })
+        .disposed(by: disposeBag)
     }
     
     private func buildConstraints() {
         toolbar.snp.makeConstraints { make in
-            make.bottom.left.right.equalToSuperview()
+            make.left.right.bottom.equalToSuperview()
             make.height.equalTo(60)
         }
         
@@ -207,7 +239,7 @@ class CheckoutSchedulerViewController: UIViewController {
         }
         
         tableView.snp.makeConstraints { make in
-            make.left.top.right.equalToSuperview()
+            make.left.right.top.equalToSuperview()
             make.bottom.equalTo(toolbar.snp.top)
         }
     }
@@ -262,6 +294,9 @@ extension CheckoutSchedulerViewController: UITableViewDelegate, UITableViewDataS
     }
     
     func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        if isModal {
+            return nil
+        }
         return "\nOrder on Friday 24th at 1pm - 2pm\n"
     }
     

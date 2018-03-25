@@ -9,16 +9,24 @@
 import UIKit
 import RxSwift
 
+protocol AddressListModal {
+    func chose(address: Address)
+}
+
 class AddressListViewController: UIViewController {
     
     private let tableView = UITableView(frame: .zero, style: .grouped)
     private var addButton: UIBarButtonItem!
     private let activityIndicator = UIActivityIndicatorView()
     private let refreshControl = UIRefreshControl()
+    private var closeButton: UIBarButtonItem?
     
     private var addresses = [Address]()
     private let disposeBag = DisposeBag()
     private var isLoading = false
+    
+    public var isModal: Bool = false
+    public var delegate: AddressListModal?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -71,9 +79,21 @@ class AddressListViewController: UIViewController {
         activityIndicator.activityIndicatorViewStyle = .gray
         activityIndicator.hidesWhenStopped = true
         tableView.addSubview(activityIndicator)
+        
+        if isModal {
+            closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Close").tintable, style: .done, target: self, action: #selector(close(_:)))
+            closeButton?.tintColor = UIColor(named: .green)
+            navigationItem.leftBarButtonItem = closeButton
+            
+            navigationItem.title = "Select an Address"
+        }
     }
     
-    @objc func refreshTable() {
+    @objc private func close(_ sender: UIBarButtonItem) {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    @objc private func refreshTable() {
         loadAddresses {
             self.refreshControl.endRefreshing()
             self.tableView.reloadData()
@@ -124,7 +144,9 @@ extension AddressListViewController: UITableViewDelegate, UITableViewDataSource 
         cell.detailTextLabel?.textColor = .lightGray
         cell.imageView?.image = #imageLiteral(resourceName: "Address").tintable
         cell.imageView?.tintColor = .lightGray
-        cell.accessoryType = .disclosureIndicator
+        if !isModal {
+            cell.accessoryType = .disclosureIndicator
+        }
         return cell
     }
     
@@ -133,8 +155,17 @@ extension AddressListViewController: UITableViewDelegate, UITableViewDataSource 
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
         if addresses.isEmpty { return }
         let address = addresses[indexPath.row]
+        
+        if isModal {
+            delegate?.chose(address: address)
+            navigationController?.dismiss(animated: true, completion: nil)
+            return
+        }
+        
         let vc = AddressDetailViewController()
         vc.address = address
         navigationController?.pushViewController(vc, animated: true)

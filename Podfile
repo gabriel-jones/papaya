@@ -33,6 +33,10 @@ target 'Papaya' do
   pod 'PMAlertController'
   pod 'DSGradientProgressView'
   pod 'Mandoline'
+  pod 'Presentr'
+  pod 'TCProgressBar'
+  pod 'HCSStarRatingView', '~> 1.5'
+  pod 'UIScrollView-InfiniteScroll', '~> 1.0.0'
   
   #HTTP
   pod 'SwiftyJSON'

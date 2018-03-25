@@ -7,7 +7,8 @@
 //
 
 import UIKit
-import SwiftyJSON // todo: remove
+import Presentr
+import RxSwift
 
 class CheckoutViewController: UIViewController {
 
@@ -16,6 +17,22 @@ class CheckoutViewController: UIViewController {
     private let toolbarBorder = UIView()
     private let checkoutButton = LoadingButton()
     private let orderType = UISegmentedControl()
+    
+    public var checkout: Checkout!
+    
+    private let disposeBag = DisposeBag()
+    private let modalBottomTransition: Presentr = {
+        let tr = Presentr(presentationType: .bottomHalf)
+        tr.transitionType = .coverVertical
+        tr.roundCorners = true
+        return tr
+    }()
+    private let modalCenterTransition: Presentr = {
+        let tr = Presentr(presentationType: .popup)
+        tr.transitionType = .coverVertical
+        tr.roundCorners = true
+        return tr
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,7 +47,6 @@ class CheckoutViewController: UIViewController {
         tableView.backgroundColor = .clear
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.allowsSelection = false
         tableView.register(CheckoutMapTableViewCell.classForCoder(), forCellReuseIdentifier: CheckoutMapTableViewCell.identifier)
         tableView.register(CheckoutCartTableViewCell.classForCoder(), forCellReuseIdentifier: CheckoutCartTableViewCell.identifier)
         view.addSubview(tableView)
@@ -88,10 +104,42 @@ class CheckoutViewController: UIViewController {
     }
     
     @objc private func changeOrderType(_ sender: UISegmentedControl) {
+        let isDelivery = sender.selectedSegmentIndex == 0
         
+        Request.shared.updateCheckout(isDelivery: isDelivery)
+        .observeOn(MainScheduler.instance)
+        .subscribe(onNext: { [unowned self] _ in
+            self.checkout.isDelivery = isDelivery
+        }, onError: { error in
+            
+        })
+        .disposed(by: disposeBag)
     }
     
 
+}
+
+extension CheckoutViewController: CheckoutMapDelegate, AddressListModal {
+    func changeAddress() {
+        let vc = AddressListViewController()
+        vc.isModal = true
+        vc.delegate = self
+        let nav = UINavigationController(rootViewController: vc)
+        nav.navigationBar.tintColor = UIColor(named: .green)
+        present(nav, animated: true, completion: nil)
+    }
+    
+    func chose(address: Address) {
+        Request.shared.updateCheckout(address: address)
+        .observeOn(MainScheduler.instance)
+        .subscribe(onNext: { [unowned self] _ in
+            self.checkout.address = address
+            self.tableView.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .none)
+        }, onError: { error in
+            
+        })
+        .disposed(by: disposeBag)
+    }
 }
 
 extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
@@ -109,7 +157,7 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
             switch indexPath.row {
             case 0:
                 let cell = UITableViewCell(style: .value1, reuseIdentifier: C.ViewModel.CellIdentifier.deliveryTimeCell.rawValue)
-                cell.textLabel?.text = "Delivery Friday at 1pm – 2pm"
+                cell.textLabel?.text = "Friday at 1pm – 2pm"
                 cell.textLabel?.font = Font.gotham(size: 15)
                 cell.accessoryType = .disclosureIndicator
                 cell.detailTextLabel?.text = "Edit"
@@ -121,13 +169,26 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
                 return cell
             case 1:
                 let cell = tableView.dequeueReusableCell(withIdentifier: CheckoutMapTableViewCell.identifier, for: indexPath) as! CheckoutMapTableViewCell
-                cell.load(address: Address(dict: JSON(["id": 6, "street": "32 Highwood Lane", "zip_code": "PG05"]))!)
+                if let address = checkout.address {
+                    cell.load(address: address)
+                } else {
+                    // handle
+                }
+                cell.delegate = self
                 return cell
             default: break
             }
         case 1:
-            let cell = tableView.dequeueReusableCell(withIdentifier: CheckoutCartTableViewCell.identifier, for: indexPath) as! CheckoutCartTableViewCell
-            //cell.load(cart: cart)
+            let cell = UITableViewCell(style: .value1, reuseIdentifier: C.ViewModel.CellIdentifier.deliveryTimeCell.rawValue)
+            cell.textLabel?.text = "Cart"
+            cell.textLabel?.font = Font.gotham(size: 15)
+            cell.accessoryType = .disclosureIndicator
+            cell.detailTextLabel?.text = "\(checkout.cart?.items.count ?? 0) items"
+            cell.detailTextLabel?.font = Font.gotham(size: 13)
+            cell.detailTextLabel?.textColor = .gray
+            cell.imageView?.image = #imageLiteral(resourceName: "Cart Full").tintable
+            cell.imageView?.tintColor = .gray
+            cell.separatorInset = .zero
             return cell
         case 2:
             let cell = UITableViewCell(style: .value1, reuseIdentifier: C.ViewModel.CellIdentifier.checkoutTotalCell.rawValue)
@@ -159,6 +220,7 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
             let cell = UITableViewCell(style: .value1, reuseIdentifier: C.ViewModel.CellIdentifier.checkoutTotalCell.rawValue)
             cell.detailTextLabel?.textColor = .gray
             cell.detailTextLabel?.font = Font.gotham(size: 14)
+            cell.selectionStyle = .none
             switch indexPath.row {
             case 0...3:
                 cell.textLabel?.text = ["Cart Subtotal", "Service Fee", "Tip", "Total"][indexPath.row]
@@ -182,19 +244,39 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
                 return 125
             }
         } else if indexPath.section == 1 {
-            return 125
+            return 50
         }
         return UITableViewAutomaticDimension
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print(indexPath)
         tableView.deselectRow(at: indexPath, animated: true)
         if indexPath.section == 0 && indexPath.row == 0 {
-            // edit delivery time
+            print("load")
+            let vc = CheckoutSchedulerViewController()
+            vc.isModal = true
+            let nav = UINavigationController(rootViewController: vc)
+            nav.navigationBar.tintColor = UIColor(named: .green)
+            customPresentViewController(modalBottomTransition, viewController: nav, animated: true, completion: nil)
         }
-        if indexPath.section == 2 {
+        else if indexPath.section == 1 {
+            guard let cart = checkout.cart else {
+                return
+            }
+            let vc = CartMinimalViewController()
+            vc.cart = cart
+            let nav = UINavigationController(rootViewController: vc)
+            nav.navigationBar.tintColor = UIColor(named: .green)
+            customPresentViewController(modalCenterTransition, viewController: nav, animated: true, completion: nil)
+        }
+        else if indexPath.section == 2 {
             if indexPath.row == 0 {
-                // edit payment type
+                /*
+                let vc = CheckoutEditPaymentType()
+                vc.delegate = self
+                customPresentViewController(modalBottomTransition, viewController: vc, animated: true, completion: nil)
+                */
             } else if indexPath.row == 1 {
                 // edit payment selected
             }

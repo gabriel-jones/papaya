@@ -151,7 +151,7 @@ extension Double {
             return self.layer.shadowOpacity == 1.0
         } set {
             self.layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
-            self.layer.shadowRadius = 0.0
+            self.layer.shadowRadius = 1.0//0.0
             self.layer.masksToBounds = false
             self.layer.shadowOpacity = newValue ? 1.0 : 0.0
         }

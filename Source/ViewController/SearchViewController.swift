@@ -75,7 +75,22 @@ class SearchViewController: ViewControllerWithCart {
         collectionView.dataSource = itemsModel
         collectionView.alwaysBounceVertical = true
         collectionView.register(ItemCollectionViewCell.classForCoder(), forCellWithReuseIdentifier: ItemCollectionViewCell.identifier)
+        collectionView.infiniteScrollTriggerOffset = 200
         view.addSubview(collectionView)
+        
+        collectionView.addInfiniteScroll { collectionView in
+            collectionView.performBatchUpdates({
+                // update collection view
+            }, completion: { finished in
+                // finish infinite scroll animations
+                collectionView.finishInfiniteScroll()
+            });
+        }
+        
+        collectionView.setShouldShowInfiniteScrollHandler { _ -> Bool in
+            // Only show up to 5 pages then prevent the infinite scroll
+            return currentPage < 5
+        }
         
         searchBar.placeholder = "Search for an item..."
         searchBar.sizeToFit()
@@ -228,19 +243,22 @@ class SearchPopularModel: SearchModel, UITableViewDelegate, UITableViewDataSourc
 }
 
 class SearchRecommendModel: SearchModel, UITableViewDelegate, UITableViewDataSource {
+    
+    public var recommended = [String]()
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return recommended.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: SearchTableViewCell.identifier, for: indexPath) as! SearchTableViewCell
-        cell.loadTemplate()
+        cell.load(search: recommended[indexPath.row])
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        delegate?.selectRecommended(keyword: "") // TODO:
+        delegate?.selectRecommended(keyword: recommended[indexPath.row]) // TODO:
     }
 }
 
