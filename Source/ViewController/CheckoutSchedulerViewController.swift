@@ -8,12 +8,13 @@
 
 import Foundation
 import Mandoline
-import RxSwift
+
+//formatter.timeZone = TimeZone(secondsFromGMT: 0)
 
 class DayCell: UICollectionViewCell {
     
     static let cellSize = CGSize(width: 90, height: 100)
-
+    
     let dayLabel = UILabel()
     let dateLabel = UILabel()
     
@@ -55,7 +56,6 @@ class DayCellViewModel: Selectable {
     
     let threeLetterWeekdayFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
         formatter.dateFormat = "EEE"
         return formatter
     }()
@@ -118,7 +118,6 @@ class TimeCellViewModel: Selectable {
     
     let hourDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
         formatter.dateFormat = "h a"
         return formatter
     }()
@@ -126,8 +125,8 @@ class TimeCellViewModel: Selectable {
     var date: Date? {
         didSet {
             guard let date = date else { return }
-            time1 = hourDateFormatter.string(from: date)
-            time2 = hourDateFormatter.string(from: Calendar.current.date(byAdding: .hour, value: 1, to: date)!)
+            time1 = hourDateFormatter.string(from: date).lowercased()
+            time2 = hourDateFormatter.string(from: Calendar.current.date(byAdding: .hour, value: 1, to: date)!).lowercased()
         }
     }
     
@@ -141,6 +140,10 @@ class TimeCellViewModel: Selectable {
     }
 }
 
+protocol SchedulerDelegate: class {
+    func didUpdateCheckout(new: Checkout)
+}
+
 class CheckoutSchedulerViewController: UIViewController {
     
     private let tableView = UITableView(frame: .zero, style: .grouped)
@@ -152,15 +155,26 @@ class CheckoutSchedulerViewController: UIViewController {
     
     public var checkout: Checkout!
     public var isModal: Bool = false
+    public var schedule: [ScheduleDay]!
+    public var modalDelegate: SchedulerDelegate?
     
     private let dayModel = PickerDayModel()
     private let timeModel = PickerTimeModel()
-    private let disposeBag = DisposeBag()
+    
+    private var selectedDate: Date!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        selectedDate = combine(date: schedule.first!.date, withTime: schedule.first!.opensAt)!
+
         self.buildViews()
         self.buildConstraints()
+        
+        dayModel.days = schedule
+        dayModel.delegate = self
+        timeModel.day = schedule.first!
+        timeModel.delegate = self
+        
     }
     
     private func buildViews() {
@@ -182,8 +196,6 @@ class CheckoutSchedulerViewController: UIViewController {
         
         scheduleButton.backgroundColor = UIColor(named: .green)
         scheduleButton.layer.cornerRadius = 5
-        let day = "Friday" // TODO: dyanmic
-        scheduleButton.setTitle("Schedule for \(day)", for: .normal)
         scheduleButton.titleLabel?.textColor = .white
         scheduleButton.titleLabel?.font = Font.gotham(size: 17)
         scheduleButton.addTarget(self, action: #selector(schedule(_:)), for: .touchUpInside)
@@ -192,10 +204,54 @@ class CheckoutSchedulerViewController: UIViewController {
         if isModal {
             closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Close").tintable, style: .done, target: self, action: #selector(close(_:)))
             navigationItem.leftBarButtonItem = closeButton
-            
+            tableView.tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 0.01))
             navigationController?.navigationBar.backgroundColor = .white
-            
-            navigationItem.title = "Friday 24th at 1pm - 2pm"
+        }
+        
+        setButton(to: selectedDate)
+        setDetail(to: selectedDate)
+    }
+    
+    func daySuffix(date: Date) -> String {
+        let dayOfMonth = Calendar.current.component(.day, from: date)
+        switch dayOfMonth {
+        case 1, 21, 31: return "st"
+        case 2, 22: return "nd"
+        case 3, 23: return "rd"
+        default: return "th"
+        }
+    }
+    
+    private func setButton(to date: Date) {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE"
+        scheduleButton.setTitle("Schedule for \(formatter.string(from: date))", for: .normal)
+    }
+    
+    private func getDetailString(date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE d"
+        var str = formatter.string(from: date) + daySuffix(date: date)
+        formatter.dateFormat = " 'at' h a - "
+        str += formatter.string(from: date).lowercased()
+        let nextHour = Calendar.current.date(byAdding: .hour, value: 1, to: date)!
+        formatter.dateFormat = "h a"
+        str += formatter.string(from: nextHour).lowercased()
+        return str
+    }
+    
+    private func setDetail(to date: Date) {
+        let str = getDetailString(date: date)
+        
+        if isModal {
+            navigationItem.title = str
+        } else {
+            UIView.setAnimationsEnabled(false)
+            tableView.beginUpdates()
+            tableView.footerView(forSection: 0)?.textLabel?.text = "\n" + str + "\n"
+            tableView.footerView(forSection: 0)?.sizeToFit()
+            tableView.endUpdates()
+            UIView.setAnimationsEnabled(true)
         }
     }
     
@@ -205,22 +261,27 @@ class CheckoutSchedulerViewController: UIViewController {
     
     @objc private func schedule(_ sender: LoadingButton) {
         sender.showLoading()
-        Request.shared.updateCheckout(orderDate: Date()) // TODO
-        .observeOn(MainScheduler.instance)
-        .subscribe(onNext: { _ in
+        checkout.orderDate = self.selectedDate
+        Request.shared.updateCheckout(orderDate: selectedDate) { result in
             sender.hideLoading()
-            if self.isModal {
-                self.navigationController?.dismiss(animated: true, completion: nil)
-                return
+            switch result {
+            case .success(_):
+                print("success in update")
+                if self.isModal {
+                    print("is modalll")
+                    self.modalDelegate?.didUpdateCheckout(new: self.checkout)
+                    self.navigationController?.dismiss(animated: true, completion: nil)
+                    return
+                }
+                self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .done, target: self, action: nil)
+                let vc = CheckoutViewController()
+                vc.checkout = self.checkout
+                vc.schedule = self.schedule
+                self.navigationController?.pushViewController(vc, animated: true)
+            case .failure(let error):
+                print(error.localizedDescription)
             }
-            self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .done, target: self, action: nil)
-            let vc = CheckoutViewController()
-            vc.checkout = self.checkout
-            self.navigationController?.pushViewController(vc, animated: true)
-        }, onError: { error in
-            print("ERROR HANDLE")
-        })
-        .disposed(by: disposeBag)
+        }
     }
     
     private func buildConstraints() {
@@ -242,6 +303,20 @@ class CheckoutSchedulerViewController: UIViewController {
             make.left.right.top.equalToSuperview()
             make.bottom.equalTo(toolbar.snp.top)
         }
+    }
+}
+
+extension CheckoutSchedulerViewController: PickerDayDelegate {
+    func didSelect(day: ScheduleDay, date: Date, shouldRefresh: Bool) {
+        if shouldRefresh {
+            timeModel.day = day
+            tableView.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .none)
+        }
+        
+        setButton(to: date)
+        setDetail(to: date)
+        
+        selectedDate = date
     }
 }
 
@@ -297,7 +372,7 @@ extension CheckoutSchedulerViewController: UITableViewDelegate, UITableViewDataS
         if isModal {
             return nil
         }
-        return "\nOrder on Friday 24th at 1pm - 2pm\n"
+        return "\n" + self.getDetailString(date: selectedDate) + "\n"
     }
     
     func tableView(_ tableView: UITableView, willDisplayFooterView view: UIView, forSection section: Int) {
@@ -306,42 +381,79 @@ extension CheckoutSchedulerViewController: UITableViewDelegate, UITableViewDataS
             v.textLabel?.textAlignment = .center
         }
     }
-//
-//    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-//        let label = UILabel()
-//        label.font = Font.gotham(size: 15)
-//        label.text = "Order on Friday 24th at 1pm - 2pm"
-//        label.textAlignment = .center
-//
-//        return label
-//    }
+}
+
+protocol PickerDayDelegate: class {
+    func didSelect(day: ScheduleDay, date: Date, shouldRefresh: Bool)
 }
 
 class PickerDayModel: PickerViewDataSource, PickerViewDelegate {
+    var days: [ScheduleDay]!
+    var delegate: PickerDayDelegate?
+    
     var selectableCells: [Selectable] {
-        let today = Date()
-        return (0...8).map { i in
-            let cellViewModel = DayCellViewModel(isSelectable: true)
-            cellViewModel.date = Calendar.current.date(byAdding: .day, value: i, to: today)
+        return days.map { day in
+            let cellViewModel = DayCellViewModel(isSelectable: day.isOpen)
+            cellViewModel.date = day.date
             return cellViewModel
         }
     }
-    
     
     func configure(cell: UICollectionViewCell, for: IndexPath) {
         guard let datedCell = cell as? DayCell else { return }
         datedCell.viewModel = selectableCells[`for`.row] as? DayCellViewModel
     }
+    
+    func collectionView(_ view: PickerView, didSelectItemAt indexPath: IndexPath) {
+        let day = days[indexPath.row]
+        let date = combine(date: day.date, withTime: day.opensAt)!
+        delegate?.didSelect(day: day, date: date, shouldRefresh: true)
+    }
+    
+    func didSelect(indexPath: IndexPath) {
+        let day = days[indexPath.row]
+        let date = combine(date: day.date, withTime: day.opensAt)!
+        delegate?.didSelect(day: day, date: date, shouldRefresh: true)
+    }
+}
+
+func combine(date: Date, withTime time: Date) -> Date? {
+    let calendar = Calendar.current
+    
+    let dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+    let timeComponents = calendar.dateComponents([.hour, .minute, .second], from: time)
+    
+    var mergedComponments = DateComponents()
+    mergedComponments.year = dateComponents.year
+    mergedComponments.month = dateComponents.month
+    mergedComponments.day = dateComponents.day
+    mergedComponments.hour = timeComponents.hour
+    mergedComponments.minute = timeComponents.minute
+    mergedComponments.second = timeComponents.second
+    
+    return calendar.date(from: mergedComponments)
 }
 
 class PickerTimeModel: PickerViewDataSource, PickerViewDelegate {
+    func didSelect(indexPath: IndexPath) {
+        let time = Calendar.current.date(byAdding: .hour, value: indexPath.row, to: day.opensAt)!
+        let date = combine(date: day.date, withTime: time)!
+        delegate?.didSelect(day: day, date: date, shouldRefresh: false)
+    }
+    
+    var day: ScheduleDay!
+    var delegate: PickerDayDelegate?
+
     var selectableCells: [Selectable] {
-        let today = Date()
-        return (0...8).map { i in
+        var results = [TimeCellViewModel]()
+        var t = day.opensAt
+        while t < day.closesAt {
             let cellViewModel = TimeCellViewModel(isSelectable: true)
-            cellViewModel.date = Date()
-            return cellViewModel
+            cellViewModel.date = t
+            results.append(cellViewModel)
+            t = Calendar.current.date(byAdding: .hour, value: 1, to: t)!
         }
+        return results
     }
     
     func configure(cell: UICollectionViewCell, for: IndexPath) {
@@ -349,3 +461,4 @@ class PickerTimeModel: PickerViewDataSource, PickerViewDelegate {
         datedCell.viewModel = selectableCells[`for`.row] as? TimeCellViewModel
     }
 }
+

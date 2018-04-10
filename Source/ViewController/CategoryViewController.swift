@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import RxSwift
 
 struct CategorySection {
     let category: Category
@@ -19,10 +18,9 @@ struct CategorySection {
     }
 }
 
-class CategoryVC: ViewControllerWithCart {
+class CategoryViewController: ViewControllerWithCart {
     
     public var category: Category?
-    private let disposeBag = DisposeBag()
     
     private let tableView = UITableView()
     private let sectionBar = UIView()
@@ -37,9 +35,10 @@ class CategoryVC: ViewControllerWithCart {
             completion(false)
             return
         }
-        Request.shared.getSubcategories(category: cat)
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { subcategories in
+        
+        Request.shared.getSubcategories(category: cat) { result in
+            switch result {
+            case .success(let subcategories):
                 self.sections = subcategories.map {
                     self.getItems(cat: $0)
                     return CategorySection(category: $0)
@@ -47,31 +46,28 @@ class CategoryVC: ViewControllerWithCart {
                 self.sectionsCollectionView.reloadData()
                 self.tableView.reloadData()
                 completion(true)
-            }, onError: { [unowned self] error in
+            case .failure(let error):
                 print(error.localizedDescription)
                 completion(false)
-            })
-            .disposed(by: disposeBag)
+            }
+        }
     }
     
     private func getItems(cat: Category) {
-        print("Getting items for category: \(cat.name)")
-        Request.shared.getItems(category: cat)
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [unowned self] items in
-                print("Fetched items: \(items.count)")
+        Request.shared.getItems(category: cat) { result in
+            switch result {
+            case .success(let items):
                 if let index = self.sections.index(where: { $0.category.id == cat.id }) {
-                    print("Index: \(index)")
                     self.sections[index].items = items
                     if let cell = self.tableView.cellForRow(at: IndexPath(row: index+1, section: 0)) as? GroupTableViewCell {
                         cell.model?.set(new: items)
                         cell.reload()
                     }
                 }
-            }, onError: { [unowned self] error in
+            case .failure(let error):
                 print(error.localizedDescription)
-            })
-            .disposed(by: disposeBag)
+            }
+        }
     }
     
     override func viewDidLoad() {
@@ -123,8 +119,6 @@ class CategoryVC: ViewControllerWithCart {
         activityIndicator.activityIndicatorViewStyle = .gray
         activityIndicator.hidesWhenStopped = true
         view.addSubview(activityIndicator)
-        
-        
     }
     
     private func buildConstraints() {
@@ -151,7 +145,7 @@ class CategoryVC: ViewControllerWithCart {
     }
 }
 
-extension CategoryVC: UITableViewDelegate, UITableViewDataSource {
+extension CategoryViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1 + sections.count
     }
@@ -194,30 +188,18 @@ extension CategoryVC: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-extension CategoryVC: ViewAllDelegate {
+extension CategoryViewController: ViewAllDelegate {
     func viewAll(identifier: Int?) {
         if let selected = sections.first(where: { $0.category.id == identifier }) {
             let vc = ItemGroupViewController()
-            vc.items = Request.shared.getAllItemsTemp()
+            //vc.items = Request.shared.getAllItemsTemp()
             vc.groupTitle = selected.category.name
             navigationController?.pushViewController(vc, animated: true)
         }
     }
 }
 
-extension CategoryVC: GroupDelegateAction {
-    func open(item: Item, imageId: String) {
-        let vc = ItemVC()
-        vc.item = item
-        vc.imageId = imageId
-        isHeroEnabled = true
-        let nav = UINavigationController(rootViewController: vc)
-        nav.isHeroEnabled = true
-        present(nav, animated: true, completion: nil)
-    }
-}
-
-extension CategoryVC: UICollectionViewDelegate, UICollectionViewDataSource {
+extension CategoryViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return sections.count
     }

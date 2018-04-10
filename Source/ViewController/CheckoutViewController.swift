@@ -8,10 +8,9 @@
 
 import UIKit
 import Presentr
-import RxSwift
 
 class CheckoutViewController: UIViewController {
-
+    
     private let tableView = UITableView(frame: .zero, style: .grouped)
     private let toolbar = UIView()
     private let toolbarBorder = UIView()
@@ -19,10 +18,11 @@ class CheckoutViewController: UIViewController {
     private let orderType = UISegmentedControl()
     
     public var checkout: Checkout!
+    public var schedule: [ScheduleDay]!
     
-    private let disposeBag = DisposeBag()
     private let modalBottomTransition: Presentr = {
-        let tr = Presentr(presentationType: .bottomHalf)
+        let type = PresentationType.custom(width: .full, height: .half, center: .bottomCenter)
+        let tr = Presentr(presentationType: type)
         tr.transitionType = .coverVertical
         tr.roundCorners = true
         return tr
@@ -75,7 +75,7 @@ class CheckoutViewController: UIViewController {
         orderType.tintColor = UIColor(named: .green)
         orderType.setTitleTextAttributes([NSAttributedStringKey.font: Font.gotham(size: 15)], for: .normal)
         orderType.addTarget(self, action: #selector(changeOrderType(_:)), for: .valueChanged)
-        orderType.selectedSegmentIndex = 0
+        orderType.selectedSegmentIndex = checkout.isDelivery ? 0 : 1
     }
     
     private func buildConstraints() {
@@ -105,18 +105,24 @@ class CheckoutViewController: UIViewController {
     
     @objc private func changeOrderType(_ sender: UISegmentedControl) {
         let isDelivery = sender.selectedSegmentIndex == 0
-        
-        Request.shared.updateCheckout(isDelivery: isDelivery)
-        .observeOn(MainScheduler.instance)
-        .subscribe(onNext: { [unowned self] _ in
-            self.checkout.isDelivery = isDelivery
-        }, onError: { error in
-            
-        })
-        .disposed(by: disposeBag)
+        checkout.isDelivery = isDelivery
+        if sender.selectedSegmentIndex == 0 {
+            tableView.insertRows(at: [IndexPath(row: 1, section: 0)], with: .top)
+        } else {
+            tableView.deleteRows(at: [IndexPath(row: 1, section: 0)], with: .top)
+        }
+        print("change type: \(checkout.isDelivery)")
+        Request.shared.updateCheckout(isDelivery: isDelivery) { result in
+            switch result {
+            case .success(_):
+                self.checkout.isDelivery = isDelivery
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
     }
     
-
+    
 }
 
 extension CheckoutViewController: CheckoutMapDelegate, AddressListModal {
@@ -130,15 +136,22 @@ extension CheckoutViewController: CheckoutMapDelegate, AddressListModal {
     }
     
     func chose(address: Address) {
-        Request.shared.updateCheckout(address: address)
-        .observeOn(MainScheduler.instance)
-        .subscribe(onNext: { [unowned self] _ in
-            self.checkout.address = address
-            self.tableView.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .none)
-        }, onError: { error in
-            
-        })
-        .disposed(by: disposeBag)
+        Request.shared.updateCheckout(address: address) { result in
+            switch result {
+            case .success(_):
+                self.checkout.address = address
+                self.tableView.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .none)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+    }
+}
+
+extension CheckoutViewController: SchedulerDelegate {
+    func didUpdateCheckout(new: Checkout) {
+        self.checkout = new
+        tableView.reloadRows(at: [IndexPath.init(row: 0, section: 0)], with: .none)
     }
 }
 
@@ -148,7 +161,7 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return [0: 2, 1: 1, 2: 2, 3: 4][section] ?? 0
+        return [0: checkout.isDelivery ? 2 : 1, 1: 1, 2: 2, 3: 4][section] ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -156,8 +169,17 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
         case 0:
             switch indexPath.row {
             case 0:
+                let formatter = DateFormatter()
+                formatter.dateFormat = "EEEE"
+                var str = formatter.string(from: checkout.orderDate!)
+                formatter.dateFormat = " 'at' ha - "
+                str += formatter.string(from: checkout.orderDate!).lowercased()
+                let nextHour = Calendar.current.date(byAdding: .hour, value: 1, to: checkout.orderDate!)!
+                formatter.dateFormat = "ha"
+                str += formatter.string(from: nextHour).lowercased()
+                
                 let cell = UITableViewCell(style: .value1, reuseIdentifier: C.ViewModel.CellIdentifier.deliveryTimeCell.rawValue)
-                cell.textLabel?.text = "Friday at 1pm – 2pm"
+                cell.textLabel?.text = str
                 cell.textLabel?.font = Font.gotham(size: 15)
                 cell.accessoryType = .disclosureIndicator
                 cell.detailTextLabel?.text = "Edit"
@@ -250,12 +272,13 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print(indexPath)
         tableView.deselectRow(at: indexPath, animated: true)
         if indexPath.section == 0 && indexPath.row == 0 {
-            print("load")
             let vc = CheckoutSchedulerViewController()
             vc.isModal = true
+            vc.schedule = self.schedule
+            vc.checkout = self.checkout
+            vc.modalDelegate = self
             let nav = UINavigationController(rootViewController: vc)
             nav.navigationBar.tintColor = UIColor(named: .green)
             customPresentViewController(modalBottomTransition, viewController: nav, animated: true, completion: nil)
@@ -273,10 +296,10 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
         else if indexPath.section == 2 {
             if indexPath.row == 0 {
                 /*
-                let vc = CheckoutEditPaymentType()
-                vc.delegate = self
-                customPresentViewController(modalBottomTransition, viewController: vc, animated: true, completion: nil)
-                */
+                 let vc = CheckoutEditPaymentType()
+                 vc.delegate = self
+                 customPresentViewController(modalBottomTransition, viewController: vc, animated: true, completion: nil)
+                 */
             } else if indexPath.row == 1 {
                 // edit payment selected
             }
@@ -296,3 +319,4 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
         return container
     }
 }
+

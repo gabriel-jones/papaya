@@ -8,21 +8,6 @@ target 'Papaya' do
 
   # Pods for Papaya
   
-  #ReactiveX
-  pod 'RxSwift', '~> 4.0'
-  
-  post_install do |installer|
-      installer.pods_project.targets.each do |target|
-          if target.name == 'RxSwift'
-              target.build_configurations.each do |config|
-                  if config.name == 'Debug'
-                      config.build_settings['OTHER_SWIFT_FLAGS'] ||= ['-D', 'TRACE_RESOURCES']
-                  end
-              end
-          end
-      end
-  end
-  
   #UI
   pod 'SnapKit', '~> 3.2.0'
   
@@ -31,17 +16,18 @@ target 'Papaya' do
   pod 'JVFloatLabeledTextField'
   pod 'TOMSMorphingLabel', '~> 0.5'
   pod 'PMAlertController'
-  pod 'DSGradientProgressView'
   pod 'Mandoline'
   pod 'Presentr'
   pod 'TCProgressBar'
   pod 'HCSStarRatingView', '~> 1.5'
   pod 'UIScrollView-InfiniteScroll', '~> 1.0.0'
+  pod 'PhoneNumberKit', '~> 2.1'
   
   #HTTP
   pod 'SwiftyJSON'
   pod 'SocketRocket'
   pod 'PINRemoteImage'
+  pod 'ReachabilitySwift'
 
   #Animations
   pod 'Hero', '1.0.0-alpha.4'

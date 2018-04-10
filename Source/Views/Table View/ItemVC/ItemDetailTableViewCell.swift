@@ -12,6 +12,8 @@ class ItemDetailTableViewCell: UITableViewCell {
     
     static let identifier: String = C.ViewModel.CellIdentifier.itemDetailCell.rawValue
     
+    public var delegate: ItemImageDelegate?
+    
     var itemImage = UIImageView(frame: .zero)
     var itemName = UILabel(frame: .zero)
     var itemPrice = UILabel(frame: .zero)
@@ -30,6 +32,9 @@ class ItemDetailTableViewCell: UITableViewCell {
         masksToBounds = true
         
         itemImage.contentMode = .scaleAspectFit
+        let imageTap = UITapGestureRecognizer(target: self, action: #selector(tap(_:)))
+        itemImage.isUserInteractionEnabled = true
+        itemImage.addGestureRecognizer(imageTap)
         addSubview(itemImage)
         
         itemName.font = Font.gotham(size: 18.0)
@@ -40,6 +45,11 @@ class ItemDetailTableViewCell: UITableViewCell {
         itemPrice.font = Font.gotham(size: 16.0)
         itemPrice.textColor = UIColor(named: .mediumGrey)
         addSubview(itemPrice)
+    }
+    
+    @objc private func tap(_ sender: Any) {
+        print("tap")
+        delegate?.openImage(sender)
     }
     
     private func buildConstraints() {

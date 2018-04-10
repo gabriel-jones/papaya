@@ -11,25 +11,34 @@ import SwiftyJSON
 
 struct User: BaseObject {
     
-    static var current: User?
+    public static var current: User?
     
     let id: Int
-    var email: String
-    var fname: String
-    var lname: String
-    var phone: String?
+    public var email: String
+    public var fname: String
+    public var lname: String
+    public var phone: String?
     
-    var name: String {
+    public var name: String {
         get {
             return [fname, lname].joined(separator: " ")
         }
     }
     
-    init?(dict: JSON) {
-        id = dict["id"].intValue
-        email = dict["email"].stringValue
-        fname = dict["fname"].stringValue
-        lname = dict["lname"].stringValue
+    public init?(dict: JSON) {
+        guard
+            let _id = dict["id"].int,
+            let _email = dict["email"].string,
+            let _fname = dict["fname"].string,
+            let _lname = dict["lname"].string
+        else {
+            return nil
+        }
+        
+        id = _id
+        email = _email
+        fname = _fname
+        lname = _lname
         phone = dict["phone"].string
     }
 }

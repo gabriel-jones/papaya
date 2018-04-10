@@ -8,58 +8,77 @@
 
 import Foundation
 import SwiftyJSON
-import RxSwift
 
 extension Request {
-    public func createCheckout() -> Observable<Checkout> {
+    @discardableResult
+    public func getSchedule(days: Int = 7, completion: (CompletionHandler<[ScheduleDay]>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.get(path: "/checkout/schedule/\(days)") else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, parseMethod: parse.json2ScheduleDays, completion: completion)
+    }
+    
+    @discardableResult
+    public func createCheckout(completion: (CompletionHandler<Checkout>)? = nil) -> URLSessionDataTask? {
         guard let request = URLRequest.post(path: "/checkout/create") else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
         
-        return self.fetch(request: request)
-        .flatMap(parse.json2Checkout)
+        return self.execute(request: request, parseMethod: parse.json2Checkout, completion: completion)
     }
     
-    public func getCheckout() -> Observable<Checkout> {
-        guard let request = URLRequest.post(path: "/checkout") else {
-            return Observable.error(RequestError.cannotBuildRequest)
+    @discardableResult
+    public func getCheckout(completion: (CompletionHandler<Checkout>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.get(path: "/checkout") else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
         
-        return self.fetch(request: request)
-        .flatMap(parse.json2Checkout)
+        return self.execute(request: request, parseMethod: parse.json2Checkout, completion: completion)
     }
     
-    public func updateCheckout(orderDate: Date) -> Observable<JSON> {
+    @discardableResult
+    public func updateCheckout(orderDate: Date, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
+        print(orderDate)
+        print(dateTimeFormatter.string(from: orderDate))
         let body = [
-            "date": "FORMAT_REQUIRED" //TODO: formatting dates
+            "order_time": dateTimeFormatter.string(from: orderDate)
         ]
         guard let request = URLRequest.put(path: "/checkout/update/time", body: body) else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
         
-        return self.fetch(request: request)
+        return self.execute(request: request, completion: completion)
     }
     
-    public func updateCheckout(address: Address) -> Observable<JSON> {
+    @discardableResult
+    public func updateCheckout(address: Address, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
         let body = [
             "address_id": address.id
         ]
         guard let request = URLRequest.put(path: "/checkout/update/address", body: body) else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
         
-        return self.fetch(request: request)
+        return self.execute(request: request, completion: completion)
     }
     
-    public func updateCheckout(isDelivery: Bool) -> Observable<JSON> {
+    @discardableResult
+    public func updateCheckout(isDelivery: Bool, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
         let body = [
             "is_delivery": isDelivery
         ]
         guard let request = URLRequest.put(path: "/checkout/update/type", body: body) else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
         
-        return self.fetch(request: request)
+        return self.execute(request: request, completion: completion)
     }
 }
 

@@ -10,7 +10,7 @@ import UIKit
 import SafariServices
 import PMAlertController
 
-class SettingsVC: UIViewController {
+class SettingsViewController: UIViewController {
     
     private let tableView = UITableView(frame: .zero, style: .grouped)
     private let settings: [SettingField] = [
@@ -86,7 +86,7 @@ class SettingsVC: UIViewController {
                 print(didLogout)
                 if didLogout {
                     self.navigationController?.isNavigationBarHidden = true
-                    self.hero_replaceViewController(with: LoadingVC())
+                    self.hero_replaceViewController(with: LoadingViewController())
                 }
             }
         })
@@ -100,7 +100,7 @@ class SettingsVC: UIViewController {
     
 }
 
-extension SettingsVC: UITableViewDelegate, UITableViewDataSource {
+extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return 2
     }
@@ -151,7 +151,7 @@ extension SettingsVC: UITableViewDelegate, UITableViewDataSource {
     
 }
 
-extension SettingsVC: SFSafariViewControllerDelegate {
+extension SettingsViewController: SFSafariViewControllerDelegate {
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         controller.dismiss(animated: true, completion: nil)
     }

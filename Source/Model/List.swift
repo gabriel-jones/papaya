@@ -15,12 +15,22 @@ struct List: BaseObject {
     let items: [Item]
     
     init?(dict: JSON) {
-        id = dict["id"].intValue
-        name = dict["name"].stringValue
+        guard
+            let _id = dict["id"].int,
+            let _name = dict["name"].string,
+            let _itemsDict = dict["items"].array
+        else {
+            return nil
+        }
+            
+        id = _id
+        name = _name
         var _items = [Item]()
-        for itemDict in dict["items"].arrayValue {
+        for itemDict in _itemsDict {
             if let item = Item(dict: itemDict) {
                 _items.append(item)
+            } else {
+                return nil
             }
         }
         items = _items

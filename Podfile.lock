@@ -1,6 +1,5 @@
 PODS:
   - CHIPageControl/Jaloro (0.1.4)
-  - DSGradientProgressView (1.0.0)
   - FLAnimatedImage (1.0.12)
   - HCSStarRatingView (1.5)
   - Hero (1.0.0-alpha.4)
@@ -8,6 +7,12 @@ PODS:
   - KeychainAccess (3.1.0)
   - Mandoline (1.0.0):
     - SnapKit (~> 3.2.0)
+  - PhoneNumberKit (2.1.0):
+    - PhoneNumberKit/PhoneNumberKitCore (= 2.1.0)
+    - PhoneNumberKit/UIKit (= 2.1.0)
+  - PhoneNumberKit/PhoneNumberKitCore (2.1.0)
+  - PhoneNumberKit/UIKit (2.1.0):
+    - PhoneNumberKit/PhoneNumberKitCore
   - PINCache (2.3)
   - PINRemoteImage (2.1.4):
     - PINRemoteImage/FLAnimatedImage (= 2.1.4)
@@ -18,7 +23,7 @@ PODS:
     - PINRemoteImage/Core
   - PMAlertController (3.1.0)
   - Presentr (1.3)
-  - RxSwift (4.0.0)
+  - ReachabilitySwift (4.1.0)
   - SnapKit (3.2.0)
   - SocketRocket (0.5.1)
   - SwiftyJSON (4.0.0)
@@ -28,16 +33,16 @@ PODS:
 
 DEPENDENCIES:
   - CHIPageControl/Jaloro
-  - DSGradientProgressView
   - HCSStarRatingView (~> 1.5)
   - Hero (= 1.0.0-alpha.4)
   - JVFloatLabeledTextField
   - KeychainAccess
   - Mandoline
+  - PhoneNumberKit (~> 2.1)
   - PINRemoteImage
   - PMAlertController
   - Presentr
-  - RxSwift (~> 4.0)
+  - ReachabilitySwift
   - SnapKit (~> 3.2.0)
   - SocketRocket
   - SwiftyJSON
@@ -47,18 +52,18 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   CHIPageControl: 032b5ab68506c00711d5a61bd83e9fdf2a7ecb22
-  DSGradientProgressView: b591b4dfc6a7491fbd1f8dedee7a6ce02b23640f
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
   HCSStarRatingView: 1d18f79654735514cd6f00e6d90e38cb6320dc31
   Hero: 6ab58fdfb16c75ce9c6bfad48ef6abb54780b263
   JVFloatLabeledTextField: cfc44e3c4d493b2ed92ede8035e8e89c2912ba64
   KeychainAccess: 94c5540b32eabf7bc32bfb976a268e8ea05fd6da
   Mandoline: 5f0c7b5bb52ce3b2757328a59e0206a003911e77
+  PhoneNumberKit: 62003f40ff75315fd3738286558bc365365ac222
   PINCache: ce36ed282031b92fc7733ffe831f474ff80fddc2
   PINRemoteImage: 4ac4011c5caefd6befd99758e09becede05d3226
   PMAlertController: 2c9f27b318e5adf685ba10737ff84be0a3ac5618
   Presentr: 3f0825a42cb32ecd8fc6b6d0b0de87d7d0b42482
-  RxSwift: fd680d75283beb5e2559486f3c0ff852f0d35334
+  ReachabilitySwift: 6849231cd4e06559f3b9ef4a97a0a0f96d41e09f
   SnapKit: 1ca44df72cfa543218d177cb8aab029d10d86ea7
   SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
   SwiftyJSON: 070dabdcb1beb81b247c65ffa3a79dbbfb3b48aa
@@ -66,6 +71,6 @@ SPEC CHECKSUMS:
   TOMSMorphingLabel: 3e88a2bf5257f8993ebc51fb3109187a0bfb2c4d
   UIScrollView-InfiniteScroll: c132d6d5851daff229ab4a1060ccf70a05a051c9
 
-PODFILE CHECKSUM: f23911144e9681fac239675769f72635fe66ae3a
+PODFILE CHECKSUM: 060a1eed118c538692db9c1a8ba2f874702e081e
 
 COCOAPODS: 1.3.1

@@ -24,8 +24,15 @@ struct ListItem: BaseObject {
     }
     
     init?(dict: JSON) {
-        id = dict["id"].intValue
-        quantity = dict["quantity"].intValue
-        item = Item(dict: dict)!
+        guard
+            let _id = dict["id"].int,
+            let _quantity = dict["quantity"].int,
+            let _item = Item(dict: dict)
+        else {
+            return nil
+        }
+        id = _id
+        quantity = _quantity
+        item = _item
     }
 }

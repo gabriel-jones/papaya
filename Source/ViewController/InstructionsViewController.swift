@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import RxSwift
 
 protocol InstructionsViewControllerDelegate {
     func didMakeChanges()
@@ -22,7 +21,6 @@ class InstructionsViewController: UIViewController {
     
     private var madeChanges = false
     
-    private let disposeBag = DisposeBag()
     private var saveButton: UIBarButtonItem!
     private var closeButton: UIBarButtonItem!
     private let tableView = UITableView(frame: .zero, style: .grouped)
@@ -69,17 +67,17 @@ class InstructionsViewController: UIViewController {
         
         if madeChanges {
             delegate?.didMakeChanges()
-            Request.shared.update(cartItem: self.item)
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { json in
-                print(json)
-            }, onError: { error in
-                print(error.localizedDescription)
-            }, onCompleted: {
-                print("completed")
-                //self.navigationController?.dismiss(animated: true, completion: nil)
-            })
-            .disposed(by: disposeBag)
+//            Request.shared.update(cartItem: self.item)
+//            .observeOn(MainScheduler.instance)
+//            .subscribe(onNext: { json in
+//                print(json)
+//            }, onError: { error in
+//                print(error.localizedDescription)
+//            }, onCompleted: {
+//                print("completed")
+//                //self.navigationController?.dismiss(animated: true, completion: nil)
+//            })
+//            .disposed(by: disposeBag)
         }
     }
 }

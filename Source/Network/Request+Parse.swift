@@ -8,102 +8,116 @@
 
 import Foundation
 import SwiftyJSON
-import RxSwift
 
 extension Request {    
     internal class Parse {
-        func jsonDict2Object<T: BaseObject>(from json: JSON, to type: T.Type) -> Observable<T> {
-            if let object = T(dict: json) {
-                return Observable.just(object)
+        func response2Data(from response: Response) -> Result<Data> {
+            guard let data = response.data else {
+                return .failure(.unknown)
             }
-            return Observable.error(RequestError.failedToParseJson)
+            return .success(data)
         }
         
-        func jsonArray2Array<T: BaseObject>(from json: JSON, to type: T.Type) -> Observable<[T]> {
+        func data2Json(from data: Data) -> Result<JSON> {
+            do {
+                let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
+                let json = JSON(jsonObject)
+
+                guard let code = json["code"].int else {
+                    return Result(error: .unknown)
+                }
+                
+                let error = RequestError(rawValue: code)
+                if error != .succ {
+                    return Result(error: error)
+                }
+                
+                return Result(value: json)
+            } catch {
+                return Result(error: .failedToParseJson)
+            }
+        }
+
+        func jsonDict2Object<T: BaseObject>(from json: JSON, to type: T.Type) -> Result<T> {
+            return Result(fromOptional: T(dict: json), error: .failedToParseJson)
+        }
+        
+        func jsonArray2Array<T: BaseObject>(from json: JSON, to type: T.Type) -> Result<[T]> {
             if let json = json.array {
                 var array = [T]()
                 for element in json {
                     if let object = T(dict: element) {
                         array.append(object)
                     } else {
-                        return Observable.error(RequestError.failedToParseJson)
+                        return Result(error: .failedToParseJson)
                     }
                 }
-                return Observable.just(array)
+                return Result(value: array)
             }
-            return Observable.error(RequestError.failedToParseJson)
-        }
-        
-        func jsonArray2RawArray<T: BaseObject>(from json: JSON, to type: T.Type) -> [T]? {
-            if let json = json.array {
-                var array = [T]()
-                for element in json {
-                    if let object = T(dict: element) {
-                        array.append(object)
-                    }
-                }
-                return array
-            }
-            return nil
+            return Result(error: .failedToParseJson)
         }
 
-        func json2User(from json: JSON) -> Observable<User> {
+        func json2User(from json: JSON) -> Result<User> {
             return jsonDict2Object(from: json["user"], to: User.self)
         }
         
-        func json2Addresses(from json: JSON) -> Observable<[Address]> {
+        func json2Addresses(from json: JSON) -> Result<[Address]> {
             return jsonArray2Array(from: json["addresses"], to: Address.self)
         }
         
-        func json2Address(from json: JSON) -> Observable<Address> {
+        func json2Address(from json: JSON) -> Result<Address> {
             return jsonDict2Object(from: json["address"], to: Address.self)
         }
         
-        func json2List(from json: JSON) -> Observable<List> {
+        func json2List(from json: JSON) -> Result<List> {
             return jsonDict2Object(from: json["list"], to: List.self)
         }
         
-        func json2Lists(from json: JSON) -> Observable<[List]> {
+        func json2Lists(from json: JSON) -> Result<[List]> {
             return jsonArray2Array(from: json["lists"], to: List.self)
         }
         
-        func json2Cart(from json: JSON) -> Observable<Cart> {
+        func json2Cart(from json: JSON) -> Result<Cart> {
             return jsonDict2Object(from: json["cart"], to: Cart.self)
         }
         
-        func json2Token(from json: JSON) -> Observable<String?> {
-            return Observable.just(json["auth_token"].string)
+        func json2Token(from json: JSON) -> Result<String> {
+            return Result(fromOptional: json["auth_token"].string, error: .failedToParseJson)
         }
         
-        func json2Items(from json: JSON) -> Observable<[Item]> {
+        func json2Items(from json: JSON) -> Result<[Item]> {
             return jsonArray2Array(from: json["items"], to: Item.self)
         }
         
-        func json2Category(from json: JSON) -> Observable<Category> {
+        func json2Category(from json: JSON) -> Result<Category> {
             return jsonDict2Object(from: json["category"], to: Category.self)
         }
         
-        func json2Categories(from json: JSON) -> Observable<[Category]> {
+        func json2Categories(from json: JSON) -> Result<[Category]> {
             return jsonArray2Array(from: json["categories"], to: Category.self)
         }
         
-        func json2Subcategories(from json: JSON) -> Observable<[Category]> {
+        func json2Subcategories(from json: JSON) -> Result<[Category]> {
             return jsonArray2Array(from: json["subcategories"], to: Category.self)
         }
         
-        func json2Searches(from json: JSON) -> Observable<[String]> {
-            return Observable.just(json["searches"].arrayValue.map { $0.stringValue })
+        func json2Searches(from json: JSON) -> Result<[String]> {
+            return Result(value: json["searches"].arrayValue.map { $0.stringValue })
         }
         
-        func json2Checkout(from json: JSON) -> Observable<Checkout> {
+        func json2Checkout(from json: JSON) -> Result<Checkout> {
             return jsonDict2Object(from: json["checkout"], to: Checkout.self)
         }
         
-        func json2Paginated<T: BaseObject>(from json: JSON) -> Observable<PaginatedResults<T>> {
-            let arr = jsonArray2RawArray(from: json, to: T.self)
+        func json2ScheduleDays(from json: JSON) -> Result<[ScheduleDay]> {
+            return jsonArray2Array(from: json["dates"], to: ScheduleDay.self)
+        }
+        
+        func json2Paginated<T: BaseObject>(from json: JSON, with: T.Type) -> Result<PaginatedResults<T>> {
+            let arr = jsonArray2Array(from: json, to: T.self)
             let isLast = json["is_last"].boolValue
-            let page = PaginatedResults(isLast: isLast, results: arr)
-            return Observable.just(page)
+            let page = PaginatedResults(isLast: isLast, results: arr.value!)
+            return Result(value: page)
         }
 
     }

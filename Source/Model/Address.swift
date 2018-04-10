@@ -11,12 +11,20 @@ import SwiftyJSON
 
 struct Address: BaseObject {
     public let id: Int
-    public let street: String
-    public let zip: String
+    public var street: String
+    public var zip: String
     
     init?(dict: JSON) {
-        id = dict["id"].intValue
-        street = dict["street"].stringValue
-        zip = dict["zip_code"].stringValue
+        guard
+            let _id = dict["id"].int,
+            let _street = dict["street"].string,
+            let _zip = dict["zip_code"].string
+        else {
+            return nil
+        }
+        
+        id = _id
+        street = _street
+        zip = _zip
     }
 }

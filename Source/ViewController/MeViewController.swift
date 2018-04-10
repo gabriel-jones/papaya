@@ -7,13 +7,11 @@
 //
 
 import UIKit
-import RxSwift
 
-class MeVC: ViewControllerWithCart {
+class MeViewController: ViewControllerWithCart {
     
     private var lists = [List]()
     private var favouriteItems = [Item]()
-    private let disposeBag = DisposeBag()
     
     private let tableView = UITableView()
     
@@ -21,42 +19,32 @@ class MeVC: ViewControllerWithCart {
         super.viewDidLoad()
         self.buildViews()
         self.buildConstraints()
-        
-        Request.shared.getAllLists()
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [unowned self] lists in
+        /*
+        Request.shared.getAllLists { result in
+            switch result {
+            case .success(let lists):
                 self.lists = lists
                 if let cell = self.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? GroupTableViewCell {
                     cell.model?.set(new: lists)
                     cell.reload()
                 }
-            }, onError: { [unowned self] error in
-                switch error as? RequestError {
-                case .networkOffline?:
-                    print("offline")
-                default:
-                    print("Generic error")
-                }
-            })
-            .disposed(by: disposeBag)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }*/
         
-        Request.shared.getLikedItems()
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [unowned self] items in
+        Request.shared.getLikedItems { result in
+            switch result {
+            case .success(let items):
                 self.favouriteItems = items
                 if let cell = self.tableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? GroupTableViewCell {
                     cell.model?.set(new: items)
                     cell.reload()
                 }
-            }, onError: { [unowned self] error in
-                switch error as? RequestError {
-                case .networkOffline?:
-                    print("offline")
-                default:
-                    print("Generic error")
-                }
-            })
-            .disposed(by: disposeBag)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
     }
     
     private func buildViews() {
@@ -87,13 +75,13 @@ class MeVC: ViewControllerWithCart {
     }
     
     @objc func openSettings(_ sender: UIBarButtonItem) {
-        let settingsVC = SettingsVC()
+        let settingsVC = SettingsViewController()
         let vc = UINavigationController(rootViewController: settingsVC)
         self.present(vc, animated: true, completion: nil)
     }
 }
 
-extension MeVC: UITableViewDataSource, UITableViewDelegate {
+extension MeViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 2
     }
@@ -122,39 +110,17 @@ extension MeVC: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
-extension MeVC: ViewAllDelegate, GroupDelegateAction {
+extension MeViewController: ViewAllDelegate {
     func viewAll(identifier: Int?) {
         switch identifier ?? -1 {
         case 0:
             break
         case 1:
             let vc = ItemGroupViewController()
-            vc.items = Request.shared.getAllItemsTemp()
+            //vc.items = Request.shared.getAllItemsTemp()
             vc.groupTitle = "Liked"
             navigationController?.pushViewController(vc, animated: true)
         default: break
         }
     }
-    
-    func open(list: List, imageIds: [String]) {
-        let vc = ListDetailViewController()
-        vc.list = list
-        vc.imageIds = imageIds
-        present(vc, animated: true, completion: nil)
-    }
-    
-    func open(item: Item, imageId: String) {
-        let vc = ItemVC.instantiate(from: .main)
-        vc.item = item
-        vc.imageId = imageId
-        heroModalAnimationType = .zoomSlide(direction: .up)
-        
-        let nav = UINavigationController(rootViewController: vc)
-        nav.isHeroEnabled = true
-        present(nav, animated: true, completion: nil)
-    }
-}
-
-protocol ViewAllDelegate: class {
-    func viewAll(identifier: Int?)
 }

@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import RxSwift
 
 class SearchViewController: ViewControllerWithCart {
     
@@ -22,7 +21,6 @@ class SearchViewController: ViewControllerWithCart {
     private let itemsModel = SearchItemsModel()
     
     private var isLoadingPopular = false
-    private let disposeBag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,16 +29,17 @@ class SearchViewController: ViewControllerWithCart {
         self.buildModels()
         
         isLoadingPopular = true
-        Request.shared.popularSearches()
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { searches in
+        
+        Request.shared.popularSearches { result in
+            switch result {
+            case .success(let searches):
                 self.isLoadingPopular = false
                 self.popularModel.searches = searches
                 self.popularTableView.reloadData()
-            }, onError: { error in
-                
-            })
-            .disposed(by: disposeBag)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
     }
     
     private func buildModels() {
@@ -89,7 +88,7 @@ class SearchViewController: ViewControllerWithCart {
         
         collectionView.setShouldShowInfiniteScrollHandler { _ -> Bool in
             // Only show up to 5 pages then prevent the infinite scroll
-            return currentPage < 5
+            return true //currentPage < 5
         }
         
         searchBar.placeholder = "Search for an item..."
@@ -118,35 +117,47 @@ class SearchViewController: ViewControllerWithCart {
     }
     
     private func changeToSearchDetail() {
-        navigationItem.leftBarButtonItem = backButton
+        animateBack(add: true)
         collectionView.isHidden = true
         popularTableView.isHidden = true
         recommendTableView.isHidden = false
     }
     
     private func changeToSearchMain() {
-        navigationItem.leftBarButtonItem = nil
+        animateBack(add: false)
         collectionView.isHidden = true
         popularTableView.isHidden = false
         recommendTableView.isHidden = true
     }
     
+    private func animateBack(add: Bool) {
+        let start = add ? CGAffineTransform(translationX: -50, y: 0) : CGAffineTransform.identity
+        let end = add ? CGAffineTransform.identity : CGAffineTransform(translationX: -50, y: 0)
+        
+        navigationItem.leftBarButtonItem?.customView?.transform = start
+        UIView.animate(withDuration: 5) {
+            self.navigationItem.leftBarButtonItem = add ? self.backButton : nil
+            self.navigationItem.leftBarButtonItem?.customView?.transform = end
+        }
+    }
+    
     private func changeToSearchItems(search: String) {
-        navigationItem.leftBarButtonItem = backButton
+        animateBack(add: true)
         collectionView.isHidden = false
         popularTableView.isHidden = true
         recommendTableView.isHidden = true
         searchBar.text = search
-        Request.shared.search(query: search)
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { searchItems in
-                print("got back: \(searchItems.count)")
-                self.itemsModel.items = searchItems
+        /*
+        Request.shared.search(query: search) { result in
+            switch result {
+            case .success(let searchItems):
+                self.itemsModel.items = searchItems.results
                 self.collectionView.reloadData()
-            }, onError: { error in
-                
-            })
-            .disposed(by: disposeBag)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+     */
     }
     
     @objc private func back(_ sender: UIBarButtonItem) {
@@ -178,8 +189,8 @@ extension SearchViewController: SearchModelDelegate {
         self.changeToSearchItems(search: keyword)
     }
     
-    func open(item: Item, imageId: String?) {
-        let vc = ItemVC.instantiate(from: .main)
+    func openItem(item: Item, imageId: String?) {
+        let vc = ItemViewController()
         vc.item = item
         vc.imageId = imageId
         heroModalAnimationType = .cover(direction: .up)
@@ -193,7 +204,7 @@ extension SearchViewController: SearchModelDelegate {
 protocol SearchModelDelegate: class {
     func selectPopular(keyword: String)
     func selectRecommended(keyword: String)
-    func open(item: Item, imageId: String?)
+    func openItem(item: Item, imageId: String?)
 }
 
 class SearchModel: NSObject {
@@ -289,7 +300,7 @@ class SearchItemsModel: SearchModel, UICollectionViewDelegate, UICollectionViewD
         if let cell = collectionView.cellForItem(at: indexPath) as? ItemCollectionViewCell {
             imageId = cell.getImageId()
         }
-        delegate?.open(item: item, imageId: imageId)
+        delegate?.openItem(item: item, imageId: imageId)
     }
     
 }

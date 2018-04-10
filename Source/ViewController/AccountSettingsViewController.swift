@@ -8,18 +8,21 @@
 
 import UIKit
 import JVFloatLabeledTextField
-import RxSwift
 
 class AccountSettingsViewController: UIViewController {
     
     private let tableView = UITableView(frame: .zero, style: .grouped)
+    private var activeTextField: UITextField?
+    private var didScrollUp = false
     private var madeChanges = false
-    private let disposeBag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.buildViews()
         self.buildConstraints()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: .UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: .UIKeyboardWillHide, object: nil)
     }
     
     private func buildViews() {
@@ -94,8 +97,10 @@ extension AccountSettingsViewController: UITableViewDelegate, UITableViewDataSou
             cell.textField.placeholder = "Email"
             cell.textField.keyboardType = .emailAddress
             cell.textField.autocapitalizationType = .none
+            cell.textField.autocorrectionType = .no
             cell.textField.text = User.current?.email
             cell.textField.addTarget(self, action: #selector(textDidChange(_:)), for: .editingChanged)
+            cell.textField.delegate = self
             cell.tag = 0
             return cell
         case 1:
@@ -103,23 +108,33 @@ extension AccountSettingsViewController: UITableViewDelegate, UITableViewDataSou
             cell.textField.placeholder = "Phone"
             cell.textField.keyboardType = .phonePad
             cell.textField.autocapitalizationType = .none
+            cell.textField.autocorrectionType = .no
             cell.textField.text = User.current?.phone
+            cell.textField.addTarget(self, action: #selector(phoneDidChange(_:)), for: .editingChanged)
+            cell.textField.addTarget(self, action: #selector(textDidChange(_:)), for: .editingChanged)
+            cell.textField.delegate = self
             cell.tag = 1
             return cell
         case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: SettingsInputTableViewCell.identifier, for: indexPath) as! SettingsInputTableViewCell
             cell.textField.placeholder = "First Name"
             cell.textField.keyboardType = .default
-            cell.textField.autocapitalizationType = .none
+            cell.textField.autocapitalizationType = .words
+            cell.textField.autocorrectionType = .no
             cell.textField.text = User.current?.fname
+            cell.textField.addTarget(self, action: #selector(textDidChange(_:)), for: .editingChanged)
+            cell.textField.delegate = self
             cell.tag = 2
             return cell
         case 3:
             let cell = tableView.dequeueReusableCell(withIdentifier: SettingsInputTableViewCell.identifier, for: indexPath) as! SettingsInputTableViewCell
             cell.textField.placeholder = "Last Name"
             cell.textField.keyboardType = .default
-            cell.textField.autocapitalizationType = .none
+            cell.textField.autocapitalizationType = .words
+            cell.textField.autocorrectionType = .no
             cell.textField.text = User.current?.lname
+            cell.textField.addTarget(self, action: #selector(textDidChange(_:)), for: .editingChanged)
+            cell.textField.delegate = self
             cell.tag = 3
             return cell
         default: return UITableViewCell()
@@ -156,5 +171,53 @@ extension AccountSettingsViewController: UITableViewDelegate, UITableViewDataSou
         }
         
         return container
+    }
+}
+
+extension AccountSettingsViewController: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        activeTextField = textField
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        activeTextField = nil
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        view.endEditing(true)
+    }
+    
+    @objc private func phoneDidChange(_ sender: UITextField) {
+        if let formatted = format(phoneNumber: sender.text!) {
+            sender.text = formatted
+        }
+    }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            if view.frame.origin.y == 0 {
+                if let active = activeTextField {
+                    var rect = view.frame
+                    rect.size.height -= keyboardSize.height + active.frame.height + 50
+                    if !rect.contains(active.frame.origin) {
+                        didScrollUp = true
+                        view.frame.origin.y -= keyboardSize.height
+                    }
+                }
+            }
+        }
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            if view.frame.origin.y != 0 && didScrollUp {
+                view.frame.origin.y += keyboardSize.height
+            }
+        }
     }
 }

@@ -6,16 +6,19 @@
 //  Copyright © 2018 Papaya. All rights reserved.
 //
 
-import RxSwift
 import UIKit
+
+enum ItemGroup {
+    case liked
+    case of(category: Category)
+    case similar(to: Item)
+}
 
 class ItemGroupViewController: ViewControllerWithCart {
     
-    public var items: Observable<[Item]>!
     public var groupTitle: String!
     
     private var loadedItems = [Item]()
-    private let disposeBag = DisposeBag()
     private var collectionView: UICollectionView!
     private let activityIndicator = UIActivityIndicatorView()
     private let sectionBar = UIView()
@@ -25,7 +28,10 @@ class ItemGroupViewController: ViewControllerWithCart {
         super.viewDidLoad()
         self.buildViews()
         self.buildConstraints()
-        self.buildBindings()
+        
+        self.activityIndicator.stopAnimating()
+        self.collectionView.isHidden = false
+        self.collectionView.reloadData()
     }
     
     private func buildViews() {
@@ -85,21 +91,6 @@ class ItemGroupViewController: ViewControllerWithCart {
             make.right.equalToSuperview()
         }
     }
-    
-    private func buildBindings() {
-        items
-        .observeOn(MainScheduler.instance)
-        .subscribe(onNext: { items in
-            self.loadedItems = items
-            self.activityIndicator.stopAnimating()
-            self.collectionView.isHidden = false
-            self.collectionView.reloadData()
-            print("Got items: \(items.count)")
-        }, onError: { error in
-            
-        })
-        .disposed(by: disposeBag)
-    }
 }
 
 extension ItemGroupViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -115,7 +106,7 @@ extension ItemGroupViewController: UICollectionViewDelegate, UICollectionViewDat
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let vc = ItemVC()
+        let vc = ItemViewController()
         vc.item = loadedItems[indexPath.row]
         if let cell = collectionView.cellForItem(at: indexPath) as? ItemCollectionViewCell {
             vc.imageId = cell.getImageId()

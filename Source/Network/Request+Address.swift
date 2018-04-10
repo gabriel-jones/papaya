@@ -8,25 +8,27 @@
 
 import Foundation
 import SwiftyJSON
-import RxSwift
 
 extension Request {
-    func getAllAddresses() -> Observable<[Address]> {
-        guard let request = URLRequest.get(path: "/address/all") else {
-            return Observable.error(RequestError.cannotBuildRequest)
-        }
     
-        return self.fetch(request: request)
-            .flatMap(parse.json2Addresses)
+    @discardableResult
+    public func getAllAddresses(completion: (CompletionHandler<[Address]>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.get(path: "/address/all") else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, parseMethod: parse.json2Addresses, completion: completion)
     }
     
-    func get(address id: Int) -> Observable<Address> {
-        guard let request = URLRequest.get(path: "/address/get/\(id)") else {
-            return Observable.error(RequestError.cannotBuildRequest)
+    @discardableResult
+    public func getAddress(addressId: Int, completion: (CompletionHandler<Address>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.get(path: "/address/get/\(addressId)") else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
-    
-        return self.fetch(request: request)
-            .flatMap(parse.json2Address)
+        
+        return self.execute(request: request, parseMethod: parse.json2Address, completion: completion)
     }
     
     public func getAddressImage(address: Address, completion: @escaping (UIImage) -> Void) {
@@ -41,37 +43,43 @@ extension Request {
         }.resume()
     }
     
-    func add(street: String, zipCode: String) -> Observable<JSON> {
+    @discardableResult
+    public func addAddress(street: String, zipCode: String, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
         let body = [
             "street": street,
             "zip_code": zipCode
         ]
         
-        guard let request = URLRequest.post(path: "/address/all", body: body) else {
-            return Observable.error(RequestError.cannotBuildRequest)
+        guard let request = URLRequest.post(path: "/address/add", body: body) else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
         
-        return self.fetch(request: request)
+        return self.execute(request: request, completion: completion)
     }
     
-    func update(address: Address) -> Observable<JSON> {
+    @discardableResult
+    public func updateAddress(address: Address, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
         let body = [
             "street": address.street,
             "zip_code": address.zip
         ]
         
         guard let request = URLRequest.put(path: "/address/get/\(address.id)/update", body: body) else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
         
-        return self.fetch(request: request)
+        return self.execute(request: request, completion: completion)
     }
     
-    func delete(address: Address) -> Observable<JSON> {
+    @discardableResult
+    public func deleteAddress(address: Address, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
         guard let request = URLRequest.delete(path: "/address/get/\(address.id)/delete") else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
         
-        return self.fetch(request: request)
+        return self.execute(request: request, completion: completion)
     }
 }

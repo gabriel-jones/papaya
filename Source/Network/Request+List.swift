@@ -8,8 +8,8 @@
 
 import Foundation
 import SwiftyJSON
-import RxSwift
 
+/*
 extension Request {
     func getAllLists() -> Observable<[List]> {
         guard let request = URLRequest.get(path: "/list/all") else {
@@ -84,3 +84,4 @@ extension Request {
         return self.fetch(request: request)
     }
 }
+*/

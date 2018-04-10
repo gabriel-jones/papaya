@@ -8,18 +8,18 @@
 
 import UIKit
 import JVFloatLabeledTextField
-import RxSwift
 
-class LoginVC: UIViewController {
-    private let disposeBag = DisposeBag()
+class LoginViewController: UIViewController {
     
     private let backButton = UIButton()
     private let logoView = UIView()
     private let logoImage = UIImageView()
     private let logoName = UILabel()
     private let subtitle = UILabel()
+    
     private let emailField = JVFloatLabeledTextField()
     private let passwordField = JVFloatLabeledTextField()
+    
     private let loginButton = LoadingButton()
     private let forgotButton = UIButton()
     
@@ -195,12 +195,13 @@ class LoginVC: UIViewController {
             return
         }
         
-        Request.shared.login(email: email, password: password)
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [unowned self] _ in
+        Request.shared.login(email: email, password: password) { result in
+            print("Login result: \(result)")
+            sender.hideLoading()
+            switch result {
+            case .success(let user):
                 self.navigationController?.dismiss(animated: true, completion: nil)
-            }, onError: { [unowned self] error in
-                sender.hideLoading()
+            case .failure(let error):
                 switch error as? RequestError {
                 case .userNotFound?: // Email incorrect
                     self.showLoginError(message: "Incorrect email")
@@ -210,10 +211,8 @@ class LoginVC: UIViewController {
                     print(error)
                     self.showLoginError(message: "An error occurred")
                 }
-            }, onCompleted: {
-                sender.hideLoading()
-            })
-            .disposed(by: disposeBag)
+            }
+        }
     }
     
     @objc func forgotPassword(_ sender: UIButton) {
@@ -227,13 +226,14 @@ class LoginVC: UIViewController {
             return
         }
         
-        Request.shared.forgotPassword(email: email)
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [unowned self] json in
+        Request.shared.forgotPassword(email: email) { result in
+            self.loginButton.hideLoading()
+            switch result {
+            case .success(let user):
                 let alert = UIAlertController(title: "Success", message: "Please check your email for a password reset link.", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 self.present(alert, animated: true, completion: nil)
-            }, onError: { [unowned self] error in
+            case .failure(let error):
                 var alert: UIAlertController!
                 switch error as? RequestError {
                 case .userNotFound?:
@@ -243,11 +243,8 @@ class LoginVC: UIViewController {
                 }
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 self.present(alert, animated: true, completion: nil)
-            }, onCompleted: { [unowned self] in
-                self.loginButton.hideLoading()
-            })
-            .disposed(by: disposeBag)
-        
+            }
+        }
     }
     
 }

@@ -8,7 +8,7 @@
 
 import UIKit
 import SwiftyJSON
-import RxSwift
+import Reachability
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
@@ -40,11 +40,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         setupUI()
         
-        _ = Observable<Int>.interval(1, scheduler: MainScheduler.instance)
-            .subscribe { _ in
-                //print("Resource count \(RxSwift.Resources.total)")
-            }
-        
         //TODO: remove in production
         /**/
         NSSetUncaughtExceptionHandler { exception in
@@ -53,28 +48,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
         }
         /**/
         
-        if UserDefaults.standard.object(forKey: "useLessData") == nil {
-            UserDefaults.standard.set(true, forKey: "useLessData")
-            UserDefaults.standard.synchronize()
-        }
-        
-        do {
-            Network.reachability = try Reachability(hostname: "www.google.com")
-            do {
-                try Network.reachability?.start()
-            } catch let error as Network.Error {
-                print(error)
-            } catch {
-                print(error)
-            }
-        } catch {
-            print(error)
-        }
-        
         NotificationRouter.shared.setupObservers()
         
         window = UIWindow(frame: UIScreen.main.bounds)
-        let loadingVC = LoadingVC()
+        let loadingVC = LoadingViewController()
         window?.rootViewController = loadingVC
         window?.makeKeyAndVisible()
         return !j()

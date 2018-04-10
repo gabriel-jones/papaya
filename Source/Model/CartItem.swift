@@ -77,11 +77,19 @@ struct CartItem: BaseObject {
     }
     
     init?(dict: JSON) {
-        id = dict["id"].intValue
-        quantity = dict["quantity"].intValue
-        item = Item(dict: dict)!
+        guard
+            let _id = dict["id"].int,
+            let _quantity = dict["quantity"].int,
+            let _replaceOptionString = dict["replace_option"].string,
+            let _item = Item(dict: dict)
+        else {
+            return nil
+        }
+        id = _id
+        quantity = _quantity
+        item = _item
         instructions = dict["notes"].string
-        switch dict["replace_option"] {
+        switch _replaceOptionString {
         case "replace_specific":
             if let replaceSpecificItem = Item(dict: dict["replace_specific"]) {
                 replaceOption = .replaceSpecific(item: replaceSpecificItem)

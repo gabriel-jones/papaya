@@ -13,14 +13,23 @@ struct Checkout: BaseObject {
     let id: Int
     let cart: Cart?
     var address: Address?
-    var orderDate: Date
+    var orderDate: Date?
     var isDelivery: Bool
     
     init?(dict: JSON) {
-        id = dict["id"].intValue
+        guard
+            let _id = dict["id"].int,
+            let _isDelivery = dict["is_delivery"].bool
+        else {
+            return nil
+        }
+        id = _id
         cart = Cart(dict: dict["cart"])
         address = Address(dict: dict["address"])
-        isDelivery = dict["is_delivery"].boolValue
-        orderDate = Date() // TODO:
+        isDelivery = _isDelivery
+        
+        if let _orderDateString = dict["order_time"].string, let _orderDate = dateTimeFormatter.date(from: _orderDateString) {
+            orderDate = _orderDate
+        }
     }
 }

@@ -7,16 +7,15 @@
 //
 
 import UIKit
-import RxSwift
+import SwiftyJSON
 
-class ItemVC: UIViewController {
+class ItemViewController: UIViewController {
     
     //MARK: - Properties
     public var item: Item?
     public var imageId: String?
     public var isOnNavigationStack = false
     
-    private let disposeBag = DisposeBag()
     private var isLoading = true
     
     private let activityIndicator = UIActivityIndicatorView()
@@ -40,37 +39,52 @@ class ItemVC: UIViewController {
         self.buildViews()
         self.buildConstraints()
         
-        let getDetail = Request.shared.getDetail(item: self.item!).observeOn(MainScheduler.instance)
-        let getSimilarItems = Request.shared.getAllItemsTemp().observeOn(MainScheduler.instance)
         self.addToCart.showLoading()
-        Observable.combineLatest(getDetail, getSimilarItems) { detail, similarItems in
-            self.addToCart.hideLoading()
+
+        let group = DispatchGroup()
+        
+        group.enter()
+        Request.shared.getDetail(item: self.item!) { result in
+            if case .success(let detail) = result {
+                print("got detail, \(detail)")
+                self.isLiked = detail["item"]["is_liked"].bool
+                self.isInCart = detail["item"]["in_cart"].bool
+                self.numberInCart = detail["item"]["number_in_cart"].int
+                self.disclaimer = detail["item"]["disclaimer"].string
+                
+            }
+            group.leave()
+        }
+        
+        group.enter()
+        Request.shared.getAllItemsTemp() { result in
+            if case .success(let similarItems) = result {
+                self.items = similarItems
+            }
+            group.leave()
+        }
+        
+        group.notify(queue: .main) {
             self.isLoading = false
-            self.isLiked = detail["item"]["is_liked"].bool
-            self.isInCart = detail["item"]["in_cart"].bool
-            self.numberInCart = detail["item"]["number_in_cart"].int
-            self.disclaimer = detail["item"]["disclaimer"].string
             self.updateCartButtons()
-            self.items = similarItems
+            self.addToCart.hideLoading()
             self.tableView.reloadData()
         }
-        .subscribe(onError: { [unowned self] error in
-            switch error as? RequestError {
-            case .networkOffline?:
-                break
-            default:
-                print("error")
-            }
-        })
-        .disposed(by: disposeBag)
     }
     
     private func updateCartButtons() {
-        self.addToCart.tag = (self.isInCart ?? false) ? 1 : 0
-        self.addToCart.isEnabled = self.addToCart.tag == 0
-        self.addToCart.alpha = self.addToCart.tag == 0 ? 1 : 0.75
-        if self.numberInCart ?? 0 > 0 {
-            self.stepper.value = self.numberInCart!
+        let inCart = isInCart ?? false
+        print("calling")
+        print(isInCart)
+        print(inCart)
+        
+        addToCart.tag = inCart ? 1 : 0
+        addToCart.isEnabled = !inCart
+        addToCart.alpha = inCart ? 0.75 : 1
+        addToCart.setTitle(inCart ? "In cart" : "Add to cart", for: .normal)
+        
+        if let n = numberInCart, n > 0 {
+            stepper.value = n
         }
     }
     
@@ -114,8 +128,6 @@ class ItemVC: UIViewController {
         // Add to cart
         addToCart.backgroundColor = UIColor(named: .green)
         addToCart.layer.cornerRadius = 5
-        addToCart.setTitle("Add to cart", for: .normal)
-        addToCart.setTitle("In cart", for: .disabled)
         addToCart.titleLabel?.textColor = .white
         addToCart.titleLabel?.font = Font.gotham(size: 17)
         addToCart.addTarget(self, action: #selector(addToCart(_:)), for: .touchUpInside)
@@ -162,24 +174,24 @@ class ItemVC: UIViewController {
     }
     
     @objc private func close(_ sender: Any) {
+        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ItemDetailTableViewCell {
+            cell.itemImage.heroID = nil
+        }
         dismiss(animated: true, completion: nil)
     }
     
-    @objc private func addToCart(_ sender: UIButton) {
+    @objc private func addToCart(_ sender: LoadingButton) {
+        if sender.tag == 1 { return }
         DispatchQueue.main.async { self.addToCart.showLoading() }
         self.numberInCart = self.stepper.value
         self.isInCart = true
-        Request.shared.addItemToCart(item: self.item!, quantity: self.stepper.value)
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { _ in
-                self.addToCart.hideLoading()
+        Request.shared.addToCart(item: self.item!, quantity: self.stepper.value) { result in
+            self.addToCart.hideLoading()
+            if case .success(_) = result {
                 self.updateCartButtons()
-            }, onError: { error in
-                self.addToCart.hideLoading()
-            })
-            .disposed(by: disposeBag)
-        
-        
+                self.close(0)
+            }
+        }
     }
     
     @objc private func share(_ sender: UIBarButtonItem) {
@@ -191,7 +203,7 @@ class ItemVC: UIViewController {
     }
 }
 
-extension ItemVC: StepperDelegate {
+extension ItemViewController: StepperDelegate {
     func changedQuantity(to: Int) {
         if !(self.isInCart ?? false) {
             return
@@ -199,14 +211,9 @@ extension ItemVC: StepperDelegate {
         Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
             if to == self.stepper.value {
                 self.stepper.showLoading()
-                Request.shared.updateQuantity(with: self.item!.id, new: to)
-                    .observeOn(MainScheduler.instance)
-                    .subscribe(onNext: { _ in
-                        self.stepper.hideLoading()
-                    }, onError: { error in
-                        self.stepper.hideLoading()
-                    })
-                    .disposed(by: self.disposeBag)
+                Request.shared.updateCartQuantity(item: self.item!, quantity: to) { result in
+                    self.stepper.hideLoading() //todo: switch
+                }
             }
         }
     }
@@ -216,7 +223,7 @@ extension ItemVC: StepperDelegate {
     }
 }
 
-extension ItemVC: UIScrollViewDelegate {
+extension ItemViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         UIView.animate(withDuration: 0.3) {
             let isPastTop = scrollView.contentOffset.y > 0
@@ -227,13 +234,11 @@ extension ItemVC: UIScrollViewDelegate {
     }
 }
 
-extension ItemVC: ItemActionDelegate {
+extension ItemViewController: ItemActionDelegate {
     internal func set(liked: Bool) {
         print("like: \(liked)")
         if let item = self.item {
             Request.shared.setLiked(item: item, to: liked)
-                .subscribe()
-                .disposed(by: disposeBag)
             isLiked = liked
             tableView.reloadData()
         }
@@ -254,16 +259,35 @@ protocol ItemActionDelegate {
     func addInstructions()
 }
 
-extension ItemVC: ViewAllDelegate {
+extension ItemViewController: ViewAllDelegate {
     internal func viewAll(identifier: Int?) {
         let vc = ItemGroupViewController()
-        vc.items = Request.shared.getAllItemsTemp()
-        vc.groupTitle = "Similar to \(item?.name)"
+        //vc.items = Request.shared.getAllItemsTemp()
+        vc.groupTitle = "Similar to \(item!.name)"
         navigationController?.pushViewController(vc, animated: true)
     }
 }
 
-extension ItemVC: UITableViewDelegate, UITableViewDataSource {
+@objc protocol ItemImageDelegate {
+    func openImage(_ sender: Any)
+}
+
+extension ItemViewController: ItemImageDelegate {
+    func openImage(_ sender: Any) {
+        print("open image")
+        let vc = ItemImageViewController()
+        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ItemDetailTableViewCell, let img = cell.itemImage.image {
+            print("found img")
+            vc.image = img
+        }
+        vc.imageId = self.imageId
+        vc.isHeroEnabled = true
+        vc.heroModalAnimationType = .fade
+        present(vc, animated: true, completion: nil)
+    }
+}
+
+extension ItemViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         //item detail
         // item action
@@ -280,6 +304,7 @@ extension ItemVC: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: ItemDetailTableViewCell.identifier, for: indexPath) as! ItemDetailTableViewCell
             cell.set(item: self.item!, id: self.imageId ?? "")
             cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
+            cell.delegate = self
             return cell
         } else if indexPath.row == 1 {
             let cell = tableView.dequeueReusableCell(withIdentifier: ItemActionTableViewCell.identifier, for: indexPath) as! ItemActionTableViewCell
@@ -322,7 +347,6 @@ extension ItemVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        print(isLoading)
         if isLoading {
             let container = UIView()
             container.addSubview(activityIndicator)
@@ -341,13 +365,14 @@ extension ItemVC: UITableViewDelegate, UITableViewDataSource {
         return 0.3
     }
 }
-
-extension ItemVC: GroupDelegateAction {
+//TODO: fix
+/*
+extension ItemViewController: GroupDelegateAction {
     internal func open(item: Item, imageId: String) {
         if item.id == self.item!.id {
             return
         }
-        let vc = ItemVC()
+        let vc = ItemViewController()
         vc.item = item
         vc.isOnNavigationStack = true
         navigationController?.pushViewController(vc, animated: true)
@@ -356,4 +381,4 @@ extension ItemVC: GroupDelegateAction {
         navigationController?.pushViewController(newItem, animated: true)*/
         // Allow next controller to have back button
     }
-}
+}*/

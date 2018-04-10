@@ -7,14 +7,11 @@
 //
 
 import UIKit
-import SnapKit
-import RxSwift
 
-class HomeVC: ViewControllerWithCart {
+class HomeViewController: ViewControllerWithCart {
     
     private var items = [Item]()
     
-    private let disposeBag = DisposeBag()
     private let tableView = UITableView()
         
     override func viewDidLoad() {
@@ -23,22 +20,17 @@ class HomeVC: ViewControllerWithCart {
         self.buildViews()
         self.buildConstraints()
         
-        Request.shared.getAllItemsTemp()
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [unowned self] items in
+        Request.shared.getAllItemsTemp { result in
+            switch result {
+            case .success(let items):
                 if let cell = self.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? GroupTableViewCell {
                     cell.model?.set(new: items)
                     cell.reload()
                 }
-            }, onError: { [unowned self] error in
-                switch error as? RequestError {
-                case .networkOffline?:
-                    print("offline")
-                default:
-                    print("Generic error")
-                }
-            })
-            .disposed(by: disposeBag)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
     }
     
     private func buildViews() {
@@ -88,7 +80,7 @@ class HomeVC: ViewControllerWithCart {
     
 }
 
-extension HomeVC: UITableViewDelegate, UITableViewDataSource {
+extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 2
@@ -121,23 +113,33 @@ extension HomeVC: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-extension HomeVC: ViewAllDelegate {
+extension HomeViewController: ViewAllDelegate {
     func viewAll(identifier: Int?) {
         print(identifier)
     }
     
 }
 
-extension HomeVC: GroupDelegateAction {
+protocol ViewAllDelegate: class {
+    func viewAll(identifier: Int?)
+}
+
+extension UIViewController: GroupDelegateAction {
     func open(item: Item, imageId: String) {
-        let vc = ItemVC.instantiate(from: .main)
+        let vc = ItemViewController()
         vc.item = item
         vc.imageId = imageId
-        heroModalAnimationType = .cover(direction: .up)
         
         let nav = UINavigationController(rootViewController: vc)
         nav.isHeroEnabled = true
+        nav.heroModalAnimationType = .selectBy(presenting: .auto, dismissing: .uncover(direction: .down))
         present(nav, animated: true, completion: nil)
     }
+    
+    func open(list: List, imageIds: [String]) {
+        let vc = ListDetailViewController()
+        vc.list = list
+        vc.imageIds = imageIds
+        present(vc, animated: true, completion: nil)
+    }
 }
-

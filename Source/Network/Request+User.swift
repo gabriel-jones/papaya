@@ -8,36 +8,41 @@
 
 import Foundation
 import SwiftyJSON
-import RxSwift
 
 extension Request {
-    func getUserDetails() -> Observable<User> {
+    
+    @discardableResult
+    public func getUserDetails(completion: (CompletionHandler<User>)? = nil) -> URLSessionDataTask? {
         guard let request = URLRequest.get(path: "/user") else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
     
-        return self.fetch(request: request)
-            .flatMap(parse.json2User)
+        return self.execute(request: request, parseMethod: parse.json2User, completion: completion)
     }
     
-    func getLikedItems() -> Observable<[Item]> {
+    @discardableResult
+    public func getLikedItems(completion: (CompletionHandler<[Item]>)? = nil) -> URLSessionDataTask? {
         guard let request = URLRequest.get(path: "/user/liked/all") else {
-            return Observable.error(RequestError.cannotBuildRequest)
-        }
-        return self.fetch(request: request)
-            .flatMap(parse.json2Items)
-    }
-    
-    func checkAuthentication() -> Observable<JSON> {
-        print("check auth")
-        guard let request = URLRequest.get(path: "/user/auth") else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
         
-        return self.fetch(request: request)
+        return self.execute(request: request, parseMethod: parse.json2Items, completion: completion)
     }
     
-    func update(user: User) -> Observable<JSON> {
+    @discardableResult
+    public func checkAuthentication(completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.get(path: "/user/auth") else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, completion: completion)
+    }
+    
+    @discardableResult
+    public func updateUser(user: User, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
         let body = [
             "email": user.email,
             "fname": user.fname,
@@ -46,72 +51,88 @@ extension Request {
         ]
         
         guard let request = URLRequest.put(path: "/user/update", body: body) else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
         
-        return self.task(request: request)
+        return self.execute(request: request, completion: completion)
     }
     
-    func updateNotifications(values: [String: Bool]) -> Observable<JSON> {
-        guard let request = URLRequest.post(path: "/user/update/notification", body: values) else {
-            return Observable.error(RequestError.cannotBuildRequest)
+    @discardableResult
+    public func updateNotifications(values: [String: Bool], completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.put(path: "/user/update/notifications", body: values) else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
         
-        return self.task(request: request)
+        return self.execute(request: request, completion: completion)
     }
     
-    func login(email: String, password: String) -> Observable<String> {
+    @discardableResult
+    public func login(email: String, password: String, completion: (CompletionHandler<String>)? = nil) -> URLSessionDataTask? {
         let body = [
             "email": email,
             "password": password
         ]
         
+        AuthenticationStore.set(email: email)
+        AuthenticationStore.set(password: password)
+        
         guard let request = URLRequest.post(path: "/user/login", body: body) else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
         
-        return self.task(request: request)
-            .flatMap { json -> Observable<String> in
-                if let token = json["auth_token"].string {
-                    AuthenticationStore.set(token: token)
-                    return Observable.just(token)
-                }
-                return Observable.error(RequestError.failedToParseJson)
+        return self.execute(request: request, withAuth: false, parseMethod: parse.json2Token) { result in
+            if case .success(let token) = result {
+                AuthenticationStore.set(token: token)
             }
+            completion?(result)
+        }
     }
     
-    func signup(email: String, password: String, fname: String, lname: String) -> Observable<JSON> {
+    @discardableResult
+    public func signup(email: String, password: String, fname: String, lname: String, phone: String, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
         let body = [
             "email": email,
             "password": password,
             "fname": fname,
-            "lname": lname
+            "lname": lname,
+            "phone": phone
         ]
         
+        AuthenticationStore.set(email: email)
+        AuthenticationStore.set(password: password)
+        
         guard let request = URLRequest.post(path: "/user/signup", body: body) else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
         
-        return self.task(request: request)
+        return self.execute(request: request, withAuth: false, completion: completion)
     }
     
-    func forgotPassword(email: String) -> Observable<JSON> {
-        let urlParameters = [
+    @discardableResult
+    public func forgotPassword(email: String, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
+        let body = [
             "email": email
         ]
         
-        guard let request = URLRequest.get(path: "/user/forgot", urlParameters: urlParameters) else {
-            return Observable.error(RequestError.cannotBuildRequest)
-        }
-
-        return self.task(request: request)
-    }
-    
-    func logout() -> Observable<JSON> {
-        guard let request = URLRequest.get(path: "/user/logout") else {
-            return Observable.error(RequestError.cannotBuildRequest)
+        guard let request = URLRequest.get(path: "/user/forgot", urlParameters: body) else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
         
-        return self.task(request: request)
+        return self.execute(request: request, withAuth: false, completion: completion)
+    }
+    
+    @discardableResult
+    public func logout(completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.get(path: "/user/logout") else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, completion: completion)
     }
 }

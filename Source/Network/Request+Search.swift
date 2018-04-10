@@ -7,36 +7,37 @@
 //
 
 import Foundation
-import RxSwift
 import SwiftyJSON
 
-struct PaginatedResults<T> {
-    let isLast: Bool
-    let results: Array<T>
-}
-
 extension Request {
-    public func search(query: String) -> Observable<PaginatedResults<Item>> {
+    /*
+    @discardableResult
+    public func search(query: String, completion: (CompletionHandler<PaginatedResults<Item>>)? = nil) -> URLSessionDataTask? {
         guard let request = URLRequest.get(path: "/search/q/\(query)") else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
-        return self.fetch(request: request)
-            .flatMap(parse.json2Paginated<Item>)
-    }
+        
+        return self.execute(request: request, parseMethod: parse.json2Paginated, completion: completion)
+    }*/
     
-    public func popularSearches() -> Observable<[String]> {
+    @discardableResult
+    public func popularSearches(completion: (CompletionHandler<[String]>)? = nil) -> URLSessionDataTask? {
         guard let request = URLRequest.get(path: "/search/popular") else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
-        return self.fetch(request: request)
-            .flatMap(parse.json2Searches)
+        
+        return self.execute(request: request, parseMethod: parse.json2Searches, completion: completion)
     }
     
-    public func autocompletion() -> Observable<[String]> {
+    @discardableResult
+    public func autocompletion(completion: (CompletionHandler<[String]>)? = nil) -> URLSessionDataTask? {
         guard let request = URLRequest.get(path: "/search/autocomplete") else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
-        return self.fetch(request: request)
-            .flatMap(parse.json2Searches)
+        
+        return self.execute(request: request, parseMethod: parse.json2Searches, completion: completion)
     }
 }

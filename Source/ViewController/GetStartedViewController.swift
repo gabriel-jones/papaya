@@ -10,7 +10,7 @@ import UIKit
 import Hero
 import CHIPageControl
 
-class GetStartedVC: UIViewController {
+class GetStartedViewController: UIViewController {
     
     private let logoView = UIView()
     private let logoName = UILabel()
@@ -70,6 +70,10 @@ class GetStartedVC: UIViewController {
         getStartedButton.layer.cornerRadius = 10
         getStartedButton.contentEdgeInsets = UIEdgeInsets(top: 8, left: 24, bottom: 8, right: 24)
         getStartedButton.addTarget(self, action: #selector(signup(_:)), for: .touchUpInside)
+        getStartedButton.layer.shadowColor = UIColor.white.cgColor
+        getStartedButton.layer.shadowRadius = 5
+        getStartedButton.layer.shadowOpacity = 0.5
+        getStartedButton.layer.shadowOffset = CGSize(width: 0, height: 5)
         view.addSubview(getStartedButton)
     }
     
@@ -123,14 +127,14 @@ class GetStartedVC: UIViewController {
     }
     
     @objc func login(_ sender: UIButton) {
-        let loginVC = LoginVC()
-        loginVC.heroModalAnimationType = .cover(direction: .right)
+        let loginVC = LoginViewController()
+        navigationController?.heroNavigationAnimationType = .selectBy(presenting: .cover(direction: .left), dismissing: .uncover(direction: .right))
         self.navigationController?.pushViewController(loginVC, animated: true)
     }
     
     @objc func signup(_ sender: UIButton) {
-        let signupVC = SignupVC()
-        signupVC.heroModalAnimationType = .cover(direction: .left)
+        let signupVC = SignupViewController()
+        navigationController?.heroNavigationAnimationType = .selectBy(presenting: .cover(direction: .up), dismissing: .uncover(direction: .down))
         self.navigationController?.pushViewController(signupVC, animated: true)
     }
 }

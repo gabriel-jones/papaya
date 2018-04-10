@@ -20,7 +20,10 @@ struct Category: BaseObject {
     }
     
     init?(dict: JSON) {
-        guard let _id = dict["category_id"].int, let _name = dict["category_name"].string else {
+        guard
+            let _id = dict["category_id"].int,
+            let _name = dict["category_name"].string
+        else {
             return nil
         }
         id = _id

@@ -47,7 +47,7 @@ extension URLRequest {
         return self.build(path: path, method: .delete, urlParameters: urlParameters, body: body)
     }
     
-    static private func build(path: String, method: Request.HTTPMethod, urlParameters: [String:String], body: [String: Any]) -> URLRequest? {
+    static private func build(path: String, method: HTTPMethod, urlParameters: [String:String], body: [String: Any]) -> URLRequest? {
         let parameters = urlParameters.urlQueryString
         let urlWithParameters = parameters.isEmpty ? path : path + "?" + parameters
         guard let url = URL(string: C.URL.main + urlWithParameters) else {

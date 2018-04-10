@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import RxSwift
 
 protocol CheckoutMapDelegate {
     func changeAddress()
@@ -66,6 +65,7 @@ class CheckoutMapTableViewCell: UITableViewCell {
         addSubview(addressMap)
         
         mapLoading.hidesWhenStopped = true
+        mapLoading.activityIndicatorViewStyle = .gray
         addSubview(mapLoading)
     }
     
@@ -120,7 +120,9 @@ class CheckoutMapTableViewCell: UITableViewCell {
         addressLabel.text = address.street
         zipLabel.text = address.zip
         addressMap.image = nil
-        mapLoading.startAnimating()
+        DispatchQueue.main.async {
+            self.mapLoading.startAnimating()
+        }
         Request.shared.getAddressImage(address: address) { image in
             DispatchQueue.main.async {
                 self.mapLoading.stopAnimating()

@@ -14,18 +14,21 @@ struct Cart: BaseObject {
     var items: [CartItem]
     
     init?(dict: JSON) {
-        guard let id = dict["id"].int else {
+        guard
+            let _id = dict["id"].int,
+            let _itemsArray = dict["items"].array
+        else {
             return nil
         }
         
-        self.id = id
+        self.id = _id
         
         var itemsBuffer = [CartItem]()
-        if let items = dict["items"].array {
-            for item in items {
-                if let item = CartItem(dict: item) {
-                    itemsBuffer.append(item)
-                }
+        for item in _itemsArray {
+            if let item = CartItem(dict: item) {
+                itemsBuffer.append(item)
+            } else {
+                return nil
             }
         }
         self.items = itemsBuffer

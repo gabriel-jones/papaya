@@ -8,55 +8,68 @@
 
 import Foundation
 import SwiftyJSON
-import RxSwift
 
 extension Request {
-    func getCart() -> Observable<Cart> {
+    
+    @discardableResult
+    public func getCart(completion: (CompletionHandler<Cart>)? = nil) -> URLSessionDataTask? {
         guard let request = URLRequest.get(path: "/cart") else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
-        return self.fetch(request: request)
-            .flatMap(parse.json2Cart)
+        
+        return self.execute(request: request, parseMethod: parse.json2Cart, completion: completion)
     }
     
-    func addItemToCart(item: Item, quantity: Int) -> Observable<JSON> {
+    @discardableResult
+    public func addToCart(item: Item, quantity: Int, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
         let body = [
             "item_id": item.id,
             "quantity": quantity
         ]
         guard let request = URLRequest.post(path: "/cart/item/add", body: body) else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
-        return self.fetch(request: request)
+        
+        return self.execute(request: request, completion: completion)
     }
     
-    func updateQuantity(with itemId: Int, new quantity: Int) -> Observable<JSON> {
+    @discardableResult
+    public func updateCartQuantity(item: Item, quantity: Int, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
         let body = [
-            "item_id": itemId,
+            "item_id": item.id,
             "quantity": quantity
         ]
-        print(body)
         guard let request = URLRequest.put(path: "/cart/item/update/quantity", body: body) else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
-        return self.fetch(request: request)
+        
+        return self.execute(request: request, completion: completion)
     }
     
-    func update(cartItem: CartItem) -> Observable<JSON> {
+    @discardableResult
+    public func updateCartItem(cartItem: CartItem, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
         let body = cartItem.rawdict
         guard let request = URLRequest.put(path: "/cart/item/update", body: body) else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
-        return self.fetch(request: request)
+        
+        return self.execute(request: request, completion: completion)
     }
     
-    func delete(cartItem: CartItem) -> Observable<JSON> {
+    @discardableResult
+    public func deleteCartItem(cartItem: CartItem, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
         let urlParameters = [
             "item_id": String(cartItem.id)
         ]
         guard let request = URLRequest.delete(path: "/cart/item/delete", body: [:], urlParameters: urlParameters) else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
-        return self.fetch(request: request)
+        
+        return self.execute(request: request, completion: completion)
     }
 }

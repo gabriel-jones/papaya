@@ -54,20 +54,26 @@ extension ChangePasswordViewController: UITableViewDelegate, UITableViewDataSour
         case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: SettingsInputTableViewCell.identifier, for: indexPath) as! SettingsInputTableViewCell
             cell.textField.placeholder = "Current Password"
-            cell.textField.keyboardType = .emailAddress
+            cell.textField.keyboardType = .default
+            cell.textField.isSecureTextEntry = true
             cell.textField.autocapitalizationType = .none
+            cell.textField.keyboardAppearance = .dark
             return cell
         case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: SettingsInputTableViewCell.identifier, for: indexPath) as! SettingsInputTableViewCell
             cell.textField.placeholder = "New Password"
-            cell.textField.keyboardType = .phonePad
+            cell.textField.keyboardType = .default
+            cell.textField.isSecureTextEntry = true
             cell.textField.autocapitalizationType = .none
+            cell.textField.keyboardAppearance = .dark
             return cell
         case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: SettingsInputTableViewCell.identifier, for: indexPath) as! SettingsInputTableViewCell
             cell.textField.placeholder = "Repeat New Password"
             cell.textField.keyboardType = .default
+            cell.textField.isSecureTextEntry = true
             cell.textField.autocapitalizationType = .none
+            cell.textField.keyboardAppearance = .dark
             return cell
         default: return UITableViewCell()
         }

@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import RxSwift
 
 extension UIImage {
     public var tintable: UIImage {
@@ -17,7 +16,6 @@ extension UIImage {
 
 class CartViewController: UIViewController {
     
-    private let disposeBag = DisposeBag()
     private var cart: Cart?
     
     private var closeButton: UIBarButtonItem!
@@ -35,16 +33,16 @@ class CartViewController: UIViewController {
     }
     
     private func loadCart(_ completion: ((Bool) -> Void)? = nil) {
-        Request.shared.getCart()
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [unowned self] cart in
+        Request.shared.getCart { result in
+            switch result {
+            case .success(let cart):
                 self.cart = cart
                 self.update()
                 completion?(true)
-                }, onError: { error in
-                    completion?(false)
-            })
-            .disposed(by: disposeBag)
+            case .failure(let error):
+                completion?(false)
+            }
+        }
     }
     
     override func viewDidLoad() {
@@ -134,17 +132,26 @@ class CartViewController: UIViewController {
     
     @objc private func checkout(_ sender: LoadingButton) {
         sender.showLoading()
-        Request.shared.createCheckout()
-        .observeOn(MainScheduler.instance)
-        .subscribe(onNext: { checkout in
-            sender.hideLoading()
-            let vc = CheckoutSchedulerViewController()
-            vc.checkout = checkout
-            self.navigationController?.pushViewController(vc, animated: true)
-        }, onError: { error in
-            print("HANDLE ERROR")
-        })
-        .disposed(by: disposeBag)
+        Request.shared.getSchedule { result in
+            switch result {
+            case .success(let days):
+                Request.shared.createCheckout { result in
+                    sender.hideLoading()
+                    switch result {
+                    case .success(let checkout):
+                        let vc = CheckoutSchedulerViewController()
+                        vc.checkout = checkout
+                        vc.schedule = days
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                    }
+                }
+            case .failure(let error):
+                sender.hideLoading()
+                print(error.localizedDescription)
+            }
+        }
     }
     
     private func buildConstraints() {
@@ -194,21 +201,25 @@ extension CartViewController: CartItemTableViewCellDelegate {
             if let items = self.cart?.items, let index = items.index(where: { $0.id == selectedItem.id }), let row = self.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? CartItemTableViewCell {
                 if new == row.stepper.value {
                     row.stepper.showLoading()
-                    Request.shared.updateQuantity(with: selectedItem.id, new: new)
-                        .observeOn(MainScheduler.instance)
-                        .subscribe(onNext: { _ in
-                            row.stepper.hideLoading()
-                        }, onError: { error in
-                            row.stepper.hideLoading()
-                        })
-                        .disposed(by: self.disposeBag)
+                    
+                    Request.shared.updateCartQuantity(item: selectedItem.item, quantity: new) { result in
+                        row.stepper.hideLoading()
+                        switch result {
+                        case .success(_):
+                            print("success")
+                        case .failure(let error):
+                            print(error.localizedDescription)
+                        }
+                    }
                 }
             }
         }
     }
     
-    func delete(selectedItem: CartItem) {
-        
+    func delete(selectedItem: CartItem) {/*
+        Request.shared.deleteCartItem(cartItem: selectedItem) {
+            
+        }*/
     }
     
     func addInstructions(selectedItem: CartItem) {
@@ -253,12 +264,12 @@ extension CartViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let item = ItemVC.instantiate(from: .main)
-        item.item = cart!.items[indexPath.row-1].item
-        item.imageId = (tableView.cellForRow(at: indexPath) as? CartItemTableViewCell)?.getImageId()
+        let vc = ItemViewController()
+        vc.item = cart!.items[indexPath.row-1].item
+        vc.imageId = (tableView.cellForRow(at: indexPath) as? CartItemTableViewCell)?.getImageId()
         heroModalAnimationType = .cover(direction: .up)
         
-        let nav = UINavigationController(rootViewController: item)
+        let nav = UINavigationController(rootViewController: vc)
         nav.isHeroEnabled = true
         present(nav, animated: true, completion: nil)
     }
@@ -276,7 +287,6 @@ extension CartViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        
         guard let _cart = self.cart else {
             return nil
         }

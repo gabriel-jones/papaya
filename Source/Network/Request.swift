@@ -8,99 +8,109 @@
 
 import UIKit
 import SwiftyJSON
-import RxSwift
+import Reachability
+
+enum ThreadType {
+    case main, background
+}
 
 class Request: NSObject, URLSessionDelegate, URLSessionDataDelegate {
     
+    internal var threadType: ThreadType?
     
-    /* TEMP */
-    //TOOD: DELETE
-    
-    func getAllItemsTemp() -> Observable<[Item]> {
-        if let request = URLRequest.get(path: "/item/all") {
-            return Request.shared.fetch(request: request)
-                .observeOn(MainScheduler.instance)
-                .flatMap(parse.json2Items)
-        }
-        return Observable.error(RequestError.unknown)
+    public init(_ thread: ThreadType) {
+        threadType = thread
+        super.init()
     }
-
-    public static let shared = Request()
+    
+    public static let shared: Request = Request(.main)
+    //public let background: Request = Request(.background)
     
     internal let parse = Parse()
-    internal let session = URLSession(configuration: URLSessionConfiguration.default)
-
-    public enum HTTPMethod: String {
-        case get, post, put, patch, delete
-        
-        public var stringValue: String {
-            get {
-                return self.rawValue.uppercased()
-            }
+    internal let session = URLSession(configuration: .default)
+    
+    internal typealias HandleResponse<T> = (_ data: Data?, _ response: URLResponse?, _ error: NSError?) -> Result<T>
+    internal typealias CompletionHandler<T> = (Result<T>) -> Void
+    
+    internal func constructHandler<T>(parseMethod: ((JSON) -> Result<T>)?) -> ((Data?, URLResponse?, NSError?) -> Result<T>) {
+        return { (data: Data?, response: URLResponse?, error: NSError?) -> Result<T> in
+            return Result(from: Response(data: data, urlResponse: response), optional: error)
+                .flatMap(self.parse.response2Data)
+                .flatMap(self.parse.data2Json)
+                .flatMap(parseMethod ?? {return Result(value: $0 as! T)}) // I'm sorry for this garbage code
         }
     }
     
-    internal func fetch(request: URLRequest) -> Observable<JSON> {
-        return self.task(request: request)
-            .catchError { error in
-                switch error as? RequestError {
-                case .unauthorised?:
-                    return self.reauthorise()
-                        .catchErrorJustReturn("")
-                        .flatMap { str -> Observable<JSON> in
-                            if str == "" {
-                                return self.task(request: request)
-                            }
-                            return Observable.error(error)
-                        }
-                default:
-                    return Observable.error(error)
-                }
-            }
-    }
-    
-    internal func task(request: URLRequest) -> Observable<JSON> {
-        print("TASK")
-        return Observable.create { observer in
-            print("creating")
-            let task = self.session.dataTask(with: request) { (data: Data?, response: URLResponse?, error: Error?) -> Void in
-                print("callback: \(error, response)")
-                guard error == nil, let _ = response as? HTTPURLResponse, let data = data else {
-                    observer.onError(RequestError.unknown)
+    internal func execute<T>(request: URLRequest, withAuth: Bool = true, parseMethod: ((JSON) -> Result<T>)? = nil, completion: (CompletionHandler<T>)? = nil) -> URLSessionDataTask {
+        /*if !(Network.reachability?.isConnectedToNetwork ?? false) {
+            completion?(Result(error: RequestError.networkOffline))
+        }*/
+        
+        print("Execute request: \(request.url)")
+        let task = session.dataTask(with: request) { data, response, error in
+            let handleResponse = self.constructHandler(parseMethod: parseMethod)
+            let result = handleResponse(data, response, error as NSError?)
+            switch result {
+            case .failure(let error):
+                print("Failed: \(error)")
+                if error == .unauthorised && withAuth {
+                    self.reauthoriseAndExecute(request: request, handleResponse: handleResponse, completion: completion)
                     return
                 }
-                
-                do {
-                    let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
-                    let json = JSON(jsonObject)
-                    guard let code = json["code"].int else {
-                        observer.onError(RequestError.unknown)
-                        return
-                    }
-                    if let requestError = RequestError(rawValue: code) {
-                        if requestError == .success {
-                            observer.onNext(json)
-                            observer.onCompleted()
-                            return
-                        }
-                        observer.onError(requestError)
-                    }
-                } catch {
-                    observer.onError(RequestError.failedToParseJson)
-                }
+            default: break
             }
-            task.resume()
-            return Disposables.create(with: task.cancel)
+            if self.threadType == .main {
+                DispatchQueue.main.async {
+                    completion?(result)
+                }
+            } else {
+                completion?(result)
+            }
+        }
+        task.resume()
+        return task
+    }
+    
+    private func reauthoriseAndExecute<T>(request: URLRequest, handleResponse: @escaping HandleResponse<T>, completion: (CompletionHandler<T>)? = nil) {
+        print("Reauthorising and reexecuting...")
+        self.reauthorise { result in
+            switch result {
+            case .failure(let error):
+                print("Reauth failed: \(error)")
+                if self.threadType == .main {
+                    DispatchQueue.main.async {
+                        completion?(Result(error: error))
+                    }
+                } else {
+                    completion?(Result(error: error))
+                }
+            case .success(let token):
+                print("Reauth succeeded: \(token)")
+                AuthenticationStore.set(token: token)
+                
+                var request = request
+                request.setAuthorisation(token: token)
+                self.session.dataTask(with: request) { data, response, error in
+                    print("Reexecuted with error:", error)
+                    if self.threadType == .main {
+                        DispatchQueue.main.async {
+                            completion?(handleResponse(data, response, error as NSError?))
+                        }
+                    } else {
+                        completion?(handleResponse(data, response, error as NSError?))
+                    }
+                }.resume()
+            }
         }
     }
     
-    internal func reauthorise() -> Observable<String> {
-        print("reauth")
+    public func reauthorise(_ completion: (CompletionHandler<String>)? = nil) {
         guard let email = AuthenticationStore.email, let password = AuthenticationStore.password else {
-            return Observable.error(RequestError.unknown)
+            completion?(Result(error: RequestError.unauthorised))
+            return
         }
-        print("reauth task")
-        return self.login(email: email, password: password)
+        
+        login(email: email, password: password) { completion?($0) }
     }
     
     /*

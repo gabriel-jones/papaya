@@ -7,10 +7,8 @@
 //
 
 import Foundation
-import RxSwift
 
 class AuthenticationStore {
-    static private let disposeBag = DisposeBag()
     static private let store = KeychainStore()
     
     static var token: String? {
@@ -44,10 +42,9 @@ class AuthenticationStore {
     }
     
     static func logout(_ completion: @escaping (Bool) -> Void) {
-        
-        Request.shared.logout()
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { _ in
+        Request.shared.logout() { result in
+            switch result {
+            case .success(_):
                 do {
                     try self.store.delete(key: C.KeychainStore.user_email)
                     try self.store.delete(key: C.KeychainStore.user_password)
@@ -56,9 +53,9 @@ class AuthenticationStore {
                     print(error.localizedDescription)
                 }
                 completion(true)
-            }, onError: { error in
+            case .failure(let error):
                 completion(false)
-            })
-            .disposed(by: disposeBag)
+            }
+        }
     }
 }

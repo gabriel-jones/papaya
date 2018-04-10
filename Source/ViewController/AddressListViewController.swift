@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import RxSwift
 
 protocol AddressListModal {
     func chose(address: Address)
@@ -17,13 +16,11 @@ class AddressListViewController: UIViewController {
     
     private let tableView = UITableView(frame: .zero, style: .grouped)
     private var addButton: UIBarButtonItem!
-    private let activityIndicator = UIActivityIndicatorView()
     private let refreshControl = UIRefreshControl()
     private var closeButton: UIBarButtonItem?
     
     private var addresses = [Address]()
-    private let disposeBag = DisposeBag()
-    private var isLoading = false
+    private var isLoading = true
     
     public var isModal: Bool = false
     public var delegate: AddressListModal?
@@ -40,19 +37,20 @@ class AddressListViewController: UIViewController {
         present(nav, animated: true, completion: nil)
     }
     
-    private func loadAddresses(_ completion: @escaping () -> Void) {
-        isLoading = true
-        Request.shared.getAllAddresses()
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [unowned self] addresses in
-                self.isLoading = false
+    private func loadAddresses(_ completion: (() -> Void)? = nil) {
+        self.isLoading = true
+        self.refreshControl.beginRefreshing()
+        Request.shared.getAllAddresses { result in
+            self.isLoading = false
+            self.refreshControl.endRefreshing()
+            switch result {
+            case .success(let addresses):
                 self.addresses = addresses
                 self.tableView.reloadData()
-                completion()
-            }, onError: { [unowned self] error in
-                self.isLoading = false
-            })
-            .disposed(by: disposeBag)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
     }
     
     private func buildViews() {
@@ -76,10 +74,6 @@ class AddressListViewController: UIViewController {
         refreshControl.addTarget(self, action: #selector(refreshTable), for: .valueChanged)
         tableView.addSubview(refreshControl)
         
-        activityIndicator.activityIndicatorViewStyle = .gray
-        activityIndicator.hidesWhenStopped = true
-        tableView.addSubview(activityIndicator)
-        
         if isModal {
             closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Close").tintable, style: .done, target: self, action: #selector(close(_:)))
             closeButton?.tintColor = UIColor(named: .green)
@@ -94,28 +88,17 @@ class AddressListViewController: UIViewController {
     }
     
     @objc private func refreshTable() {
-        loadAddresses {
-            self.refreshControl.endRefreshing()
-            self.tableView.reloadData()
-        }
+        loadAddresses()
     }
     
     private func buildConstraints() {
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-        
-        activityIndicator.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.top.equalTo(50)
-        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        activityIndicator.startAnimating()
-        self.loadAddresses {
-            self.activityIndicator.stopAnimating()
-        }
+        loadAddresses()
     }
 }
 

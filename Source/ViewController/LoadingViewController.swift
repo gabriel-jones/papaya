@@ -7,13 +7,9 @@
 //
 
 import UIKit
-import Hero
-import RxSwift
 
-class LoadingVC: UIViewController {
+class LoadingViewController: UIViewController {
     
-    private let disposeBag = DisposeBag()
-
     private let logoView = UIView()
     private let logoName = UILabel()
     private let logoImage = UIImageView()
@@ -86,12 +82,12 @@ class LoadingVC: UIViewController {
     }
     
     private func load() {
-        Request.shared.getUserDetails()
-        .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { user in
+        Request.shared.getUserDetails() { result in
+            switch result {
+            case .success(let user):
                 User.current = user
                 self.openHomeScreen()
-            }, onError: { error in
+            case .failure(let error):
                 switch error as? RequestError {
                 case .networkOffline?:
                     break
@@ -100,12 +96,12 @@ class LoadingVC: UIViewController {
                 default:
                     self.openGetStarted()
                 }
-            })
-            .disposed(by: disposeBag)
+            }
+        }
     }
     
     private func openHomeScreen() {
-        let home = HomeVC()
+        let home = HomeViewController()
         home.tabBarItem = UITabBarItem(title: "Home", image: #imageLiteral(resourceName: "Home"), tag: 0)
         let navHome = UINavigationController(rootViewController: home)
         navHome.isHeroEnabled = true
@@ -115,12 +111,12 @@ class LoadingVC: UIViewController {
         let navSearch = UINavigationController(rootViewController: search)
         navSearch.isHeroEnabled = true
 
-        let browse = BrowseVC()
+        let browse = BrowseViewController()
         browse.tabBarItem = UITabBarItem(title: "Browse", image: #imageLiteral(resourceName: "Browse"), tag: 2)
         let navBrowse = UINavigationController(rootViewController: browse)
         navBrowse.isHeroEnabled = true
 
-        let me = MeVC()
+        let me = MeViewController()
         me.tabBarItem = UITabBarItem(title: "Me", image: #imageLiteral(resourceName: "User"), tag: 3)
         let navMe = UINavigationController(rootViewController: me)
         navMe.isHeroEnabled = true
@@ -134,13 +130,12 @@ class LoadingVC: UIViewController {
         ]
         tabBarController.tabBar.tintColor = UIColor(named: .green)
         
-        //tabBarController.isHeroEnabled = true
-        tabBarController.heroModalAnimationType = .auto
+        tabBarController.heroModalAnimationType = .cover(direction: .left)
         self.hero_replaceViewController(with: tabBarController)
     }
     
     private func openGetStarted() {
-        let getStartedVC = GetStartedVC()
+        let getStartedVC = GetStartedViewController()
         let vc = UINavigationController(rootViewController: getStartedVC)
         vc.navigationBar.isHidden = true
         vc.isHeroEnabled = true

@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import RxSwift
 
 class NotificationSettingsViewController: UIViewController {
     
@@ -25,7 +24,6 @@ class NotificationSettingsViewController: UIViewController {
     
     private let tableView = UITableView(frame: .zero, style: .grouped)
     private var model = [NotificationGroup]()
-    private let disposeBag = DisposeBag()
 
     override func viewDidLoad() {
         super.viewDidLoad()

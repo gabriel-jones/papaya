@@ -8,42 +8,46 @@
 
 import Foundation
 import SwiftyJSON
-import RxSwift
 
 extension Request {
-    func getAllCategories() -> Observable<[Category]> {
+    
+    @discardableResult
+    public func getAllCategories(completion: (CompletionHandler<[Category]>)? = nil) -> URLSessionDataTask? {
         guard let request = URLRequest.get(path: "/category/all") else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
         
-        return self.fetch(request: request)
-            .flatMap(parse.json2Categories)
+        return self.execute(request: request, parseMethod: parse.json2Categories, completion: completion)
     }
     
-    func get(category id: Int) -> Observable<Category> {
-        guard let request = URLRequest.get(path: "/category/get/\(id)") else {
-            return Observable.error(RequestError.cannotBuildRequest)
+    @discardableResult
+    public func getCategory(categoryId: Int, completion: (CompletionHandler<Category>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.get(path: "/category/get/\(categoryId)") else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
         
-        return self.fetch(request: request)
-            .flatMap(parse.json2Category)
+        return self.execute(request: request, parseMethod: parse.json2Category, completion: completion)
     }
     
-    func getSubcategories(category: Category) -> Observable<[Category]> {
+    @discardableResult
+    public func getSubcategories(category: Category, completion: (CompletionHandler<[Category]>)? = nil) -> URLSessionDataTask? {
         guard let request = URLRequest.get(path: "/category/get/\(category.id)") else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
         
-        return self.fetch(request: request)
-            .flatMap(parse.json2Subcategories)
+        return self.execute(request: request, parseMethod: parse.json2Subcategories, completion: completion)
     }
     
-    func getItems(category: Category) -> Observable<[Item]> {
+    @discardableResult
+    public func getItems(category: Category, completion: (CompletionHandler<[Item]>)? = nil) -> URLSessionDataTask? {
         guard let request = URLRequest.get(path: "/category/get/\(category.id)/items") else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
         
-        return self.fetch(request: request)
-            .flatMap(parse.json2Items)
+        return self.execute(request: request, parseMethod: parse.json2Items, completion: completion)
     }
 }

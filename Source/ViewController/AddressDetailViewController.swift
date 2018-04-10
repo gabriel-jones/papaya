@@ -8,6 +8,8 @@
 
 import UIKit
 
+
+
 struct AddressDetailField {
     var title: String
     var value: String?
@@ -68,7 +70,35 @@ class AddressDetailViewController: UIViewController {
     }
     
     @objc private func save(_ sender: UIBarButtonItem) {
+        guard
+            let streetCell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? SettingsInputTableViewCell, let street = streetCell.textField.text,
+            let zipCell = tableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? SettingsInputTableViewCell, let zip = zipCell.textField.text
+        else {
+            return
+        }
         
+        address?.street = street
+        address?.zip = zip
+        
+        if let a = address {
+            Request.shared.updateAddress(address: a) { result in
+                switch result {
+                case .success(_):
+                    self.dismiss(animated: true, completion: nil)
+                case .failure(let error):
+                    print(error)
+                }
+            }
+        } else {
+            Request.shared.addAddress(street: street, zipCode: zip) { result in
+                switch result {
+                case .success(_):
+                    self.dismiss(animated: true, completion: nil)
+                case .failure(let error):
+                    print(error)
+                }
+            }
+        }
     }
     
     @objc private func close(_ sender: UIBarButtonItem) {

@@ -7,13 +7,11 @@
 //
 
 import Foundation
-import RxSwift
 
 class NotificationRouter {
     public static let shared = NotificationRouter()
     
     private var didSetup = false
-    private let disposeBag = DisposeBag()
     
     public func setupObservers() {
         if didSetup { return }
@@ -40,10 +38,10 @@ class NotificationRouter {
     private func updateCartItem(_ userInfo: [AnyHashable: Any]?) {
         guard let cartItem = userInfo?["cartItem"] as? CartItem else {
             return
-        }
+        }/* TODO: FIX THIS SHIT
         Request.shared.update(cartItem: cartItem)
         .subscribe()
-        .disposed(by: disposeBag)
+        .disposed(by: disposeBag)*/
     }
     
     deinit {

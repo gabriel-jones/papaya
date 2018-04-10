@@ -18,14 +18,22 @@ struct Item: BaseObject {
     let size: String?
     
     init?(dict: JSON) {
-        guard let _id = dict["id"].int, let _name = dict["name"].string, let _price = dict["price"].double else {
+        guard
+            let _id = dict["id"].int,
+            let _name = dict["name"].string,
+            let _price = dict["price"].double
+        else {
             return nil
         }
         
         id = _id
         name = _name
-        img = URL(string: dict["img_url"].stringValue)
         price = _price
+        if let img_url = dict["img_url"].string {
+            img = URL(string: img_url)
+        } else {
+            img = nil
+        }
         category = Category(dict: dict)
         size = dict["size"].string
     }

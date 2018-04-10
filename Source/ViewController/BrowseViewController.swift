@@ -7,16 +7,13 @@
 //
 
 import UIKit
-import RxSwift
 
-class BrowseVC: ViewControllerWithCart {
+class BrowseViewController: ViewControllerWithCart {
     
     private var departments = [Category]()
     
     private var collectionView: UICollectionView!
     private let activityIndicator = UIActivityIndicatorView()
-
-    private let disposeBag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,17 +28,17 @@ class BrowseVC: ViewControllerWithCart {
     }
     
     private func loadCategories(_ completion: @escaping (Bool) -> Void) {
-        Request.shared.getAllCategories()
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { categories in
+        Request.shared.getAllCategories() { result in
+            switch result {
+            case .success(let categories):
                 self.departments = categories
                 self.collectionView.reloadData()
                 completion(true)
-            }, onError: { error in
+            case .failure(let error):
                 print(error.localizedDescription)
                 completion(false)
-            })
-            .disposed(by: disposeBag)
+            }
+        }
     }
 
     private func buildViews() {
@@ -79,9 +76,9 @@ class BrowseVC: ViewControllerWithCart {
     }
 }
 
-extension BrowseVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension BrowseViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let vc = CategoryVC()
+        let vc = CategoryViewController()
         vc.category = departments[indexPath.row]
         navigationController?.pushViewController(vc, animated: true)
     }

@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import RxSwift
 
 protocol SimilarItemsViewControllerDelegate {
     func didChoose(item: Item)
@@ -19,7 +18,6 @@ class SimilarItemsViewController: UIViewController {
     public var delegate: SimilarItemsViewControllerDelegate?
     
     private var similar = [Item]()
-    private let disposeBag = DisposeBag()
     
     private let tableView = UITableView()
     private let activityIndicator = UIActivityIndicatorView()
@@ -33,29 +31,29 @@ class SimilarItemsViewController: UIViewController {
     }
     
     func loadSimilarForItem() {
-        Request.shared.getAllItemsTemp()
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [unowned self] items in
+        Request.shared.getAllItemsTemp() { result in
+            switch result {
+            case .success(let items):
                 self.similar = items
                 self.activityIndicator.stopAnimating()
                 self.tableView.reloadData()
-            }, onError: { error in
-                
-            })
-            .disposed(by: disposeBag)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
     }
     
     func loadSimilarForSearch(_ search: String) {
-        Request.shared.getAllItemsTemp()
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [unowned self] items in
+        Request.shared.getAllItemsTemp() { result in
+            switch result {
+            case .success(let items):
                 self.similar = items
                 self.activityIndicator.stopAnimating()
                 self.tableView.reloadData()
-                }, onError: { error in
-                    
-            })
-            .disposed(by: disposeBag)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
     }
     
     private func buildViews() {
