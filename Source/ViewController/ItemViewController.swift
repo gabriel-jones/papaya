@@ -9,12 +9,27 @@
 import UIKit
 import SwiftyJSON
 
+protocol CartItemDelegate: class {
+    /*
+    func didUpdateQuantity(forItem: CartItem, toQuantity: Int)
+    func didDelete(cartItem: CartItem)
+    func didAddToCart(cartItem: CartItem)
+     */
+    func didUpdateCart()
+}
+
+protocol LikedDelegate: class {
+    func didUpdateLikedStatus(toLiked: Bool, forItem: Item)
+}
+
 class ItemViewController: UIViewController {
     
     //MARK: - Properties
     public var item: Item?
     public var imageId: String?
     public var isOnNavigationStack = false
+    public var cartDelegate: CartItemDelegate?
+    public var likedDelegate: LikedDelegate?
     
     private var isLoading = true
     
@@ -39,7 +54,7 @@ class ItemViewController: UIViewController {
         self.buildViews()
         self.buildConstraints()
         
-        self.addToCart.showLoading()
+        DispatchQueue.main.async { self.addToCart.showLoading() }
 
         let group = DispatchGroup()
         
@@ -58,8 +73,8 @@ class ItemViewController: UIViewController {
         
         group.enter()
         Request.shared.getAllItemsTemp() { result in
-            if case .success(let similarItems) = result {
-                self.items = similarItems
+            if case .success(let paginatedResult) = result {
+                self.items = paginatedResult.results
             }
             group.leave()
         }
@@ -74,14 +89,12 @@ class ItemViewController: UIViewController {
     
     private func updateCartButtons() {
         let inCart = isInCart ?? false
-        print("calling")
-        print(isInCart)
-        print(inCart)
         
         addToCart.tag = inCart ? 1 : 0
         addToCart.isEnabled = !inCart
         addToCart.alpha = inCart ? 0.75 : 1
         addToCart.setTitle(inCart ? "In cart" : "Add to cart", for: .normal)
+        stepper.shouldDelete = inCart
         
         if let n = numberInCart, n > 0 {
             stepper.value = n
@@ -115,6 +128,8 @@ class ItemViewController: UIViewController {
         tableView.estimatedRowHeight = 200
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.tableFooterView = nil
+        tableView.showsVerticalScrollIndicator = false
+        tableView.showsHorizontalScrollIndicator = false
         view.addSubview(tableView)
         
         // Toolbar
@@ -135,6 +150,7 @@ class ItemViewController: UIViewController {
         
         stepper.backgroundColor = .white
         stepper.delegate = self
+        stepper.shouldDelete = false
         toolbar.addSubview(stepper)
         
         activityIndicator.hidesWhenStopped = true
@@ -185,10 +201,15 @@ class ItemViewController: UIViewController {
         DispatchQueue.main.async { self.addToCart.showLoading() }
         self.numberInCart = self.stepper.value
         self.isInCart = true
+        self.stepper.isUserInteractionEnabled = false
         Request.shared.addToCart(item: self.item!, quantity: self.stepper.value) { result in
             self.addToCart.hideLoading()
-            if case .success(_) = result {
+            self.stepper.isUserInteractionEnabled = true
+            if case .success(let cartItem) = result {
+                //self.cartDelegate?.didAddToCart(cartItem: cartItem)
+                self.cartDelegate?.didUpdateCart()
                 self.updateCartButtons()
+                self.tableView.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .none)
                 self.close(0)
             }
         }
@@ -212,14 +233,27 @@ extension ItemViewController: StepperDelegate {
             if to == self.stepper.value {
                 self.stepper.showLoading()
                 Request.shared.updateCartQuantity(item: self.item!, quantity: to) { result in
-                    self.stepper.hideLoading() //todo: switch
+                    self.stepper.hideLoading()
+                    if case .success(let cartItem) = result {
+                        self.cartDelegate?.didUpdateCart()
+                        //self.cartDelegate?.didUpdateQuantity(forItem: cartItem, toQuantity: to)
+                    }
                 }
             }
         }
     }
     
     func delete() {
-        
+        self.stepper.showLoading()
+        Request.shared.deleteCartItem(item: self.item!) { result in
+            self.stepper.hideLoading()
+            if case .success(_) = result {
+                self.isInCart = false
+                self.updateCartButtons()
+                self.tableView.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .none)
+                self.cartDelegate?.didUpdateCart()
+            }
+        }
     }
 }
 
@@ -236,33 +270,54 @@ extension ItemViewController: UIScrollViewDelegate {
 
 extension ItemViewController: ItemActionDelegate {
     internal func set(liked: Bool) {
-        print("like: \(liked)")
         if let item = self.item {
             Request.shared.setLiked(item: item, to: liked)
             isLiked = liked
+            self.likedDelegate?.didUpdateLikedStatus(toLiked: liked, forItem: item)
             tableView.reloadData()
         }
     }
     
-    internal func add(to list: List) {
-        
+    internal func addToList() {
+        let vc = ListListViewController()
+        vc.isModal = true
+        vc.delegate = self
+        let nav = UINavigationController(rootViewController: vc)
+        nav.navigationBar.tintColor = UIColor(named: .green)
+        present(nav, animated: true, completion: nil)
     }
     
     internal func addInstructions() {
-        
+        let vc = InstructionsViewController()
+        vc.rawItem = self.item
+        vc.delegate = self
+        let nav = UINavigationController(rootViewController: vc)
+        present(nav, animated: true, completion: nil)
+    }
+}
+
+extension ItemViewController: InstructionsViewControllerDelegate {
+    func didMakeChanges(toCartItem: CartItem) {
+        print("made changes")
+    }
+}
+
+extension ItemViewController: ListModalDelegate {
+    func chose(list: List) {
+        Request.shared.addToList(item: self.item!)
     }
 }
 
 protocol ItemActionDelegate {
     func set(liked: Bool)
-    func add(to list: List)
+    func addToList()
     func addInstructions()
 }
 
 extension ItemViewController: ViewAllDelegate {
     internal func viewAll(identifier: Int?) {
         let vc = ItemGroupViewController()
-        //vc.items = Request.shared.getAllItemsTemp()
+        vc.items = .similar(to: item!)
         vc.groupTitle = "Similar to \(item!.name)"
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -274,10 +329,11 @@ extension ItemViewController: ViewAllDelegate {
 
 extension ItemViewController: ItemImageDelegate {
     func openImage(_ sender: Any) {
-        print("open image")
         let vc = ItemImageViewController()
         if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ItemDetailTableViewCell, let img = cell.itemImage.image {
-            print("found img")
+            if !cell.didLoadImage {
+                return
+            }
             vc.image = img
         }
         vc.imageId = self.imageId
@@ -309,7 +365,11 @@ extension ItemViewController: UITableViewDelegate, UITableViewDataSource {
         } else if indexPath.row == 1 {
             let cell = tableView.dequeueReusableCell(withIdentifier: ItemActionTableViewCell.identifier, for: indexPath) as! ItemActionTableViewCell
             cell.delegate = self
-            cell.load(actions: [(isLiked ?? false) ? .liked : .like, .addToList])
+            var actions: [ItemActionTableViewCell.ItemActions] = [(isLiked ?? false) ? .liked : .like]
+            if isInCart ?? false {
+                actions.append(.instructions)
+            }
+            cell.load(actions: actions)
             cell.separatorInset = UIEdgeInsets.zero
             return cell
         } else if indexPath.row == 2 || indexPath.row == 3 {
@@ -325,7 +385,7 @@ extension ItemViewController: UITableViewDelegate, UITableViewDataSource {
         } else if indexPath.row == 4 {
             let cell = UITableViewCell(style: .default, reuseIdentifier: "disclaimerCell")
             cell.backgroundColor = UIColor(named: .backgroundGrey)
-            cell.textLabel?.text = disclaimer
+            cell.textLabel?.text = (disclaimer ?? "") + "\n"
             cell.textLabel?.font = Font.gotham(size: 12)
             cell.textLabel?.textAlignment = .center
             cell.textLabel?.textColor = .gray

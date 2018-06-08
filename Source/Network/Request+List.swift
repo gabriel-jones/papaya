@@ -9,79 +9,96 @@
 import Foundation
 import SwiftyJSON
 
-/*
 extension Request {
-    func getAllLists() -> Observable<[List]> {
+    @discardableResult
+    public func getAllLists(completion: (CompletionHandler<[List]>)? = nil) -> URLSessionDataTask? {
         guard let request = URLRequest.get(path: "/list/all") else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
         
-        return self.fetch(request: request)
-            .flatMap(parse.json2Lists)
+        return self.execute(request: request, parseMethod: parse.json2Lists, completion: completion)
     }
     
-    func get(list id: Int) -> Observable<List> {
-        guard let request = URLRequest.get(path: "/list/get/\(id)") else {
-            return Observable.error(RequestError.cannotBuildRequest)
+    @discardableResult
+    public func getList(listId: Int, completion: (CompletionHandler<List>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.get(path: "/list/get/\(listId)") else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
-        return self.fetch(request: request)
-            .flatMap(parse.json2List)
+        
+        return self.execute(request: request, parseMethod: parse.json2List, completion: completion)
     }
     
-    func add(list name: String, items: [ListItem]) -> Observable<JSON> {
-        let body: [String:Any] = [
-            "name": name,
-            "items": items.map { $0.rawdict }
+    @discardableResult
+    public func addListToCart(listId: Int, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.get(path: "/list/get/\(listId)/add_to_cart") else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, completion: completion)
+    }
+    
+    @discardableResult
+    public func addList(name: String, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
+        let body = [
+            "name": name
         ]
         guard let request = URLRequest.post(path: "/list/add", body: body) else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
-        return self.fetch(request: request)
+        
+        return self.execute(request: request, completion: completion)
     }
     
-    func addItem(to list: List, item: ListItem) -> Observable<JSON> {
-        let body = item.rawdict
-        guard let request = URLRequest.post(path: "/list/get/\(list.id)/item/add", body: body) else {
-            return Observable.error(RequestError.cannotBuildRequest)
+    @discardableResult
+    public func addToList(item: Item, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
+        let body = [
+            "item_id": item.id
+        ]
+        guard let request = URLRequest.post(path: "/list/item/add", body: body) else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
-        return self.fetch(request: request)
+        
+        return self.execute(request: request, completion: completion)
     }
     
-    func updateItem(for list: List, item: ListItem) -> Observable<JSON> {
-        let body = item.rawdict
-        guard let request = URLRequest.put(path: "/list/get/\(list.id)/item/update", body: body) else {
-            return Observable.error(RequestError.cannotBuildRequest)
-        }
-        return self.fetch(request: request)
-    }
-    
-    func deleteItem(from list: List, item: ListItem) -> Observable<JSON> {
+    @discardableResult
+    public func deleteListItem(item: Item, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
         let urlParameters = [
             "item_id": String(item.id)
         ]
-        
-        guard let request = URLRequest.delete(path: "/list/add", body: [:], urlParameters: urlParameters) else {
-            return Observable.error(RequestError.cannotBuildRequest)
+        guard let request = URLRequest.delete(path: "/list/item/delete", body: [:], urlParameters: urlParameters) else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
-        return self.fetch(request: request)
+        
+        return self.execute(request: request, completion: completion)
     }
     
-    func update(list: List) -> Observable<JSON> {
+    @discardableResult
+    public func updateList(list: List, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
         let body = [
             "name": list.name
         ]
         guard let request = URLRequest.put(path: "/list/get/\(list.id)/update", body: body) else {
-            return Observable.error(RequestError.cannotBuildRequest)
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
-        return self.fetch(request: request)
-            .observeOn(MainScheduler.instance)
+        
+        return self.execute(request: request, completion: completion)
     }
     
-    func delete(list: List) -> Observable<JSON> {
-        guard let request = URLRequest.delete(path: "/list/get/\(list.id)/delete") else {
-            return Observable.error(RequestError.cannotBuildRequest)
+    @discardableResult
+    public func deleteList(list: List, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.delete(path: "/list/delete") else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
         }
-        return self.fetch(request: request)
+        
+        return self.execute(request: request, completion: completion)
     }
 }
-*/

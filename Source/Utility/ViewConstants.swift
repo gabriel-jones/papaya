@@ -12,10 +12,10 @@ extension C {
     struct ViewModel {
         enum CellIdentifier: String {
             case cartItemCell, emptyCell, cartDetailCell
-            case browseCell
+            case browseCell, browseSpecialCell
             case aisleSectionBarCell
             case instructionsItemCell, instructionsReplaceCell
-            case itemGroupCell, itemCell
+            case itemGroupCell, itemCell, specialItemCell
             case listGroupCell, listCell, listItemGridCell
             case itemDetailCell, itemActionCell
             case settingsInputCell, settingsLargeInputCell, settingsButtonCell
@@ -26,6 +26,8 @@ extension C {
             case similarItemCell
             case deliveryTimeCell, deliveryLocationCell
             case checkoutCartCell, checkoutTotalCell, checkoutMapCell
+            case listHeaderView
+            case clubCell
         }
         
         enum Nib: String {

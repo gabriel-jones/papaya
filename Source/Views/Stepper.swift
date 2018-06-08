@@ -14,11 +14,20 @@ protocol StepperDelegate {
 }
 
 class Stepper: UIView {
+    
     public var maximum = 100
     public var minimum = 1
+    
+    public var shouldDelete = false
+    
     public var value = 1 {
         didSet {
             valueLabel.text = String(value)
+            if value == minimum && shouldDelete {
+                decreaseButton.setImage(#imageLiteral(resourceName: "Delete").tintable, for: .normal)
+            } else if !shouldDelete {
+                decreaseButton.setImage(#imageLiteral(resourceName: "Minus").tintable, for: .normal)
+            }
         }
     }
     
@@ -40,11 +49,11 @@ class Stepper: UIView {
     }
     
     private func load() {
-        self.build()
+        self.buildView()
         self.buildConstraints()
     }
     
-    private func build() {
+    private func buildView() {
         layer.cornerRadius = 5
         layer.borderColor = UIColor.lightGray.cgColor
         layer.borderWidth = 1.0
@@ -113,9 +122,9 @@ class Stepper: UIView {
     }
     
     @objc func decrease(_ sender: UIButton) {
-        if value-1 == minimum { // show trash
+        if value-1 == minimum && shouldDelete {
             decreaseButton.setImage(#imageLiteral(resourceName: "Delete").tintable, for: .normal)
-        } else if value-1 < minimum {
+        } else if value-1 < minimum && shouldDelete {
             delegate?.delete()
             return
         }

@@ -18,6 +18,8 @@ class ItemDetailTableViewCell: UITableViewCell {
     var itemName = UILabel(frame: .zero)
     var itemPrice = UILabel(frame: .zero)
     
+    var didLoadImage = false
+    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.buildViews()
@@ -31,7 +33,9 @@ class ItemDetailTableViewCell: UITableViewCell {
     private func buildViews() {
         masksToBounds = true
         
-        itemImage.contentMode = .scaleAspectFit
+        itemImage.pin_setPlaceholder(with: #imageLiteral(resourceName: "Picture").tintable)
+        itemImage.tintColor = .gray
+        self.setImageTemplate(to: true)
         let imageTap = UITapGestureRecognizer(target: self, action: #selector(tap(_:)))
         itemImage.isUserInteractionEnabled = true
         itemImage.addGestureRecognizer(imageTap)
@@ -77,15 +81,23 @@ class ItemDetailTableViewCell: UITableViewCell {
     }
     
     func set(item: Item, id: String) {
-        itemImage.heroID = id
-        
-        itemImage.pin_setPlaceholder(with: #imageLiteral(resourceName: "Picture"))
         if let url = item.img {
             itemImage.pin_updateWithProgress = true
             itemImage.pin_setImage(from: url)
+            itemImage.pin_setImage(from: url, placeholderImage: #imageLiteral(resourceName: "Picture").tintable) { result in
+                self.didLoadImage = result.error == nil
+                self.setImageTemplate(to: result.error != nil)
+            }
+            itemImage.heroID = id
         }
         
         itemName.text = item.name
         itemPrice.text = item.price.currencyFormat
+    }
+
+    private func setImageTemplate(to: Bool) {
+        itemImage.contentMode = to ? .center : .scaleAspectFit
+        itemImage.backgroundColor = to ? UIColor(named: .backgroundGrey) : .clear
+        itemImage.layer.cornerRadius = to ? 5 : 0
     }
 }

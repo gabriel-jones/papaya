@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import GSMessages
 
 protocol AddressListModal {
     func chose(address: Address)
@@ -18,6 +19,7 @@ class AddressListViewController: UIViewController {
     private var addButton: UIBarButtonItem!
     private let refreshControl = UIRefreshControl()
     private var closeButton: UIBarButtonItem?
+    private let retryButton = UIButton()
     
     private var addresses = [Address]()
     private var isLoading = true
@@ -29,6 +31,7 @@ class AddressListViewController: UIViewController {
         super.viewDidLoad()
         self.buildViews()
         self.buildConstraints()
+        self.initialLoad()
     }
     
     @objc private func add(_ sender: UIBarButtonItem?) {
@@ -37,20 +40,34 @@ class AddressListViewController: UIViewController {
         present(nav, animated: true, completion: nil)
     }
     
-    private func loadAddresses(_ completion: (() -> Void)? = nil) {
-        self.isLoading = true
-        self.refreshControl.beginRefreshing()
+    @objc private func loadAddresses() {
+        isLoading = true
+        retryButton.isHidden = true
+        
         Request.shared.getAllAddresses { result in
             self.isLoading = false
             self.refreshControl.endRefreshing()
             switch result {
             case .success(let addresses):
+                self.hideMessage()
                 self.addresses = addresses
+                self.tableView.isHidden = false
                 self.tableView.reloadData()
             case .failure(let error):
                 print(error.localizedDescription)
+                self.retryButton.isHidden = false
+                self.showMessage("Can't fetch addresses", type: .error, options: [
+                    .autoHide(false),
+                    .hideOnTap(false)
+                ])
             }
         }
+    }
+    
+    private func initialLoad() {
+        refreshControl.beginRefreshing()
+        tableView.isHidden = true
+        self.loadAddresses()
     }
     
     private func buildViews() {
@@ -68,11 +85,22 @@ class AddressListViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.backgroundColor = .clear
+        tableView.alwaysBounceVertical = true
         tableView.register(EmptyTableViewCell.classForCoder(), forCellReuseIdentifier: EmptyTableViewCell.identifier)
         view.addSubview(tableView)
 
         refreshControl.addTarget(self, action: #selector(refreshTable), for: .valueChanged)
         tableView.addSubview(refreshControl)
+        
+        retryButton.setTitle("Retry", for: .normal)
+        retryButton.setImage(#imageLiteral(resourceName: "Replace").tintable, for: .normal)
+        retryButton.setTitleColor(.black, for: .normal)
+        retryButton.tintColor = .black
+        retryButton.titleLabel?.font = Font.gotham(size: 15)
+        retryButton.addTarget(self, action: #selector(loadAddresses), for: .touchUpInside)
+        retryButton.alignVertical()
+        retryButton.isHidden = true
+        view.addSubview(retryButton)
         
         if isModal {
             closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Close").tintable, style: .done, target: self, action: #selector(close(_:)))
@@ -88,17 +116,18 @@ class AddressListViewController: UIViewController {
     }
     
     @objc private func refreshTable() {
-        loadAddresses()
+        self.loadAddresses()
     }
     
     private func buildConstraints() {
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        loadAddresses()
+        
+        retryButton.snp.makeConstraints { make in
+            make.width.height.equalTo(50)
+            make.center.equalToSuperview()
+        }
     }
 }
 

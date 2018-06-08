@@ -15,12 +15,17 @@ class SearchViewController: ViewControllerWithCart {
     private let popularTableView = UITableView(frame: .zero, style: .grouped)
     private let recommendTableView = UITableView(frame: .zero, style: .grouped)
     private var collectionView: UICollectionView!
-    
+    private let retryButton = UIButton()
+
     private let popularModel = SearchPopularModel()
     private let recommendModel = SearchRecommendModel()
     private let itemsModel = SearchItemsModel()
     
     private var isLoadingPopular = false
+    private var recommended = [String]()
+    private var query = String()
+    
+    private var searchRequest: URLSessionDataTask?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,11 +40,27 @@ class SearchViewController: ViewControllerWithCart {
             case .success(let searches):
                 self.isLoadingPopular = false
                 self.popularModel.searches = searches
-                self.popularTableView.reloadData()
+                self.popularTableView.reloadSections(IndexSet(integer: 0), with: .fade)
             case .failure(let error):
                 print(error.localizedDescription)
+                self.showMessage("Can't fetch searches", type: .error)
             }
         }
+        
+        Request.shared.autocompletion { result in
+            switch result {
+            case .success(let searches):
+                self.recommended = searches
+            case .failure(let error):
+                print(error.localizedDescription)
+                self.showMessage("Can't fetch searches", type: .error)
+            }
+        }
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        view.endEditing(true)
+        searchBar.resignFirstResponder()
     }
     
     private func buildModels() {
@@ -72,24 +93,38 @@ class SearchViewController: ViewControllerWithCart {
         collectionView.isHidden = true
         collectionView.delegate = itemsModel
         collectionView.dataSource = itemsModel
+        collectionView.bounces = true
         collectionView.alwaysBounceVertical = true
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.register(SearchEmptyCollectionViewCell.classForCoder(), forCellWithReuseIdentifier: SearchEmptyCollectionViewCell.identifier)
         collectionView.register(ItemCollectionViewCell.classForCoder(), forCellWithReuseIdentifier: ItemCollectionViewCell.identifier)
-        collectionView.infiniteScrollTriggerOffset = 200
         view.addSubview(collectionView)
         
-        collectionView.addInfiniteScroll { collectionView in
-            collectionView.performBatchUpdates({
-                // update collection view
-            }, completion: { finished in
-                // finish infinite scroll animations
-                collectionView.finishInfiniteScroll()
-            });
+        /*
+        collectionView.addInfiniteScroll { [unowned self] collectionView in
+            self.search { result in
+                switch result {
+                case .success(let paginatedResults):
+                    self.collectionView.performBatchUpdates({
+                        let (start, end) = (self.loadedItems.results.count, self.loadedItems.results.count + paginatedResults.results.count)
+                        let indexPaths = (start..<end).map { IndexPath(row: $0, section: 0)}
+                        self.loadedItems.combine(with: paginatedResults)
+                        collectionView.insertItems(at: indexPaths)
+                    }, completion: { finished in
+                        self.page += 1
+                        collectionView.finishInfiniteScroll()
+                    })
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
         }
         
-        collectionView.setShouldShowInfiniteScrollHandler { _ -> Bool in
-            // Only show up to 5 pages then prevent the infinite scroll
-            return true //currentPage < 5
-        }
+        collectionView.setShouldShowInfiniteScrollHandler { [unowned self] _ -> Bool in
+            return !self.loadedItems.isLast
+        }*/
+        
         
         searchBar.placeholder = "Search for an item..."
         searchBar.sizeToFit()
@@ -100,6 +135,16 @@ class SearchViewController: ViewControllerWithCart {
         
         backButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Left Arrow").tintable, style: .done, target: self, action: #selector(back(_:)))
         backButton?.tintColor = UIColor(named: .green)
+        
+        retryButton.setTitle("Retry", for: .normal)
+        retryButton.setImage(#imageLiteral(resourceName: "Replace").tintable, for: .normal)
+        retryButton.setTitleColor(.black, for: .normal)
+        retryButton.tintColor = .black
+        retryButton.titleLabel?.font = Font.gotham(size: 15)
+        retryButton.addTarget(self, action: #selector(loadItems), for: .touchUpInside)
+        retryButton.alignVertical()
+        retryButton.isHidden = true
+        view.addSubview(retryButton)
     }
     
     private func buildConstraints() {
@@ -114,53 +159,95 @@ class SearchViewController: ViewControllerWithCart {
         collectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+        
+        retryButton.snp.makeConstraints { make in
+            make.width.height.equalTo(50)
+            make.center.equalToSuperview()
+        }
+    }
+    
+    private func changeBackButton(add: Bool) {
+        self.navigationItem.leftBarButtonItem?.customView?.transform = add ? CGAffineTransform.identity : CGAffineTransform(translationX: -50, y: 0)
+        self.navigationItem.leftBarButtonItem = add ? self.backButton : nil
     }
     
     private func changeToSearchDetail() {
-        animateBack(add: true)
+        retryButton.isHidden = true
+        hideMessage()
+        changeBackButton(add: true)
         collectionView.isHidden = true
         popularTableView.isHidden = true
         recommendTableView.isHidden = false
     }
     
     private func changeToSearchMain() {
-        animateBack(add: false)
+        retryButton.isHidden = true
+        hideMessage()
+        changeBackButton(add: false)
         collectionView.isHidden = true
         popularTableView.isHidden = false
         recommendTableView.isHidden = true
-    }
-    
-    private func animateBack(add: Bool) {
-        let start = add ? CGAffineTransform(translationX: -50, y: 0) : CGAffineTransform.identity
-        let end = add ? CGAffineTransform.identity : CGAffineTransform(translationX: -50, y: 0)
-        
-        navigationItem.leftBarButtonItem?.customView?.transform = start
-        UIView.animate(withDuration: 5) {
-            self.navigationItem.leftBarButtonItem = add ? self.backButton : nil
-            self.navigationItem.leftBarButtonItem?.customView?.transform = end
-        }
+        view.endEditing(true)
+        searchBar.resignFirstResponder()
+        popularTableView.frame.origin.x = -view.frame.width
+        UIView.animate(withDuration: 0.3, animations: {
+            self.collectionView.frame.origin.x = self.view.frame.width
+            self.popularTableView.frame.origin.x = 0
+        }, completion: { _ in
+            self.collectionView.frame.origin.x = 0
+        })
     }
     
     private func changeToSearchItems(search: String) {
-        animateBack(add: true)
+        searchRequest?.cancel()
+        changeBackButton(add: true)
         collectionView.isHidden = false
         popularTableView.isHidden = true
         recommendTableView.isHidden = true
         searchBar.text = search
-        /*
-        Request.shared.search(query: search) { result in
+        view.endEditing(true)
+        searchBar.resignFirstResponder()
+        collectionView.frame.origin.x = view.frame.width
+        UIView.animate(withDuration: 0.3, animations: {
+            self.collectionView.frame.origin.x = 0
+            self.popularTableView.frame.origin.x = -self.view.frame.width
+            self.recommendTableView.frame.origin.x = -self.view.frame.width
+        }, completion: { _ in
+            self.popularTableView.frame.origin.x = 0
+            self.recommendTableView.frame.origin.x = 0
+        })
+        self.query = search
+        self.loadItems()
+    }
+    
+    @objc private func loadItems() {
+        collectionView.isHidden = false
+        collectionView.isUserInteractionEnabled = false
+        itemsModel.query = self.query
+        retryButton.isHidden = true
+        searchRequest = Request.shared.search(query: self.query, page: 1) { result in
             switch result {
-            case .success(let searchItems):
-                self.itemsModel.items = searchItems.results
+            case .success(let paginatedItems):
+                self.hideMessage()
+                self.collectionView.isUserInteractionEnabled = true
+                self.itemsModel.items = paginatedItems
                 self.collectionView.reloadData()
             case .failure(let error):
                 print(error.localizedDescription)
+                self.retryButton.isHidden = false
+                self.collectionView.isHidden = true
+                self.itemsModel.items = PaginatedResults(isLast: false, results: [Item]())
+                self.collectionView.reloadData()
+                self.showMessage("Can't fetch search results", type: .error, options: [
+                    .autoHide(false),
+                    .hideOnTap(false)
+                ])
             }
         }
-     */
     }
     
     @objc private func back(_ sender: UIBarButtonItem) {
+        self.searchBar.text = ""
         self.changeToSearchMain()
     }
 }
@@ -171,12 +258,21 @@ extension SearchViewController: UISearchBarDelegate {
         self.changeToSearchItems(search: searchBar.text!)
     }
     
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         self.changeToSearchDetail()
+        recommendModel.recommended = recommendedFor(searchTerm: searchText)
+        recommendTableView.reloadData()
     }
     
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        self.changeToSearchMain()
+    public func recommendedFor(searchTerm: String) -> [String] {
+        return Array(recommended.filter {
+            $0.range(of: searchTerm, options: .caseInsensitive) != nil
+        }.sorted {
+            let range1 = $0.range(of: searchTerm, options: .caseInsensitive)
+            let range2 = $1.range(of: searchTerm, options: .caseInsensitive)
+            
+            return range1!.lowerBound < range2!.lowerBound
+        }.prefix(8))
     }
 }
 
@@ -197,6 +293,7 @@ extension SearchViewController: SearchModelDelegate {
         
         let nav = UINavigationController(rootViewController: vc)
         nav.isHeroEnabled = true
+        nav.heroModalAnimationType = .selectBy(presenting: .auto, dismissing: .uncover(direction: .down))
         present(nav, animated: true, completion: nil)
     }
 }
@@ -269,33 +366,48 @@ class SearchRecommendModel: SearchModel, UITableViewDelegate, UITableViewDataSou
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        delegate?.selectRecommended(keyword: recommended[indexPath.row]) // TODO:
+        delegate?.selectRecommended(keyword: recommended[indexPath.row])
     }
 }
 
 class SearchItemsModel: SearchModel, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    public var items = [Item]()
+    public var items = PaginatedResults<Item>(isLast: false, results: [Item]())
+    public var query = String()
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return items.isEmpty ? 8 : items.count
+        if items.isLast && items.results.isEmpty {
+            return 1
+        } else if items.results.isEmpty {
+            return 8
+        }
+        return items.results.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if items.isLast && items.results.isEmpty {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchEmptyCollectionViewCell.identifier, for: indexPath) as! SearchEmptyCollectionViewCell
+            print(query)
+            cell.query = query
+            return cell
+        }
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ItemCollectionViewCell.identifier, for: indexPath) as! ItemCollectionViewCell
-        if items.isEmpty {
+        if items.results.isEmpty {
             cell.loadTemplate()
         } else {
-            cell.load(item: items[indexPath.row])
+            cell.load(item: items.results[indexPath.row])
         }
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        if items.isLast && items.results.isEmpty {
+            return CGSize(width: collectionView.frame.width, height: 200)
+        }
         return CGSize(width: (collectionView.frame.width / 2) - 24, height: 200)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let item = items[indexPath.row]
+        let item = items.results[indexPath.row]
         var imageId: String?
         if let cell = collectionView.cellForItem(at: indexPath) as? ItemCollectionViewCell {
             imageId = cell.getImageId()
@@ -303,4 +415,42 @@ class SearchItemsModel: SearchModel, UICollectionViewDelegate, UICollectionViewD
         delegate?.openItem(item: item, imageId: imageId)
     }
     
+}
+
+class SearchEmptyCollectionViewCell: UICollectionViewCell {
+    public static let identifier: String = C.ViewModel.CellIdentifier.emptyCell.rawValue
+    
+    private let label = UILabel()
+    
+    public var query: String = String() {
+        didSet {
+            label.text = "No results found for \"\(self.query)\"."
+        }
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.buildViews()
+        self.buildConstraints()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func buildViews() {
+        label.font = Font.gotham(size: 16)
+        label.textColor = .darkGray
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        addSubview(label)
+    }
+    
+    private func buildConstraints() {
+        label.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(16)
+            make.left.right.equalToSuperview()
+        }
+    }
 }

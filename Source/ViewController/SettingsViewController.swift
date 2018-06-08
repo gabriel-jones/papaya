@@ -8,7 +8,6 @@
 
 import UIKit
 import SafariServices
-import PMAlertController
 
 class SettingsViewController: UIViewController {
     
@@ -39,6 +38,8 @@ class SettingsViewController: UIViewController {
                 return AddressListViewController()
             case 3:
                 return NotificationSettingsViewController()
+            case 5:
+                return ExpressViewController()
             case 6:
                 let vc = SFSafariViewController(url: URL(string: C.URL.help)!)
                 vc.delegate = sender

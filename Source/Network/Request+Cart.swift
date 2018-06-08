@@ -12,6 +12,16 @@ import SwiftyJSON
 extension Request {
     
     @discardableResult
+    public func getCartCount(completion: (CompletionHandler<Int>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.get(path: "/cart/count") else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, parseMethod: parse.json2ItemCount, completion: completion)
+    }
+    
+    @discardableResult
     public func getCart(completion: (CompletionHandler<Cart>)? = nil) -> URLSessionDataTask? {
         guard let request = URLRequest.get(path: "/cart") else {
             completion?(Result(error: .cannotBuildRequest))
@@ -22,7 +32,7 @@ extension Request {
     }
     
     @discardableResult
-    public func addToCart(item: Item, quantity: Int, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
+    public func addToCart(item: Item, quantity: Int, completion: (CompletionHandler<CartItem>)? = nil) -> URLSessionDataTask? {
         let body = [
             "item_id": item.id,
             "quantity": quantity
@@ -32,11 +42,21 @@ extension Request {
             return nil
         }
         
-        return self.execute(request: request, completion: completion)
+        return self.execute(request: request, parseMethod: parse.json2CartItem, completion: completion)
     }
     
     @discardableResult
-    public func updateCartQuantity(item: Item, quantity: Int, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
+    public func getCartItem(item: Item, completion: (CompletionHandler<CartItem>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.get(path: "/cart/item/get/\(item.id)") else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, parseMethod: parse.json2CartItem, completion: completion)
+    }
+    
+    @discardableResult
+    public func updateCartQuantity(item: Item, quantity: Int, completion: (CompletionHandler<CartItem>)? = nil) -> URLSessionDataTask? {
         let body = [
             "item_id": item.id,
             "quantity": quantity
@@ -46,7 +66,7 @@ extension Request {
             return nil
         }
         
-        return self.execute(request: request, completion: completion)
+        return self.execute(request: request, parseMethod: parse.json2CartItem, completion: completion)
     }
     
     @discardableResult
@@ -61,11 +81,21 @@ extension Request {
     }
     
     @discardableResult
-    public func deleteCartItem(cartItem: CartItem, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
+    public func deleteCartItem(item: Item, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
         let urlParameters = [
-            "item_id": String(cartItem.id)
+            "item_id": String(item.id)
         ]
         guard let request = URLRequest.delete(path: "/cart/item/delete", body: [:], urlParameters: urlParameters) else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, completion: completion)
+    }
+    
+    @discardableResult
+    public func deleteAllItemsFromCart(completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.delete(path: "/cart/remove_all_items") else {
             completion?(Result(error: .cannotBuildRequest))
             return nil
         }

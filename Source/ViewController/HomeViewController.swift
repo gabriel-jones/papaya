@@ -7,10 +7,13 @@
 //
 
 import UIKit
+import SwiftyJSON
 
 class HomeViewController: ViewControllerWithCart {
     
     private var items = [Item]()
+    public var scheduleDays: [ScheduleDay]?
+    public var checkout: Checkout?
     
     private let tableView = UITableView()
         
@@ -22,20 +25,54 @@ class HomeViewController: ViewControllerWithCart {
         
         Request.shared.getAllItemsTemp { result in
             switch result {
-            case .success(let items):
+            case .success(let paginatedResults):
                 if let cell = self.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? GroupTableViewCell {
-                    cell.model?.set(new: items)
+                    cell.model?.set(new: paginatedResults.results)
                     cell.reload()
                 }
             case .failure(let error):
                 print(error.localizedDescription)
+                self.showMessage("Can't fetch items", type: .error)
             }
         }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+//        if let checkout = checkout, let scheduleDays = scheduleDays {
+//            isHeroEnabled = true
+//            let cart = CartViewController()
+//            cart.delegate = self
+//            cart.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .done, target: cart, action: nil)
+//            let navCart = UINavigationController()
+//            navCart.isHeroEnabled = true
+//            navCart.navigationBar.tintColor = UIColor(named: .green)
+//            navCart.heroModalAnimationType = .selectBy(presenting: .cover(direction: .left), dismissing: .uncover(direction: .right))
+//            let scheduler = CheckoutSchedulerViewController()
+//            scheduler.checkout = checkout
+//            scheduler.schedule = scheduleDays
+//            scheduler.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .done, target: scheduler, action: nil)
+//            var vcs: [UIViewController] = [cart, scheduler]
+//            if checkout.orderDate != nil {
+//                scheduler.selectedDate = checkout.orderDate!
+//                let checkoutVC = CheckoutViewController()
+//                checkoutVC.checkout = checkout
+//                checkoutVC.schedule = scheduleDays
+//                checkoutVC.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .done, target: checkoutVC, action: nil)
+//                vcs.append(checkoutVC)
+//            }
+//
+//            navCart.viewControllers = vcs
+//            view.window?.rootViewController?.present(navCart, animated: true) {
+//                self.checkout = nil
+//                self.scheduleDays = nil
+//            }
+//        }
     }
     
     private func buildViews() {
         isHeroEnabled = true
         view.backgroundColor = UIColor(named: .backgroundGrey)
+        navigationController?.interactivePopGestureRecognizer?.delegate = self
 
         tableView.allowsSelection = false
         tableView.backgroundColor = .clear
@@ -89,18 +126,17 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: GroupTableViewCell.identifier, for: indexPath) as! GroupTableViewCell
         cell.delegate = self
-        
+        cell.model?.identifier = indexPath.row
+
         switch indexPath.row {
         case 0:
             cell.set(title: "Today's Specials")
             cell.register(class: ItemCollectionViewCell.classForCoder(), identifier: ItemCollectionViewCell.identifier)
-            cell.model = ItemGroupModel()
-            cell.model?.identifier = nil
+            cell.model = ItemGroupModel(items: items)
         case 1:
             cell.set(title: "Recommended for You")
             cell.register(class: ItemCollectionViewCell.classForCoder(), identifier: ItemCollectionViewCell.identifier)
-            cell.model = ItemGroupModel()
-            cell.model?.identifier = nil
+            cell.model = ItemGroupModel(items: items)
         default: break
         }
         
@@ -113,9 +149,15 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
+extension HomeViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+}
+
 extension HomeViewController: ViewAllDelegate {
     func viewAll(identifier: Int?) {
-        print(identifier)
+        
     }
     
 }
@@ -139,7 +181,7 @@ extension UIViewController: GroupDelegateAction {
     func open(list: List, imageIds: [String]) {
         let vc = ListDetailViewController()
         vc.list = list
-        vc.imageIds = imageIds
+        //vc.imageIds = imageIds
         present(vc, animated: true, completion: nil)
     }
 }

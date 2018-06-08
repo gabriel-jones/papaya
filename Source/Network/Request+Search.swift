@@ -10,16 +10,16 @@ import Foundation
 import SwiftyJSON
 
 extension Request {
-    /*
+    
     @discardableResult
-    public func search(query: String, completion: (CompletionHandler<PaginatedResults<Item>>)? = nil) -> URLSessionDataTask? {
-        guard let request = URLRequest.get(path: "/search/q/\(query)") else {
+    public func search(query: String, page: Int = 1, completion: (CompletionHandler<PaginatedResults<Item>>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.get(path: "/search/q/\(query)/\(page)") else {
             completion?(Result(error: .cannotBuildRequest))
             return nil
         }
         
-        return self.execute(request: request, parseMethod: parse.json2Paginated, completion: completion)
-    }*/
+        return self.execute(request: request, parseMethod: parse.json2PaginatedItems, completion: completion)
+    }
     
     @discardableResult
     public func popularSearches(completion: (CompletionHandler<[String]>)? = nil) -> URLSessionDataTask? {

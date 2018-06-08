@@ -17,10 +17,9 @@ class SimilarItemsViewController: UIViewController {
     public var itemToCompare: Item!
     public var delegate: SimilarItemsViewControllerDelegate?
     
-    private var similar = [Item]()
-    
-    private let tableView = UITableView()
-    private let activityIndicator = UIActivityIndicatorView()
+    private var items = PaginatedResults<Item>(isLast: false, results: [Item]())
+
+    private var collectionView: UICollectionView!
     private var searchController: UISearchController!
 
     override func viewDidLoad() {
@@ -33,10 +32,9 @@ class SimilarItemsViewController: UIViewController {
     func loadSimilarForItem() {
         Request.shared.getAllItemsTemp() { result in
             switch result {
-            case .success(let items):
-                self.similar = items
-                self.activityIndicator.stopAnimating()
-                self.tableView.reloadData()
+            case .success(let paginatedResults):
+                self.items = paginatedResults
+                self.collectionView.reloadData()
             case .failure(let error):
                 print(error.localizedDescription)
             }
@@ -44,12 +42,11 @@ class SimilarItemsViewController: UIViewController {
     }
     
     func loadSimilarForSearch(_ search: String) {
-        Request.shared.getAllItemsTemp() { result in
+        Request.shared.search(query: search) { result in
             switch result {
             case .success(let items):
-                self.similar = items
-                self.activityIndicator.stopAnimating()
-                self.tableView.reloadData()
+                self.items = items
+                self.collectionView.reloadData()
             case .failure(let error):
                 print(error.localizedDescription)
             }
@@ -57,8 +54,8 @@ class SimilarItemsViewController: UIViewController {
     }
     
     private func buildViews() {
-        view.backgroundColor = .white
-        
+        view.backgroundColor = UIColor(named: .backgroundGrey)
+
         searchController = UISearchController(searchResultsController: nil)
         searchController.searchBar.delegate = self
         searchController.hidesNavigationBarDuringPresentation = false
@@ -68,35 +65,31 @@ class SimilarItemsViewController: UIViewController {
         definesPresentationContext = true
         navigationItem.titleView = searchController.searchBar
         
-        tableView.showsVerticalScrollIndicator = true
-        tableView.backgroundColor = .clear
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.tableFooterView = UIView()
-        tableView.register(UITableViewCell.classForCoder(), forCellReuseIdentifier: C.ViewModel.CellIdentifier.similarItemCell.rawValue)
-        view.addSubview(tableView)
-        
-        activityIndicator.activityIndicatorViewStyle = .gray
-        activityIndicator.hidesWhenStopped = true
-        DispatchQueue.main.async { self.activityIndicator.startAnimating() }
-        tableView.addSubview(activityIndicator)
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+        collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .clear
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.bounces = true
+        collectionView.alwaysBounceVertical = true
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.register(SearchEmptyCollectionViewCell.classForCoder(), forCellWithReuseIdentifier: SearchEmptyCollectionViewCell.identifier)
+        collectionView.register(ItemCollectionViewCell.classForCoder(), forCellWithReuseIdentifier: ItemCollectionViewCell.identifier)
+        view.addSubview(collectionView)
     }
     
     private func buildConstraints() {
-        tableView.snp.makeConstraints { make in
+        collectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-        }
-        
-        activityIndicator.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.top.equalTo(50)
         }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         searchController.dismiss(animated: false, completion: nil)
     }
-
 }
 
 extension SimilarItemsViewController: UISearchBarDelegate {
@@ -104,47 +97,45 @@ extension SimilarItemsViewController: UISearchBarDelegate {
         if searchBar.text!.isEmpty {
             self.loadSimilarForItem()
         }
-        print("search: " + searchBar.text!)
+        searchController.dismiss(animated: true, completion: nil)
+        self.loadSimilarForSearch(searchBar.text!)
     }
 }
 
-extension SimilarItemsViewController: UITableViewDelegate, UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return similar.count
+extension SimilarItemsViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if items.isLast && items.results.isEmpty {
+            return 1
+        } else if items.results.isEmpty {
+            return 8
+        }
+        return items.results.count
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.similarItemCell.rawValue, for: indexPath)
-        let item = similar[indexPath.row]
-        cell.textLabel?.text = item.name
-        cell.textLabel?.font = Font.gotham(size: 15)
-        cell.textLabel?.numberOfLines = 0
-        cell.detailTextLabel?.text = item.price.currencyFormat
-        cell.detailTextLabel?.textColor = .gray
-        cell.detailTextLabel?.font = Font.gotham(size: 13)
-        cell.imageView?.pin_setPlaceholder(with: #imageLiteral(resourceName: "Picture").tintable)
-        cell.imageView?.tintColor = .gray
-        cell.imageView?.backgroundColor = UIColor(named: .backgroundGrey)
-        cell.imageView?.layer.cornerRadius = 5
-        cell.imageView?.contentMode = .center
-        cell.imageView?.pin_setImage(from: item.img) { result in
-            if result.error == nil {
-                cell.imageView?.backgroundColor = .clear
-                cell.imageView?.layer.cornerRadius = 0
-                cell.imageView?.contentMode = .scaleAspectFit
-                cell.imageView?.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
-            }
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if items.isLast && items.results.isEmpty {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchEmptyCollectionViewCell.identifier, for: indexPath) as! SearchEmptyCollectionViewCell
+            cell.query = self.searchController.searchBar.text!
+            return cell
         }
-        cell.separatorInset = .zero
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ItemCollectionViewCell.identifier, for: indexPath) as! ItemCollectionViewCell
+        if items.results.isEmpty {
+            cell.loadTemplate()
+        } else {
+            cell.load(item: items.results[indexPath.row])
+        }
         return cell
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 60
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        if items.isLast && items.results.isEmpty {
+            return CGSize(width: collectionView.frame.width, height: 200)
+        }
+        return CGSize(width: (collectionView.frame.width / 2) - 24, height: 200)
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        delegate?.didChoose(item: similar[indexPath.row])
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        delegate?.didChoose(item: items.results[indexPath.row])
         navigationController?.popViewController(animated: true)
     }
 }

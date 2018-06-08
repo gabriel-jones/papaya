@@ -12,21 +12,29 @@ import SwiftyJSON
 struct Category: BaseObject {
     public let id: Int
     public let name: String
+    public let isSpecial: Bool
+    public let imageId: String?
+    public let specialClubId: Int?
     
     public var imageURL: URL? {
         get {
-            return URL(string: C.URL.categoryImage(with: id))
+            guard let imageId = imageId else { return nil }
+            return URL(string: C.URL.categoryImage(with: imageId))
         }
     }
     
     init?(dict: JSON) {
         guard
             let _id = dict["category_id"].int,
-            let _name = dict["category_name"].string
+            let _name = dict["category_name"].string,
+            let _isSpecial = dict["is_special"].bool
         else {
             return nil
         }
         id = _id
         name = _name
+        isSpecial = _isSpecial
+        imageId = dict["img_id"].string
+        specialClubId = dict["special_club_id"].int
     }
 }

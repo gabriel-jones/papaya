@@ -38,7 +38,7 @@ class CartMinimalViewController: UIViewController {
         tableView.backgroundColor = .clear
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.tableHeaderView = UIView(frame: .zero)
+        tableView.tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 0.01))
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: C.ViewModel.CellIdentifier.cartItemCell.rawValue)
         view.addSubview(tableView)
     }

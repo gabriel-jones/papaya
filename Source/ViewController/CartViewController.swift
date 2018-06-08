@@ -17,6 +17,7 @@ extension UIImage {
 class CartViewController: UIViewController {
     
     private var cart: Cart?
+    public var delegate: CartViewControllerDelegate?
     
     private var closeButton: UIBarButtonItem!
     private let tableView = UITableView(frame: .zero, style: .grouped)
@@ -27,20 +28,47 @@ class CartViewController: UIViewController {
     private let checkoutPriceLabel = UILabel()
     private let activityIndicator = UIActivityIndicatorView()
     private let refreshControl = UIRefreshControl()
-    
+    private let retryButton = UIButton()
+
     @objc private func refreshTable() {
-        self.loadCart()
+        self.loadCart {
+            self.refreshControl.endRefreshing()
+        }
     }
     
-    private func loadCart(_ completion: ((Bool) -> Void)? = nil) {
+    private func loadCart(_ completion: (() -> Void)? = nil) {
+        retryButton.isHidden = true
         Request.shared.getCart { result in
+            self.activityIndicator.stopAnimating()
+            self.checkoutButton.hideLoading()
+            completion?()
             switch result {
             case .success(let cart):
+                self.hideMessage()
+                
+                if cart.total > 0 {
+                    self.checkoutButton.isEnabled = true
+                    self.checkoutButton.alpha = 1.0
+                }
+                
+                self.tableView.isUserInteractionEnabled = true
+                
                 self.cart = cart
                 self.update()
-                completion?(true)
             case .failure(let error):
-                completion?(false)
+                print(error.localizedDescription)
+                
+                self.checkoutButton.hideLoading()
+                self.checkoutButton.alpha = 0.5
+                self.checkoutButton.isEnabled = false
+                
+                self.retryButton.isHidden = false
+                self.tableView.isUserInteractionEnabled = false
+                
+                self.showMessage("Cannot fetch cart", type: .error, options: [
+                    .autoHide(false),
+                    .hideOnTap(false)
+                ])
             }
         }
     }
@@ -52,16 +80,14 @@ class CartViewController: UIViewController {
         self.fullLoad()
     }
     
-    func fullLoad() {
+    @objc func fullLoad() {
         DispatchQueue.main.async {
             self.checkoutButton.showLoading()
             self.activityIndicator.startAnimating()
             self.tableView.isHidden = true
         }
-        self.loadCart { _ in
+        self.loadCart {
             self.tableView.isHidden = false
-            self.activityIndicator.stopAnimating()
-            self.checkoutButton.hideLoading()
         }
     }
     
@@ -75,7 +101,8 @@ class CartViewController: UIViewController {
         isHeroEnabled = true
         view.backgroundColor = UIColor(named: .backgroundGrey)
         navigationItem.backBarButtonItem = UIBarButtonItem(title: " ", style: .done, target: self, action: nil)
-
+        navigationController?.interactivePopGestureRecognizer?.delegate = self
+        
         closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Close").tintable, style: .done, target: self, action: #selector(close(_:)))
         closeButton.tintColor = UIColor(named: .green)
         navigationItem.leftBarButtonItem = closeButton
@@ -88,6 +115,7 @@ class CartViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.isHidden = true
+        tableView.alwaysBounceVertical = true
         view.addSubview(tableView)
         
         refreshControl.addTarget(self, action: #selector(refreshTable), for: .valueChanged)
@@ -108,6 +136,8 @@ class CartViewController: UIViewController {
         checkoutButton.setTitleColor(.white, for: .normal)
         checkoutButton.titleLabel?.font = Font.gotham(weight: .bold, size: 17)
         checkoutButton.addTarget(self, action: #selector(checkout(_:)), for: .touchUpInside)
+        checkoutButton.alpha = 0.5
+        checkoutButton.isEnabled = false
         toolbar.addSubview(checkoutButton)
         
         checkoutPrice.backgroundColor = UIColor.black.withAlphaComponent(0.2)
@@ -124,10 +154,15 @@ class CartViewController: UIViewController {
         activityIndicator.hidesWhenStopped = true
         view.addSubview(activityIndicator)
         
-        activityIndicator.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.centerY.equalToSuperview()
-        }
+        retryButton.setTitle("Retry", for: .normal)
+        retryButton.setImage(#imageLiteral(resourceName: "Replace").tintable, for: .normal)
+        retryButton.setTitleColor(.black, for: .normal)
+        retryButton.tintColor = .black
+        retryButton.titleLabel?.font = Font.gotham(size: 15)
+        retryButton.addTarget(self, action: #selector(fullLoad), for: .touchUpInside)
+        retryButton.alignVertical()
+        retryButton.isHidden = true
+        view.addSubview(retryButton)
     }
     
     @objc private func checkout(_ sender: LoadingButton) {
@@ -142,16 +177,27 @@ class CartViewController: UIViewController {
                         let vc = CheckoutSchedulerViewController()
                         vc.checkout = checkout
                         vc.schedule = days
+                        if let date = checkout.orderDate {
+                            vc.selectedDate = date
+                        }
                         self.navigationController?.pushViewController(vc, animated: true)
                     case .failure(let error):
                         print(error.localizedDescription)
+                        self.showError(message: "Cannot checkout. Please check your connection and try again.")
                     }
                 }
             case .failure(let error):
                 sender.hideLoading()
                 print(error.localizedDescription)
+                self.showError(message: "Cannot checkout. Please check your connection and try again.")
             }
         }
+    }
+    
+    private func showError(message: String) {
+        let alert = UIAlertController(title: "An error occured.", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
     }
     
     private func buildConstraints() {
@@ -187,6 +233,15 @@ class CartViewController: UIViewController {
             make.left.equalTo(8)
             make.right.equalTo(-8)
         }
+        
+        activityIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+        
+        retryButton.snp.makeConstraints { make in
+            make.width.height.equalTo(50)
+            make.center.equalToSuperview()
+        }
     }
     
     @objc func close(_ sender: UIBarButtonItem?) {
@@ -195,44 +250,40 @@ class CartViewController: UIViewController {
     }
 }
 
+extension CartViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+}
+
 extension CartViewController: CartItemTableViewCellDelegate {
     func changeQuantity(new: Int, selectedItem: CartItem) {
-        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
-            if let items = self.cart?.items, let index = items.index(where: { $0.id == selectedItem.id }), let row = self.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? CartItemTableViewCell {
-                if new == row.stepper.value {
-                    row.stepper.showLoading()
-                    
-                    Request.shared.updateCartQuantity(item: selectedItem.item, quantity: new) { result in
-                        row.stepper.hideLoading()
-                        switch result {
-                        case .success(_):
-                            print("success")
-                        case .failure(let error):
-                            print(error.localizedDescription)
-                        }
-                    }
-                }
-            }
-        }
+        let index = cart!.items.index(where: { $0.id == selectedItem.id })!
+        cart?.items[index].quantity = new
+        self.update()
     }
     
-    func delete(selectedItem: CartItem) {/*
-        Request.shared.deleteCartItem(cartItem: selectedItem) {
-            
-        }*/
+    func delete(selectedItem: CartItem) {
+        let index = cart!.items.index(where: { $0.id == selectedItem.id })!
+        cart?.items.remove(at: index)
+        self.update()
     }
     
     func addInstructions(selectedItem: CartItem) {
         let vc = InstructionsViewController()
         vc.item = selectedItem
+        vc.delegate = self
         let nav = UINavigationController(rootViewController: vc)
         present(nav, animated: true, completion: nil)
     }
 }
 
 extension CartViewController: InstructionsViewControllerDelegate {
-    func didMakeChanges() {
-        self.fullLoad()
+    func didMakeChanges(toCartItem: CartItem) {
+        if let index = self.cart?.items.index(where: { $0.id == toCartItem.id }) {
+            self.cart?.items[index] = toCartItem
+            self.tableView.reloadData()
+        }
     }
 }
 
@@ -265,12 +316,13 @@ extension CartViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc = ItemViewController()
-        vc.item = cart!.items[indexPath.row-1].item
+        vc.cartDelegate = self
+        vc.item = cart!.items[indexPath.row].item
         vc.imageId = (tableView.cellForRow(at: indexPath) as? CartItemTableViewCell)?.getImageId()
-        heroModalAnimationType = .cover(direction: .up)
         
         let nav = UINavigationController(rootViewController: vc)
         nav.isHeroEnabled = true
+        nav.heroModalAnimationType = .selectBy(presenting: .auto, dismissing: .uncover(direction: .down))
         present(nav, animated: true, completion: nil)
     }
     
@@ -296,142 +348,15 @@ extension CartViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-extension CartViewController: EmptyTableViewCellDelegate {
-    func tappedButton() {
-        self.close(nil)
+extension CartViewController: CartItemDelegate {
+    func didUpdateCart() {
+        self.fullLoad()
     }
 }
 
-/*
- class _CartVC: UIViewController {
- 
- @IBOutlet weak var tableView: UITableView!
- 
- @IBAction func close(_ sender: Any) {
- dismiss(animated: false, completion: nil)
- }
- 
- override func viewDidLoad() {
- super.viewDidLoad()
- }
- }
- 
- extension _CartVC: CartItemDelegate {
- func quantity(item: CartItem, new: Int) {
- Cart.current.changeQuantity(for: item, new: new)
- tableView.reloadData()
- }
- 
- func delete(item: CartItem) {
- Cart.current.remove(item: item)
- tableView.reloadData()
- }
- 
- func addInstructions(item: CartItem) {
- print("Add INstructions")
- }
- }
- 
- extension _CartVC: UITableViewDelegate, UITableViewDataSource {
- func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
- if Cart.current.items.value.isEmpty {
- tableView.separatorStyle = .none
- return 1
- }
- tableView.separatorStyle = .singleLine
- return Cart.current.items.value.count
- }
- 
- func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
- if Cart.current.items.value.isEmpty {
- let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.cartEmptyCell.rawValue, for: indexPath) as! CartEmptyCell
- cell.action = {
- self.close(cell)
- }
- return cell
- }
- 
- let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.cartItemCell.rawValue, for: indexPath) as! CartItemCell
- cell.delegate = self
- cell.load(item: Cart.current.items[indexPath.row])
- return cell
- }
- 
- func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
- if Cart.current.items.isEmpty {
- return
- }
- 
- print("open item detail")
- }
- }
- 
- protocol CartItemDelegate {
- func delete(item: CartItem)
- func quantity(item: CartItem, new: Int)
- func addInstructions(item: CartItem)
- }
- 
- class CartEmptyCell: UITableViewCell {
- var action: (() -> ())? = nil
- 
- @IBAction func shopNow(_ sender: Any) {
- action?()
- }
- }
- 
- class CartItemCell: UITableViewCell {
- 
- var delegate: CartItemDelegate?
- private var _item: CartItem?
- 
- @IBOutlet weak var itemImage: UIImageView!
- @IBOutlet weak var name: UILabel!
- 
- @IBOutlet weak var quantity: UILabel!
- @IBOutlet weak var price: UILabel!
- @IBOutlet weak var editDetailsButton: UIButton!
- 
- @IBOutlet weak var deleteButton: UIButton!
- 
- @IBAction func reduceQuantity(_ sender: Any) {
- if let item = _item {
- delegate?.quantity(item: item, new: max(1, item.quantity - 1))
- }
- }
- 
- @IBAction func increaseQuantity(_ sender: Any) {
- if let item = _item {
- delegate?.quantity(item: item, new: item.quantity + 1)
- }
- }
- 
- @IBAction func editDetails(_ sender: Any) {
- if let item = _item {
- delegate?.addInstructions(item: item)
- }
- }
- 
- @IBAction func deleteItem(_ sender: Any) {
- if let item = _item {
- delegate?.delete(item: item)
- }
- }
- 
- func load(item: CartItem) {
- _item = item
- name.text = _item?.item.name
- price.text = _item?.item.price.currencyFormat
- itemImage.pin_setPlaceholder(with: #imageLiteral(resourceName: "Picture Grey"))
- itemImage.pin_setImage(from: URL(string: C.URL.main + "/img/items/\(_item!.item.id).png")!)
- quantity.text = String(describing: _item?.quantity)
- }
- 
- override func awakeFromNib() {
- editDetailsButton.setImage(#imageLiteral(resourceName: "Note").withRenderingMode(.alwaysTemplate), for: .normal)
- deleteButton.setImage(#imageLiteral(resourceName: "Delete").withRenderingMode(.alwaysTemplate), for: .normal)
- }
- 
- }
- */
-
+extension CartViewController: EmptyTableViewCellDelegate {
+    func tappedButton() {
+        self.delegate?.changeToSearchTab()
+        self.close(nil)
+    }
+}

@@ -322,13 +322,13 @@ class SignupViewController: UIViewController {
         
         var phoneNumber = ""
         do {
-            let pn = try phoneNumberKit.parse(phone)
+            let pn = try phoneNumberKit.parse(phone, withRegion: "BM", ignoreType: true)
             phoneNumber = String(pn.nationalNumber)
         }
         catch {
             phone = "(441) " + phone
             do {
-                let pn = try phoneNumberKit.parse(phone)
+                let pn = try phoneNumberKit.parse(phone, withRegion: "BM", ignoreType: true)
                 phoneNumber = String(pn.nationalNumber)
             } catch {
                 showSignupError(message: "Invalid phone number.")

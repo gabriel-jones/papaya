@@ -63,13 +63,16 @@ class ItemCollectionViewCell: UICollectionViewCell {
     private func buildViews() {
         backgroundColor = .white
         layer.cornerRadius = 10
-        flatShadow = true
-        layer.shadowColor = UIColor(named: .flatShadow).cgColor
         masksToBounds = false
         
+        layer.shadowOpacity = 0.1
+        layer.shadowOffset = .zero
+        layer.shadowRadius = 5
+        layer.shadowColor = UIColor.black.cgColor
+        
+        self.setImageTemplate(to: true)
         itemImage.pin_setPlaceholder(with: #imageLiteral(resourceName: "Picture").tintable)
         itemImage.tintColor = .gray
-        self.setImageTemplate(to: true)
         addSubview(itemImage)
         
         itemPrice.font = Font.gotham(size: 16)
@@ -146,14 +149,15 @@ class ItemCollectionViewCell: UICollectionViewCell {
     
     public func load(item: Item) {
         priceTemplate.layer.removeAllAnimations()
-        priceTemplate.removeFromSuperview()
-        
+        priceTemplate.isHidden = true
+        name1Template.isHidden = true
+        name2Template.isHidden = true
+        name3Template.isHidden = true
+
         itemPrice.text = item.price.currencyFormat
         itemName.text = item.name
 
         if let url = item.img {
-            itemImage.pin_updateWithProgress = true
-            itemImage.pin_setImage(from: url)
             itemImage.pin_setImage(from: url, placeholderImage: #imageLiteral(resourceName: "Picture").tintable) { result in
                 self.setImageTemplate(to: result.error != nil)
             }
@@ -168,8 +172,10 @@ class ItemCollectionViewCell: UICollectionViewCell {
         itemImage.layer.cornerRadius = to ? 5 : 0
     }
     
-    
     public func loadTemplate() {
+        itemImage.image = nil
+        itemImage.pin_setPlaceholder(with: #imageLiteral(resourceName: "Picture").tintable)
+        self.setImageTemplate(to: true)
         itemPrice.text = " "
         priceTemplate.isHidden = false
         itemName.text = " "
@@ -201,7 +207,6 @@ class ItemCollectionViewCell: UICollectionViewCell {
     }
     
     override func prepareForReuse() {
-        self.setImageTemplate(to: true)
         super.prepareForReuse()
     }
 }

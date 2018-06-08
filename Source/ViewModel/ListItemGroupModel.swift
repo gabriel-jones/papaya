@@ -23,12 +23,12 @@ class ListItemGroupModel: NSObject, UICollectionViewDelegate, UICollectionViewDa
         guard let list = list else {
             return 0
         }
-        return min(8, list.items.count)
+        return min(8, list.items!.count)
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: C.ViewModel.CellIdentifier.listItemGridCell.rawValue, for: indexPath) as! ListItemGridCollectionViewCell
-        let item = list!.items[indexPath.row]
+        let item = list!.items![indexPath.row]
         cell.load(item: item)
         return cell
     }

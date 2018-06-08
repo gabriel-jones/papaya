@@ -123,7 +123,7 @@ class ListCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource, 
         itemCountTemplate.layer.removeAllAnimations()
         
         listName.text = list.name
-        listItemCount.text = "\(list.items.count) items"
+        listItemCount.text = "\(list.itemCount) items"
         items = list.items
     }
     

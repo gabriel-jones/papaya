@@ -89,7 +89,6 @@ class ItemActionTableViewCell: UITableViewCell {
         button.addTarget(self, action: #selector(endHighlight(_:)), for: .touchUpOutside)
         button.addTarget(self, action: action, for: .touchUpInside)
         button.layer.cornerRadius = 5
-        button.alignVertical()
         button.contentEdgeInsets = UIEdgeInsets(top: 16, left: 0, bottom: 16, right: 0)
         return button
     }
@@ -135,6 +134,7 @@ class ItemActionTableViewCell: UITableViewCell {
     
     @objc private func addToList(_ sender: UIButton) {
         endHighlight(sender)
+        delegate?.addToList()
     }
     
     @objc private func addInstructions(_ sender: UIButton) {

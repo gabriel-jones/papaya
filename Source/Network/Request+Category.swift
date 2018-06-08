@@ -42,12 +42,32 @@ extension Request {
     }
     
     @discardableResult
-    public func getItems(category: Category, completion: (CompletionHandler<[Item]>)? = nil) -> URLSessionDataTask? {
-        guard let request = URLRequest.get(path: "/category/get/\(category.id)/items") else {
+    public func getItems(category: Category, page: Int = 1, completion: (CompletionHandler<PaginatedResults<Item>>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.get(path: "/category/get/\(category.id)/items/\(page)") else {
             completion?(Result(error: .cannotBuildRequest))
             return nil
         }
         
-        return self.execute(request: request, parseMethod: parse.json2Items, completion: completion)
+        return self.execute(request: request, parseMethod: parse.json2PaginatedItems, completion: completion)
+    }
+    
+    @discardableResult
+    public func getSpecialItems(category: Category, page: Int = 1, completion: (CompletionHandler<PaginatedResults<SpecialItem>>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.get(path: "/category/get/\(category.id)/items/\(page)") else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, parseMethod: parse.json2PaginatedSpecialItems, completion: completion)
+    }
+    
+    @discardableResult
+    public func getFeaturedItems(forCategory: Category, page: Int = 1, completion: (CompletionHandler<PaginatedResults<Item>>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.get(path: "/category/get/\(forCategory.id)/featured/\(page)") else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, parseMethod: parse.json2PaginatedItems, completion: completion)
     }
 }

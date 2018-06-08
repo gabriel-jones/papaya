@@ -29,6 +29,8 @@ class Request: NSObject, URLSessionDelegate, URLSessionDataDelegate {
     internal let parse = Parse()
     internal let session = URLSession(configuration: .default)
     
+    internal let reachability = Reachability()!
+    
     internal typealias HandleResponse<T> = (_ data: Data?, _ response: URLResponse?, _ error: NSError?) -> Result<T>
     internal typealias CompletionHandler<T> = (Result<T>) -> Void
     
@@ -41,18 +43,17 @@ class Request: NSObject, URLSessionDelegate, URLSessionDataDelegate {
         }
     }
     
-    internal func execute<T>(request: URLRequest, withAuth: Bool = true, parseMethod: ((JSON) -> Result<T>)? = nil, completion: (CompletionHandler<T>)? = nil) -> URLSessionDataTask {
-        /*if !(Network.reachability?.isConnectedToNetwork ?? false) {
+    internal func execute<T>(request: URLRequest, withAuth: Bool = true, parseMethod: ((JSON) -> Result<T>)? = nil, completion: (CompletionHandler<T>)? = nil) -> URLSessionDataTask? {
+        if reachability.connection == .none {
             completion?(Result(error: RequestError.networkOffline))
-        }*/
+            return nil
+        }
         
-        print("Execute request: \(request.url)")
         let task = session.dataTask(with: request) { data, response, error in
             let handleResponse = self.constructHandler(parseMethod: parseMethod)
             let result = handleResponse(data, response, error as NSError?)
             switch result {
             case .failure(let error):
-                print("Failed: \(error)")
                 if error == .unauthorised && withAuth {
                     self.reauthoriseAndExecute(request: request, handleResponse: handleResponse, completion: completion)
                     return

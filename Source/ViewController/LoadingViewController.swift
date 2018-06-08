@@ -14,10 +14,19 @@ class LoadingViewController: UIViewController {
     private let logoName = UILabel()
     private let logoImage = UIImageView()
     
+    private var error: RequestError?
+    private let group = DispatchGroup()
+    private var checkout: Checkout?
+    private var scheduleDays: [ScheduleDay]?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.buildViews()
         self.buildConstraints()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        animateLogo()
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -72,30 +81,65 @@ class LoadingViewController: UIViewController {
             }
             self.logoName.alpha = 1
             self.view.layoutIfNeeded()
-        }, completion: { _ in
+        }) { _ in
             self.load()
-        })
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        self.animateLogo()
+        }
     }
     
     private func load() {
-        Request.shared.getUserDetails() { result in
+        error = nil
+
+        group.enter()
+        Request.shared.getUserDetails { [weak self] result in
             switch result {
             case .success(let user):
                 User.current = user
-                self.openHomeScreen()
             case .failure(let error):
-                switch error as? RequestError {
-                case .networkOffline?:
-                    break
-                case nil:
-                    break
-                default:
-                    self.openGetStarted()
+                self?.error = error
+            }
+            self?.group.leave()
+        }
+        
+        group.enter()
+        Request.shared.getCartCount { [weak self] result in
+            switch result {
+            case .success(let count):
+                BaseStore.cartItemCount = count
+            case .failure(let error):
+                self?.error = error
+            }
+            self?.group.leave()
+        }
+        
+        group.enter()
+        Request.shared.getCheckout { [weak self] result in
+            switch result {
+            case .success(let checkout):
+                self?.group.enter()
+                self?.checkout = checkout
+                Request.shared.getSchedule(days: 7) { result in
+                    switch result {
+                    case .success(let schedule):
+                        self?.scheduleDays = schedule
+                    case .failure(let error):
+                        self?.error = error
+                    }
+                    self?.group.leave()
                 }
+            case .failure(let error):
+                if case .checkoutLineNotFound = error {} else {
+                    self?.error = error
+                }
+            }
+            self?.group.leave()
+        }
+        
+        group.notify(queue: .main) {
+            switch self.error {
+            case .unauthorised?:
+                self.openGetStarted()
+            default:
+                self.openHomeScreen()
             }
         }
     }
@@ -103,6 +147,8 @@ class LoadingViewController: UIViewController {
     private func openHomeScreen() {
         let home = HomeViewController()
         home.tabBarItem = UITabBarItem(title: "Home", image: #imageLiteral(resourceName: "Home"), tag: 0)
+        home.checkout = checkout
+        home.scheduleDays = scheduleDays
         let navHome = UINavigationController(rootViewController: home)
         navHome.isHeroEnabled = true
         
@@ -115,6 +161,11 @@ class LoadingViewController: UIViewController {
         browse.tabBarItem = UITabBarItem(title: "Browse", image: #imageLiteral(resourceName: "Browse"), tag: 2)
         let navBrowse = UINavigationController(rootViewController: browse)
         navBrowse.isHeroEnabled = true
+        
+        let clubs = ClubsViewController()
+        clubs.tabBarItem = UITabBarItem(title: "Clubs", image: #imageLiteral(resourceName: "Club"), tag: 2)
+        let navClubs = UINavigationController(rootViewController: clubs)
+        navClubs.isHeroEnabled = true
 
         let me = MeViewController()
         me.tabBarItem = UITabBarItem(title: "Me", image: #imageLiteral(resourceName: "User"), tag: 3)
@@ -126,12 +177,13 @@ class LoadingViewController: UIViewController {
             navHome,
             navSearch,
             navBrowse,
+            navClubs,
             navMe
         ]
         tabBarController.tabBar.tintColor = UIColor(named: .green)
         
         tabBarController.heroModalAnimationType = .cover(direction: .left)
-        self.hero_replaceViewController(with: tabBarController)
+        hero_replaceViewController(with: tabBarController)
     }
     
     private func openGetStarted() {
@@ -140,6 +192,6 @@ class LoadingViewController: UIViewController {
         vc.navigationBar.isHidden = true
         vc.isHeroEnabled = true
         vc.heroModalAnimationType = .fade
-        self.present(vc, animated: true, completion: nil)
+        present(vc, animated: true, completion: nil)
     }
 }

@@ -10,22 +10,24 @@ target 'Papaya' do
   
   #UI
   pod 'SnapKit', '~> 3.2.0'
+  pod 'UIImageViewAlignedSwift'
   
   #Custom Controls / Views
+  pod 'GSMessages'
   pod 'CHIPageControl/Jaloro'
   pod 'JVFloatLabeledTextField'
-  pod 'TOMSMorphingLabel', '~> 0.5'
-  pod 'PMAlertController'
+  #pod 'TOMSMorphingLabel', '~> 0.5'
   pod 'Mandoline'
   pod 'Presentr'
   pod 'TCProgressBar'
   pod 'HCSStarRatingView', '~> 1.5'
   pod 'UIScrollView-InfiniteScroll', '~> 1.0.0'
   pod 'PhoneNumberKit', '~> 2.1'
+  pod 'TagListView', '~> 1.0'
   
   #HTTP
   pod 'SwiftyJSON'
-  pod 'SocketRocket'
+  #pod 'SocketRocket'
   pod 'PINRemoteImage'
   pod 'ReachabilitySwift'
 

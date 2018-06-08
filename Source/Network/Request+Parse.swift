@@ -102,7 +102,7 @@ extension Request {
         }
         
         func json2Searches(from json: JSON) -> Result<[String]> {
-            return Result(value: json["searches"].arrayValue.map { $0.stringValue })
+            return Result(fromOptional: json["searches"].array?.map { $0.stringValue }, error: .failedToParseJson)
         }
         
         func json2Checkout(from json: JSON) -> Result<Checkout> {
@@ -113,11 +113,39 @@ extension Request {
             return jsonArray2Array(from: json["dates"], to: ScheduleDay.self)
         }
         
-        func json2Paginated<T: BaseObject>(from json: JSON, with: T.Type) -> Result<PaginatedResults<T>> {
-            let arr = jsonArray2Array(from: json, to: T.self)
+        func json2CartItem(from json: JSON) -> Result<CartItem> {
+            return jsonDict2Object(from: json["cart_item"], to: CartItem.self)
+        }
+        
+        func json2ItemCount(from json: JSON) -> Result<Int> {
+            return Result(fromOptional: json["item_count"].int, error: .failedToParseJson)
+        }
+        
+        func json2NotificationSettingGroup(from json: JSON) -> Result<[NotificationSettingGroup]> {
+            return jsonArray2Array(from: json["notification_settings"], to: NotificationSettingGroup.self)
+        }
+        
+        func json2Clubs(from json: JSON) -> Result<[Club]> {
+            return jsonArray2Array(from: json["clubs"], to: Club.self)
+        }
+        
+        func json2Object<T: BaseObject>(from json: JSON, key: String) -> Result<T> {
+            return jsonDict2Object(from: json[key], to: T.self)
+        }
+        
+        func json2Paginated<T: BaseObject>(from json: JSON, arrJson: JSON, with: T.Type) -> Result<PaginatedResults<T>> {
+            let arr = jsonArray2Array(from: arrJson, to: T.self)
             let isLast = json["is_last"].boolValue
             let page = PaginatedResults(isLast: isLast, results: arr.value!)
             return Result(value: page)
+        }
+        
+        func json2PaginatedItems(from json: JSON) -> Result<PaginatedResults<Item>> {
+            return json2Paginated(from: json, arrJson: json["items"], with: Item.self)
+        }
+        
+        func json2PaginatedSpecialItems(from json: JSON) -> Result<PaginatedResults<SpecialItem>> {
+            return json2Paginated(from: json, arrJson: json["items"], with: SpecialItem.self)
         }
 
     }

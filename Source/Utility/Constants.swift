@@ -22,12 +22,10 @@ struct C {
         static let help = "https://www.papaya.bm/help"
         static let termsOfService = "https://www.papaya.bm/terms"
         static let privacyPolicy = "https://www.papaya.bm/privacy"
-        static func categoryImage(with id: Int) -> String {
-            return main + "/department/\(id)/image"
+        static func categoryImage(with imageId: String) -> String {
+            return main + "/static/img/\(imageId).jpg"
         }
     }
-    
-    public static let GMS_KEY = "AIzaSyCFy56PBJTowmL5q6cTX-d_uT6HFydP0DM"
     
     enum Notification: String {
         static let base = C.domain

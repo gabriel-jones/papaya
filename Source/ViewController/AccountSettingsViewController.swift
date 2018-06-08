@@ -8,18 +8,55 @@
 
 import UIKit
 import JVFloatLabeledTextField
+import PhoneNumberKit
 
 class AccountSettingsViewController: UIViewController {
     
     private let tableView = UITableView(frame: .zero, style: .grouped)
+    private let activityIndicator = UIActivityIndicatorView()
+    private let retryButton = UIButton()
     private var activeTextField: UITextField?
+    
+    private var user: User?
+    
     private var didScrollUp = false
     private var madeChanges = false
+    private let phoneNumberKit = PhoneNumberKit()
+    
+    @objc private func fetchUserDetails() {
+        DispatchQueue.main.async { self.activityIndicator.startAnimating() }
+        retryButton.isHidden = true
+        tableView.isHidden = true
+        Request.shared.getUserDetails { result in
+            self.activityIndicator.stopAnimating()
+            switch result {
+            case .success(let user):
+                self.hideMessage()
+                self.user = user
+                self.tableView.isHidden = false
+                self.tableView.reloadData()
+            case .failure(let error):
+                print(error.localizedDescription)
+                self.retryButton.isHidden = false
+                self.showMessage("Cannot fetch account settings", type: .error, options: [
+                    .autoHide(false),
+                    .hideOnTap(false)
+                ])
+            }
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.buildViews()
         self.buildConstraints()
+        
+        if let currentUser = User.current {
+            self.user = currentUser
+            self.tableView.reloadData()
+        } else {
+            self.fetchUserDetails()
+        }
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: .UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: .UIKeyboardWillHide, object: nil)
@@ -38,11 +75,34 @@ class AccountSettingsViewController: UIViewController {
         tableView.register(SettingsInputTableViewCell.classForCoder(), forCellReuseIdentifier: SettingsInputTableViewCell.identifier)
         tableView.register(SettingsButtonTableViewCell.classForCoder(), forCellReuseIdentifier: SettingsButtonTableViewCell.identifier)
         view.addSubview(tableView)
+        
+        activityIndicator.activityIndicatorViewStyle = .gray
+        activityIndicator.hidesWhenStopped = true
+        view.addSubview(activityIndicator)
+        
+        retryButton.setTitle("Retry", for: .normal)
+        retryButton.setImage(#imageLiteral(resourceName: "Replace").tintable, for: .normal)
+        retryButton.setTitleColor(.black, for: .normal)
+        retryButton.tintColor = .black
+        retryButton.titleLabel?.font = Font.gotham(size: 15)
+        retryButton.addTarget(self, action: #selector(fetchUserDetails), for: .touchUpInside)
+        retryButton.alignVertical()
+        retryButton.isHidden = true
+        view.addSubview(retryButton)
     }
     
     private func buildConstraints() {
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+        
+        activityIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+        
+        retryButton.snp.makeConstraints { make in
+            make.width.height.equalTo(50)
+            make.center.equalToSuperview()
         }
     }
     
@@ -50,44 +110,78 @@ class AccountSettingsViewController: UIViewController {
         return (tableView.cellForRow(at: IndexPath(row: at, section: 0)) as? SettingsInputTableViewCell)?.textField.text
     }
     
+    func showError(message: String) {
+        let alert = UIAlertController(title: "Cannot update settings", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+    
     @objc func submit(_ sender: LoadingButton) {
-        sender.showLoading()
-        if self.madeChanges {
-            /*
-            Request.shared.update(user: User.current!)
-                .observeOn(MainScheduler.instance)
-                .subscribe(onNext: { _ in
-                    
-                }, onError: { error in
-                    
-                })
-                .disposed(by: disposeBag)
-             */
+        let email = getValueForCell(at: 0)!
+        var phone = getValueForCell(at: 1)!
+        let fname = getValueForCell(at: 2)!
+        let lname = getValueForCell(at: 3)!
+        
+        if fname.isEmpty || lname.isEmpty || email.isEmpty || phone.isEmpty {
+            showError(message: "Please fill out all the fields.")
+            return
         }
-    }
-    
-    @objc private func textDidChange(_ sender: JVFloatLabeledTextField) {
-        madeChanges = self.checkChanges(sender)
-    }
-    
-    func checkChanges(_ sender: JVFloatLabeledTextField) -> Bool {
-        switch sender.tag {
-        case 0:
-            return sender.text == User.current?.email
-        case 1:
-            return sender.text == User.current?.phone
-        case 2:
-            return sender.text == User.current?.fname
-        case 3:
-            return sender.text == User.current?.lname
-        default: return false
+        
+        if fname.count > 50 || lname.count > 50 {
+            showError(message: "Maximum name length is 50 characters.")
+            return
+        }
+        
+        if email.count > 120 {
+            showError(message: "Maximum email length is 120 characters.")
+            return
+        }
+        
+        var phoneNumber = ""
+        do {
+            let pn = try phoneNumberKit.parse(phone, withRegion: "BM", ignoreType: true)
+            phoneNumber = String(pn.nationalNumber)
+        }
+        catch {
+            phone = "(441) " + phone
+            do {
+                let pn = try phoneNumberKit.parse(phone, withRegion: "BM", ignoreType: true)
+                phoneNumber = String(pn.nationalNumber)
+            } catch {
+                showError(message: "Invalid phone number.")
+                sender.hideLoading()
+                return
+            }
+        }
+        
+        user?.email = email
+        user?.phone = phoneNumber
+        user?.fname = fname
+        user?.lname = lname
+        
+        sender.showLoading()
+        Request.shared.updateUser(user: user!) { result in
+            sender.hideLoading()
+            switch result {
+            case .success(_):
+                self.navigationController?.popViewController(animated: true)
+            case .failure(let error):
+                switch error {
+                case .emailExists:
+                    self.showError(message: "That email is already linked with another user's account.")
+                case .invalidEmail:
+                    self.showError(message: "Invalid email.")
+                default:
+                    self.showError(message: "Update failed. Please try again.")
+                }
+            }
         }
     }
 }
 
 extension AccountSettingsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 4
+        return user == nil ? 0 : 4
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -98,8 +192,7 @@ extension AccountSettingsViewController: UITableViewDelegate, UITableViewDataSou
             cell.textField.keyboardType = .emailAddress
             cell.textField.autocapitalizationType = .none
             cell.textField.autocorrectionType = .no
-            cell.textField.text = User.current?.email
-            cell.textField.addTarget(self, action: #selector(textDidChange(_:)), for: .editingChanged)
+            cell.textField.text = user?.email
             cell.textField.delegate = self
             cell.tag = 0
             return cell
@@ -109,9 +202,8 @@ extension AccountSettingsViewController: UITableViewDelegate, UITableViewDataSou
             cell.textField.keyboardType = .phonePad
             cell.textField.autocapitalizationType = .none
             cell.textField.autocorrectionType = .no
-            cell.textField.text = User.current?.phone
+            cell.textField.text = format(phoneNumber: user!.phone)
             cell.textField.addTarget(self, action: #selector(phoneDidChange(_:)), for: .editingChanged)
-            cell.textField.addTarget(self, action: #selector(textDidChange(_:)), for: .editingChanged)
             cell.textField.delegate = self
             cell.tag = 1
             return cell
@@ -121,8 +213,7 @@ extension AccountSettingsViewController: UITableViewDelegate, UITableViewDataSou
             cell.textField.keyboardType = .default
             cell.textField.autocapitalizationType = .words
             cell.textField.autocorrectionType = .no
-            cell.textField.text = User.current?.fname
-            cell.textField.addTarget(self, action: #selector(textDidChange(_:)), for: .editingChanged)
+            cell.textField.text = user?.fname
             cell.textField.delegate = self
             cell.tag = 2
             return cell
@@ -132,8 +223,7 @@ extension AccountSettingsViewController: UITableViewDelegate, UITableViewDataSou
             cell.textField.keyboardType = .default
             cell.textField.autocapitalizationType = .words
             cell.textField.autocorrectionType = .no
-            cell.textField.text = User.current?.lname
-            cell.textField.addTarget(self, action: #selector(textDidChange(_:)), for: .editingChanged)
+            cell.textField.text = user?.lname
             cell.textField.delegate = self
             cell.tag = 3
             return cell

@@ -161,7 +161,37 @@ class CheckoutSchedulerViewController: UIViewController {
     private let dayModel = PickerDayModel()
     private let timeModel = PickerTimeModel()
     
-    private var selectedDate: Date!
+    public var selectedDate: Date!
+//
+//    private func movePickerViewsToSelectedDate() { // Forgive me
+//        shouldUpdateTime = false
+//        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)), let pickerView = cell.subviews.first(where: { $0 is PickerView }) as? PickerView {
+//            if let row = self.schedule.index(where: {
+//                extractDateOnly(date: selectedDate) == $0.date
+//            }) {
+//                let indexPath = IndexPath(row: row, section: 0)
+//                pickerView.scrollToCell(at: indexPath)
+//                let day = self.schedule[row]
+//                timeModel.day = day
+//                tableView.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .none)
+//                if let timeCell = tableView.cellForRow(at: IndexPath(row: 1, section: 0)), let timePickerView = timeCell.subviews.first(where: { $0 is PickerView }) as? PickerView {
+//                    var t = day.opensAt
+//                    var i = 0
+//                    while t < day.closesAt {
+//                        if timeIsBetween(time: extractTimeOnly(date: selectedDate), start: extractTimeOnly(date: t)!, end: extractTimeOnly(date: Calendar.current.date(byAdding: .hour, value: 1, to: t)!)!) {
+//                            let timeIndexPath = IndexPath(row: i, section: 0)
+//                            print(timeIndexPath)
+//                            timePickerView.scrollToCell(at: timeIndexPath)
+//                            break
+//                        }
+//                        i += 1
+//                        t = Calendar.current.date(byAdding: .hour, value: 1, to: t)!
+//                    }
+//                }
+//            }
+//        }
+//        shouldUpdateTime = true
+//    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -174,13 +204,13 @@ class CheckoutSchedulerViewController: UIViewController {
         dayModel.delegate = self
         timeModel.day = schedule.first!
         timeModel.delegate = self
-        
     }
     
     private func buildViews() {
         view.backgroundColor = UIColor(named: .backgroundGrey)
         navigationItem.title = "Schedule Order"
-        
+        navigationController?.interactivePopGestureRecognizer?.delegate = self
+
         toolbar.backgroundColor = UIColorFromRGB(0xf7f7f7)
         view.addSubview(toolbar)
         
@@ -259,6 +289,12 @@ class CheckoutSchedulerViewController: UIViewController {
         navigationController?.dismiss(animated: true, completion: nil)
     }
     
+    private func showError(message: String) {
+        let alert = UIAlertController(title: "An error occured.", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+    
     @objc private func schedule(_ sender: LoadingButton) {
         sender.showLoading()
         checkout.orderDate = self.selectedDate
@@ -280,6 +316,7 @@ class CheckoutSchedulerViewController: UIViewController {
                 self.navigationController?.pushViewController(vc, animated: true)
             case .failure(let error):
                 print(error.localizedDescription)
+                self.showError(message: "Cannot schedule order. Please check your connection and try again.")
             }
         }
     }
@@ -303,6 +340,12 @@ class CheckoutSchedulerViewController: UIViewController {
             make.left.right.top.equalToSuperview()
             make.bottom.equalTo(toolbar.snp.top)
         }
+    }
+}
+
+extension CheckoutSchedulerViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
     }
 }
 
@@ -336,7 +379,6 @@ extension CheckoutSchedulerViewController: UITableViewDelegate, UITableViewDataS
             pickerView.delegate = dayModel
             pickerView.cellSize = DayCell.cellSize
             pickerView.selectedOverlayColor = UIColor(named: .green)
-            
             cell.addSubview(pickerView)
             pickerView.snp.makeConstraints { make in
                 make.edges.equalToSuperview()
@@ -432,6 +474,29 @@ func combine(date: Date, withTime time: Date) -> Date? {
     mergedComponments.second = timeComponents.second
     
     return calendar.date(from: mergedComponments)
+}
+
+func extractDateOnly(date: Date) -> Date? {
+    let calendar = Calendar.current
+    
+    let dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+    
+    return calendar.date(from: dateComponents)
+}
+
+func extractTimeOnly(date: Date) -> Date? {
+    let calendar = Calendar.current
+    
+    let timeComponents = calendar.dateComponents([.hour, .minute, .second], from: date)
+
+    return calendar.date(from: timeComponents)
+}
+
+func timeIsBetween(time: Date?, start: Date, end: Date) -> Bool {
+    guard let time = time else {
+        return false
+    }
+    return time >= start && time <= end
 }
 
 class PickerTimeModel: PickerViewDataSource, PickerViewDelegate {

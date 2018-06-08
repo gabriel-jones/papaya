@@ -67,18 +67,19 @@ struct CartItem: BaseObject {
             }
             
             return [
-                "item_id": id,
+                "id": id,
+                "item_id": item.id,
                 "quantity": quantity,
-                "notes": instructions as Any,
+                "notes": instructions,
                 "replace_option": replaceOption.rawValue,
-                "replace_specific": specificItem as Any
+                "replace_specific": specificItem?.id
             ]
         }
     }
     
     init?(dict: JSON) {
         guard
-            let _id = dict["id"].int,
+            let _id = dict["cart_item_id"].int,
             let _quantity = dict["quantity"].int,
             let _replaceOptionString = dict["replace_option"].string,
             let _item = Item(dict: dict)

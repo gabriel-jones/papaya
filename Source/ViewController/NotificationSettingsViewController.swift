@@ -10,41 +10,41 @@ import UIKit
 
 class NotificationSettingsViewController: UIViewController {
     
-    struct NotificationGroup {
-        let name: String
-        let rows: [NotificationSetting]
-    }
-    
-    struct NotificationSetting {
-        let id: Int
-        let key: String
-        let name: String
-        var initialValue: Bool
-    }
-    
     private let tableView = UITableView(frame: .zero, style: .grouped)
-    private var model = [NotificationGroup]()
+    private let activityIndicator = UIActivityIndicatorView()
+    private let retryButton = UIButton()
+    
+    private var model = [NotificationSettingGroup]()
+    private var active: URLSessionDataTask?
+    
+    @objc private func fetchNotificationSettings() {
+        tableView.isHidden = true
+        DispatchQueue.main.async { self.activityIndicator.startAnimating() }
+        retryButton.isHidden = true
+        Request.shared.getUserNotificationSettings { result in
+            self.activityIndicator.stopAnimating()
+            switch result {
+            case .success(let notificationSettings):
+                self.hideMessage()
+                self.model = notificationSettings
+                self.tableView.isHidden = false
+                self.tableView.reloadData()
+            case .failure(let error):
+                print(error.localizedDescription)
+                self.retryButton.isHidden = false
+                self.showMessage("Can't load notification settings", type: .error, options: [
+                    .autoHide(false),
+                    .hideOnTap(false)
+                ])
+            }
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.buildViews()
         self.buildConstraints()
-        
-        model = [
-            NotificationGroup(name: "Order updates", rows: [
-                NotificationSetting(id: 0, key: "order_sms", name: "SMS", initialValue: true),
-                NotificationSetting(id: 1, key: "order_push_notification", name: "Push notifications", initialValue: true)
-            ]),
-            NotificationGroup(name: "Item in stock", rows: [
-                NotificationSetting(id: 2, key: "", name: "Emails", initialValue: true),
-                NotificationSetting(id: 3, key: "", name: "Push notifications", initialValue: true)
-            ]),
-            NotificationGroup(name: "Marketing", rows: [
-                NotificationSetting(id: 4, key: "marketing_emails", name: "Emails", initialValue: true),
-                NotificationSetting(id: 5, key: "marketing_push_notification", name: "Push notifications", initialValue: true)
-            ])
-        ]
-        tableView.reloadData()
+        self.fetchNotificationSettings()
     }
 
     private func buildViews() {
@@ -56,24 +56,57 @@ class NotificationSettingsViewController: UIViewController {
         tableView.allowsSelection = false
         tableView.backgroundColor = .clear
         view.addSubview(tableView)
+        
+        activityIndicator.activityIndicatorViewStyle = .gray
+        activityIndicator.hidesWhenStopped = true
+        view.addSubview(activityIndicator)
+        
+        retryButton.setTitle("Retry", for: .normal)
+        retryButton.setImage(#imageLiteral(resourceName: "Replace").tintable, for: .normal)
+        retryButton.setTitleColor(.black, for: .normal)
+        retryButton.tintColor = .black
+        retryButton.titleLabel?.font = Font.gotham(size: 15)
+        retryButton.addTarget(self, action: #selector(fetchNotificationSettings), for: .touchUpInside)
+        retryButton.alignVertical()
+        retryButton.isHidden = true
+        view.addSubview(retryButton)
     }
     
     private func buildConstraints() {
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+        
+        activityIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+        
+        retryButton.snp.makeConstraints { make in
+            make.width.height.equalTo(50)
+            make.center.equalToSuperview()
+        }
     }
     
     @objc private func changeSwitch(_ sender: UISwitch) {
-        /*let item = model.map {
-            $0.rows.first(where: { $0.id == sender.tag })!
-        }.first!
-        Request.shared.updateNotifications(values: [item.key: sender.isOn])
-            .observeOn(MainScheduler.instance)
-            .subscribe(onError: { error in
-                print(error)
-            })
-            .disposed(by: disposeBag)*/
+        let item = model.map {
+            $0.settings.first(where: { $0.id == sender.tag })
+        }.first(where: { $0 != nil })!!
+        active?.cancel()
+        active = Request.shared.updateNotifications(notificationId: item.id, value: sender.isOn) { result in
+            if case .failure(_) = result {
+//                let sectionIndex = self.model.index(where: { $0.rows.contains(where: { $0.id == sender.tag })})!
+//                var row: Int?
+//                for model in self.model {
+//                    if let r = model.rows.index(where: { $0.id == sender.tag }) {
+//                        row = r
+//                    }
+//                }
+//                if let row = row, let cell = self.tableView.cellForRow(at: IndexPath(row: row, section: sectionIndex)), let switchView = cell.accessoryView as? UISwitch {
+//                    switchView.setOn(!sender.isOn, animated: false)
+//                }
+                self.showMessage("Can't update notification settings", type: .error)
+            }
+        }
     }
 
 }
@@ -84,7 +117,7 @@ extension NotificationSettingsViewController: UITableViewDelegate, UITableViewDa
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return model[section].rows.count
+        return model[section].settings.count
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -93,12 +126,13 @@ extension NotificationSettingsViewController: UITableViewDelegate, UITableViewDa
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .default, reuseIdentifier: C.ViewModel.CellIdentifier.notificationSettingSwitchCell.rawValue)
-        let setting = model[indexPath.section].rows[indexPath.row]
+        let setting = model[indexPath.section].settings[indexPath.row]
         cell.textLabel?.text = setting.name
         cell.textLabel?.font = Font.gotham(size: 16)
         
         let settingSwitch = UISwitch()
-        settingSwitch.isOn = setting.initialValue
+        settingSwitch.isOn = setting.value
+        settingSwitch.tag = setting.id
         settingSwitch.addTarget(self, action: #selector(changeSwitch(_:)), for: .valueChanged)
         cell.accessoryView = settingSwitch
         

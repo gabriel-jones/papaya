@@ -70,6 +70,7 @@ class ItemImageViewController: UIViewController, UIScrollViewDelegate {
     }
 
     @objc private func close(_ sender: UIButton) {
+        print("CLOSE")
         dismiss(animated: true, completion: nil)
     }
     

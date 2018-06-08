@@ -26,13 +26,19 @@ class LegalViewController: UIViewController {
         
         libs = [
             Library(name: "SnapKit", url: "https://github.com/SnapKit/SnapKit"),
+            Library(name: "CHIPageControl/Jaloro", url: "https://github.com/ChiliLabs/CHIPageControl"),
             Library(name: "JVFloatLabeledTextField", url: "https://github.com/jverdi/JVFloatLabeledTextField"),
+            Library(name: "Mandoline", url: "https://github.com/blueapron/Mandoline"),
+            Library(name: "Presentr", url: "https://github.com/IcaliaLabs/Presentr"),
+            Library(name: "TCProgressBar", url: "https://github.com/talthent/TCProgressBar"),
+            Library(name: "HCSStarRatingView", url: "https://github.com/hsousa/HCSStarRatingView"),
+            Library(name: "UIScrollView-InfiniteScroll", url: "https://github.com/pronebird/UIScrollView-InfiniteScroll"),
+            Library(name: "PhoneNumberKit", url: "https://github.com/marmelroy/PhoneNumberKit"),
+            Library(name: "SwiftyJSON", url: "https://github.com/SwiftyJSON/SwiftyJSON"),
+            Library(name: "PINRemoteImage", url: "https://github.com/pinterest/PINRemoteImage"),
+            Library(name: "ReachabilitySwift", url: "https://github.com/SwiftyJSON/SwiftyJSON"),
             Library(name: "Hero", url: "https://github.com/lkzhao/Hero"),
             Library(name: "KeychainAccess", url: "https://github.com/kishikawakatsumi/KeychainAccess"),
-            Library(name: "PINRemoteImage", url: "https://github.com/pinterest/PINRemoteImage"),
-            Library(name: "SwiftyJSON", url: "https://github.com/SwiftyJSON/SwiftyJSON"),
-            Library(name: "CHIPageControl/Jaloro", url: "https://github.com/ChiliLabs/CHIPageControl"),
-            Library(name: "RxSwift", url: "https://github.com/ReactiveX/RxSwift")
         ]
         tableView.reloadData()
     }

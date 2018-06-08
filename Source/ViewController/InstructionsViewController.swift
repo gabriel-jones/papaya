@@ -9,26 +9,52 @@
 import UIKit
 
 protocol InstructionsViewControllerDelegate {
-    func didMakeChanges()
+    func didMakeChanges(toCartItem: CartItem)
 }
-
-//TODO: modular updates, not all in one go - PATCH
 
 class InstructionsViewController: UIViewController {
     
-    public var item: CartItem!
+    public var item: CartItem?
+    public var rawItem: Item?
     public var delegate: InstructionsViewControllerDelegate?
     
-    private var madeChanges = false
-    
+    private var active = false
+    private var activeRequest: URLSessionDataTask?
+
     private var saveButton: UIBarButtonItem!
     private var closeButton: UIBarButtonItem!
     private let tableView = UITableView(frame: .zero, style: .grouped)
+    private let activityIndicator = UIActivityIndicatorView()
+    private let retryButton = UIButton()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.buildViews()
         self.buildConstraints()
+        
+        if self.item == nil && self.rawItem != nil {
+            self.loadItem()
+        }
+    }
+    
+    @objc private func loadItem() {
+        DispatchQueue.main.async { self.activityIndicator.startAnimating() }
+        tableView.isHidden = true
+        retryButton.isHidden = true
+        Request.shared.getCartItem(item: self.rawItem!) { result in
+            self.activityIndicator.stopAnimating()
+            switch result {
+            case .success(let cartItem):
+                self.hideMessage()
+                self.item = cartItem
+                self.tableView.isHidden = false
+                self.tableView.reloadData()
+            case .failure(let error):
+                print(error.localizedDescription)
+                self.retryButton.isHidden = false
+                self.showMessage("Cannot fetch item details", type: .error)
+            }
+        }
     }
     
     private func buildViews() {
@@ -51,34 +77,50 @@ class InstructionsViewController: UIViewController {
         tableView.register(SettingsLargeInputTableViewCell.classForCoder(), forCellReuseIdentifier: SettingsLargeInputTableViewCell.identifier)
         view.addSubview(tableView)
         
-
+        activityIndicator.activityIndicatorViewStyle = .gray
+        activityIndicator.hidesWhenStopped = true
+        view.addSubview(activityIndicator)
+        
+        retryButton.setTitle("Retry", for: .normal)
+        retryButton.setImage(#imageLiteral(resourceName: "Replace").tintable, for: .normal)
+        retryButton.setTitleColor(.black, for: .normal)
+        retryButton.tintColor = .black
+        retryButton.titleLabel?.font = Font.gotham(size: 15)
+        retryButton.addTarget(self, action: #selector(loadItem), for: .touchUpInside)
+        retryButton.alignVertical()
+        retryButton.isHidden = true
+        view.addSubview(retryButton)
     }
     
     private func buildConstraints() {
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+        
+        activityIndicator.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(50)
+        }
+        
+        retryButton.snp.makeConstraints { make in
+            make.width.height.equalTo(50)
+            make.center.equalToSuperview()
+        }
     }
     
     @objc private func save(_ sender: UIBarButtonItem) {
-        if item.instructions!.isEmpty {
-            item.instructions = nil
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    private func update() {
+        activeRequest?.cancel()
+        activeRequest = Request.shared.updateCartItem(cartItem: self.item!) { result in
+            if case .failure(let error) = result {
+                print(error.localizedDescription)
+                self.showMessage("Cannot update instructions", type: .error)
+            }
         }
-        
-        if madeChanges {
-            delegate?.didMakeChanges()
-//            Request.shared.update(cartItem: self.item)
-//            .observeOn(MainScheduler.instance)
-//            .subscribe(onNext: { json in
-//                print(json)
-//            }, onError: { error in
-//                print(error.localizedDescription)
-//            }, onCompleted: {
-//                print("completed")
-//                //self.navigationController?.dismiss(animated: true, completion: nil)
-//            })
-//            .disposed(by: disposeBag)
-        }
+        delegate?.didMakeChanges(toCartItem: self.item!)
     }
 }
 
@@ -88,6 +130,9 @@ extension InstructionsViewController: UITableViewDelegate, UITableViewDataSource
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if item == nil {
+            return 0
+        }
         return section == 0 ? 2 : 1
     }
     
@@ -96,19 +141,21 @@ extension InstructionsViewController: UITableViewDelegate, UITableViewDataSource
         case 0:
             if indexPath.row == 0 {
                 let cell = UITableViewCell(style: .subtitle, reuseIdentifier: C.ViewModel.CellIdentifier.instructionsItemCell.rawValue)
-                cell.textLabel?.text = item.item.name
+                cell.textLabel?.text = item!.item.name
                 cell.textLabel?.numberOfLines = 0
                 cell.textLabel?.font = Font.gotham(size: 16)
-                cell.detailTextLabel?.text = item.item.price.currencyFormat
+                cell.detailTextLabel?.text = item!.item.price.currencyFormat
                 cell.detailTextLabel?.font = Font.gotham(size: 13)
                 cell.detailTextLabel?.textColor = .gray
                 cell.imageView?.contentMode = .scaleAspectFit
-                cell.imageView?.pin_setImage(from: item.item.img) { _ in
-                    cell.imageView?.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
-                    cell.imageView?.frame.size = CGSize(width: 45, height: 45)
+                cell.imageView?.pin_setImage(from: item!.item.img) { _ in
+                    let itemSize = CGSize(width: 45, height: 45)
+                    UIGraphicsBeginImageContextWithOptions(itemSize, false, UIScreen.main.scale)
+                    let imageRect = CGRect.init(origin: CGPoint.zero, size: itemSize)
+                    cell.imageView?.image?.draw(in: imageRect)
+                    cell.imageView?.image = UIGraphicsGetImageFromCurrentImageContext()!
+                    UIGraphicsEndImageContext()
                 }
-                cell.imageView?.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
-                cell.imageView?.frame.size = CGSize(width: 45, height: 45)
                 cell.separatorInset = .zero
                 cell.selectionStyle = .none
                 return cell
@@ -118,10 +165,10 @@ extension InstructionsViewController: UITableViewDelegate, UITableViewDataSource
                 cell.textLabel?.textColor = .gray
                 cell.textLabel?.text = "If out of stock..."
                 cell.detailTextLabel?.font = Font.gotham(size: 16)
-                cell.detailTextLabel?.text = item.replaceOption.description.0
-                cell.detailTextLabel?.textColor = item.replaceOption.description.1
-                cell.imageView?.image = item.replaceOption.image.0.tintable
-                cell.imageView?.tintColor = item.replaceOption.image.1
+                cell.detailTextLabel?.text = item!.replaceOption.description.0
+                cell.detailTextLabel?.textColor = item!.replaceOption.description.1
+                cell.imageView?.image = item!.replaceOption.image.0.tintable
+                cell.imageView?.tintColor = item!.replaceOption.image.1
                 cell.imageView?.contentMode = .scaleAspectFit
                 cell.imageView?.bounds = CGRect(x: 0, y: 0, width: 40, height: 40)
                 return cell
@@ -130,7 +177,8 @@ extension InstructionsViewController: UITableViewDelegate, UITableViewDataSource
         case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: SettingsLargeInputTableViewCell.identifier, for: indexPath) as! SettingsLargeInputTableViewCell
             cell.textView.placeholder = String(repeating: " ", count: 8) + "Specific instructions for your packer"
-            cell.textView.text = item.instructions
+            cell.textView.text = item!.instructions
+            cell.textView.isUserInteractionEnabled = false
             cell.selectionStyle = .none
             return cell
         default: return UITableViewCell()
@@ -142,27 +190,56 @@ extension InstructionsViewController: UITableViewDelegate, UITableViewDataSource
             tableView.deselectRow(at: indexPath, animated: true)
             let alert = UIAlertController(title: "If the item is out of stock", message: nil, preferredStyle: .actionSheet)
             alert.addAction(UIAlertAction(title: CartItem.ReplaceOption.replaceAuto.description.0, style: .default) { _ in
-                if case .replaceAuto = self.item.replaceOption {} else {
-                    self.item.replaceOption = .replaceAuto
-                    self.madeChanges = true
+                if case .replaceAuto = self.item!.replaceOption {} else {
+                    self.item!.replaceOption = .replaceAuto
+                    self.update()
                     self.tableView.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .none)
                 }
             })
             alert.addAction(UIAlertAction(title: "Pick replacement", style: .default) { _ in
                 let vc = SimilarItemsViewController()
-                vc.itemToCompare = self.item.item
+                vc.itemToCompare = self.item!.item
                 vc.delegate = self
                 self.navigationController?.pushViewController(vc, animated: true)
             })
             alert.addAction(UIAlertAction(title: CartItem.ReplaceOption.skip.description.0, style: .destructive) { _ in
-                if case .skip = self.item.replaceOption {} else {
-                    self.item.replaceOption = .skip
-                    self.madeChanges = true
+                if case .skip = self.item!.replaceOption {} else {
+                    self.item!.replaceOption = .skip
+                    self.update()
                     self.tableView.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .none)
                 }
             })
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
             present(alert, animated: true, completion: nil)
+        }
+        
+        if indexPath.section == 1 {
+            let alert = UIAlertController(title: "Specific instructions for your packer", message: "\n\n\n\n\n\n", preferredStyle: .alert)
+            let textView = UITextView()
+            textView.backgroundColor = .clear
+            textView.autocorrectionType = .no
+            textView.text = item!.instructions
+            alert.view.addSubview(textView)
+            textView.snp.makeConstraints { make in
+                make.left.right.equalToSuperview().inset(8)
+                make.top.bottom.equalToSuperview().inset(64)
+                
+            }
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in
+                self.active = false
+                self.view.endEditing(true)
+            })
+            alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+                self.active = false
+                self.view.endEditing(true)
+                self.item!.instructions = textView.text.isEmpty ? nil : textView.text
+                self.update()
+                self.tableView.reloadRows(at: [IndexPath(row: 0, section: 1)], with: .none)
+            })
+            active = true
+            present(alert, animated: true) {
+                textView.becomeFirstResponder()
+            }
         }
     }
     
@@ -184,6 +261,8 @@ extension InstructionsViewController: UITableViewDelegate, UITableViewDataSource
 
 extension InstructionsViewController: SimilarItemsViewControllerDelegate {
     func didChoose(item: Item) {
-        print("did choose \(item.name)")
+        self.item!.replaceOption = .replaceSpecific(item: item)
+        self.update()
+        self.tableView.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .none)
     }
 }

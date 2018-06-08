@@ -27,6 +27,7 @@ class CheckoutViewController: UIViewController {
         tr.roundCorners = true
         return tr
     }()
+    
     private let modalCenterTransition: Presentr = {
         let tr = Presentr(presentationType: .popup)
         tr.transitionType = .coverVertical
@@ -40,13 +41,22 @@ class CheckoutViewController: UIViewController {
         self.buildConstraints()
     }
     
+    override func navigationShouldPopOnBackButton() -> Bool {
+        let index = navigationController!.viewControllers.index(where: { $0 is CheckoutViewController })! - 1
+        (navigationController?.viewControllers[index] as! CheckoutSchedulerViewController).checkout = self.checkout
+        return true
+    }
+    
     private func buildViews() {
         view.backgroundColor = UIColor(named: .backgroundGrey)
         navigationItem.title = "Review"
-        
+        navigationController?.interactivePopGestureRecognizer?.delegate = self
+
         tableView.backgroundColor = .clear
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.showsVerticalScrollIndicator = false
+        tableView.showsHorizontalScrollIndicator = false
         tableView.register(CheckoutMapTableViewCell.classForCoder(), forCellReuseIdentifier: CheckoutMapTableViewCell.identifier)
         tableView.register(CheckoutCartTableViewCell.classForCoder(), forCellReuseIdentifier: CheckoutCartTableViewCell.identifier)
         view.addSubview(tableView)
@@ -69,7 +79,6 @@ class CheckoutViewController: UIViewController {
         toolbar.addSubview(checkoutButton)
         
         orderType.backgroundColor = .white
-        orderType.selectedSegmentIndex = 0
         orderType.insertSegment(withTitle: "Delivery", at: 0, animated: false)
         orderType.insertSegment(withTitle: "Pickup", at: 1, animated: false)
         orderType.tintColor = UIColor(named: .green)
@@ -100,11 +109,18 @@ class CheckoutViewController: UIViewController {
     }
     
     @objc private func placeOrder(_ sender: LoadingButton) {
-        
+        print("place order")
     }
     
     @objc private func changeOrderType(_ sender: UISegmentedControl) {
         let isDelivery = sender.selectedSegmentIndex == 0
+        /*if isDelivery && checkout.cart!.total < 15 {
+            sender.selectedSegmentIndex = 1
+            let alert = UIAlertController(title: "Cannot deliver this order", message: "Your cart subtotal must be over $15.00 to be eligible for delivery.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
+            return
+        }*/
         checkout.isDelivery = isDelivery
         if sender.selectedSegmentIndex == 0 {
             tableView.insertRows(at: [IndexPath(row: 1, section: 0)], with: .top)
@@ -121,8 +137,12 @@ class CheckoutViewController: UIViewController {
             }
         }
     }
-    
-    
+}
+
+extension CheckoutViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
 }
 
 extension CheckoutViewController: CheckoutMapDelegate, AddressListModal {
@@ -161,7 +181,7 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return [0: checkout.isDelivery ? 2 : 1, 1: 1, 2: 2, 3: 4][section] ?? 0
+        return [0: checkout.isDelivery ? 2 : 1, 1: 1, 2: 1, 3: 4][section] ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -218,7 +238,7 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
             cell.detailTextLabel?.font = Font.gotham(size: 14)
             switch indexPath.row {
             case 0: // payment method
-                let attr = NSMutableAttributedString(string: "Payment Method: Card")
+                let attr = NSMutableAttributedString(string: "Payment Method: Cash")
                 attr.addAttribute(.foregroundColor, value: UIColor.gray, range: NSMakeRange(0, 15))
                 cell.textLabel?.attributedText = attr
                 cell.textLabel?.font = Font.gotham(size: 15)
@@ -240,15 +260,15 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
             return cell
         case 3:
             let cell = UITableViewCell(style: .value1, reuseIdentifier: C.ViewModel.CellIdentifier.checkoutTotalCell.rawValue)
-            cell.detailTextLabel?.textColor = .gray
+            cell.textLabel?.font = Font.gotham(size: 14)
             cell.detailTextLabel?.font = Font.gotham(size: 14)
             cell.selectionStyle = .none
             switch indexPath.row {
             case 0...3:
                 cell.textLabel?.text = ["Cart Subtotal", "Service Fee", "Tip", "Total"][indexPath.row]
                 cell.textLabel?.textColor = indexPath.row == 3 ? .black : .gray
-                cell.textLabel?.font = Font.gotham(size: 14)
-                cell.detailTextLabel?.text = "$99.99"
+                cell.detailTextLabel?.text = [checkout.cart?.total.currencyFormat, "$10.00", "$10.00", "$100000000"][indexPath.row]
+                cell.detailTextLabel?.textColor = indexPath.row == 3 ? .black : .gray
                 cell.imageView?.image = indexPath.row == 3 ? nil : UIImage()
             default: break
             }
@@ -274,6 +294,7 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         if indexPath.section == 0 && indexPath.row == 0 {
+            /*
             let vc = CheckoutSchedulerViewController()
             vc.isModal = true
             vc.schedule = self.schedule
@@ -282,6 +303,8 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
             let nav = UINavigationController(rootViewController: vc)
             nav.navigationBar.tintColor = UIColor(named: .green)
             customPresentViewController(modalBottomTransition, viewController: nav, animated: true, completion: nil)
+             */
+            navigationController?.popViewController(animated: true)
         }
         else if indexPath.section == 1 {
             guard let cart = checkout.cart else {
@@ -295,11 +318,15 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
         }
         else if indexPath.section == 2 {
             if indexPath.row == 0 {
-                /*
-                 let vc = CheckoutEditPaymentType()
-                 vc.delegate = self
-                 customPresentViewController(modalBottomTransition, viewController: vc, animated: true, completion: nil)
-                 */
+                let alert = UIAlertController(title: "Select payment type", message: nil, preferredStyle: .actionSheet)
+                alert.addAction(UIAlertAction(title: "Cash", style: .default) { _ in
+                    
+                })
+                alert.addAction(UIAlertAction(title: "Card", style: .default) { _ in
+                    
+                })
+                alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+                present(alert, animated: true, completion: nil)
             } else if indexPath.row == 1 {
                 // edit payment selected
             }

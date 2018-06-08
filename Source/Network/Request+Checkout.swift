@@ -80,5 +80,15 @@ extension Request {
         
         return self.execute(request: request, completion: completion)
     }
+    
+    @discardableResult
+    public func deleteCheckout(completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.delete(path: "/checkout/delete") else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, completion: completion)
+    }
 }
 

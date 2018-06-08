@@ -11,28 +11,34 @@ import SwiftyJSON
 
 struct List: BaseObject {
     let id: Int
-    let name: String
-    let items: [Item]
+    var name: String
+    let itemCount: Int
+    let items: [Item]?
     
     init?(dict: JSON) {
         guard
             let _id = dict["id"].int,
             let _name = dict["name"].string,
-            let _itemsDict = dict["items"].array
+            let _itemCount = dict["item_count"].int
         else {
             return nil
         }
             
         id = _id
         name = _name
-        var _items = [Item]()
-        for itemDict in _itemsDict {
-            if let item = Item(dict: itemDict) {
-                _items.append(item)
-            } else {
-                return nil
+        itemCount = _itemCount
+        if let _itemsDict = dict["items"].array {
+            var _items = [Item]()
+            for itemDict in _itemsDict {
+                if let item = Item(dict: itemDict) {
+                    _items.append(item)
+                } else {
+                    return nil
+                }
             }
+            items = _items
+        } else {
+            items = nil
         }
-        items = _items
     }
 }

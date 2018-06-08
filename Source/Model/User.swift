@@ -13,11 +13,11 @@ struct User: BaseObject {
     
     public static var current: User?
     
-    let id: Int
+    public let id: Int
     public var email: String
     public var fname: String
     public var lname: String
-    public var phone: String?
+    public var phone: String
     
     public var name: String {
         get {
@@ -30,7 +30,8 @@ struct User: BaseObject {
             let _id = dict["id"].int,
             let _email = dict["email"].string,
             let _fname = dict["fname"].string,
-            let _lname = dict["lname"].string
+            let _lname = dict["lname"].string,
+            let _phone = dict["phone"].string
         else {
             return nil
         }
@@ -39,6 +40,6 @@ struct User: BaseObject {
         email = _email
         fname = _fname
         lname = _lname
-        phone = dict["phone"].string
+        phone = _phone
     }
 }

@@ -19,10 +19,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
         UINavigationBar.appearance().titleTextAttributes = [
             NSAttributedStringKey.font: UIFont(name: "GothamRounded-Medium", size: 17)!
         ]
-        /*
-        UITabBarItem.appearance().setTitleTextAttributes(
-            [NSAttributedStringKey.font: UIFont(name: "GothamRounded-Medium", size: 14)!], for: .normal
-        )*/
+        let defaultSize = UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes[NSAttributedStringKey.font.rawValue] as? CGFloat
+        let attributes = [NSAttributedStringKey.font.rawValue: Font.gotham(size: defaultSize ?? 16.0)]
+        UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).defaultTextAttributes = attributes
+//        UITabBarItem.appearance().setTitleTextAttributes(
+//            [NSAttributedStringKey.font: UIFont(name: "GothamRounded-Medium", size: 14)!], for: .normal
+//        )
         UITabBarItem.appearance().setTitleTextAttributes(
             [NSAttributedStringKey.font: UIFont(name: "GothamRounded-Bold", size: 14)!], for: .selected
         )

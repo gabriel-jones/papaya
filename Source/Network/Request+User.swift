@@ -22,13 +22,23 @@ extension Request {
     }
     
     @discardableResult
-    public func getLikedItems(completion: (CompletionHandler<[Item]>)? = nil) -> URLSessionDataTask? {
-        guard let request = URLRequest.get(path: "/user/liked/all") else {
+    public func getUserNotificationSettings(completion: (CompletionHandler<[NotificationSettingGroup]>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.get(path: "/user/notification") else {
             completion?(Result(error: .cannotBuildRequest))
             return nil
         }
         
-        return self.execute(request: request, parseMethod: parse.json2Items, completion: completion)
+        return self.execute(request: request, parseMethod: parse.json2NotificationSettingGroup, completion: completion)
+    }
+    
+    @discardableResult
+    public func getLikedItems(page: Int = 1, completion: (CompletionHandler<PaginatedResults<Item>>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.get(path: "/user/liked/all/\(page)") else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, parseMethod: parse.json2PaginatedItems, completion: completion)
     }
     
     @discardableResult
@@ -43,6 +53,7 @@ extension Request {
     
     @discardableResult
     public func updateUser(user: User, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
+        print("update user")
         let body = [
             "email": user.email,
             "fname": user.fname,
@@ -59,8 +70,26 @@ extension Request {
     }
     
     @discardableResult
-    public func updateNotifications(values: [String: Bool], completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
-        guard let request = URLRequest.put(path: "/user/update/notifications", body: values) else {
+    public func updateNotifications(notificationId: Int, value: Bool, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
+        let body: [String:Any] = [
+            "id": notificationId,
+            "value": value
+        ]
+        guard let request = URLRequest.patch(path: "/user/update/notification", body: body) else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, completion: completion)
+    }
+    
+    @discardableResult
+    public func updatePassword(oldPassword: String, newPassword: String, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
+        let body = [
+            "old_password": oldPassword,
+            "new_password": newPassword
+        ]
+        guard let request = URLRequest.put(path: "/user/update/password", body: body) else {
             completion?(Result(error: .cannotBuildRequest))
             return nil
         }

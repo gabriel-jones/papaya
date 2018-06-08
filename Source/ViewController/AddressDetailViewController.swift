@@ -8,8 +8,6 @@
 
 import UIKit
 
-
-
 struct AddressDetailField {
     var title: String
     var value: String?
@@ -69,11 +67,22 @@ class AddressDetailViewController: UIViewController {
         }
     }
     
+    private func showError(message: String) {
+        let alert = UIAlertController(title: "Cannot save address", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+    
     @objc private func save(_ sender: UIBarButtonItem) {
         guard
             let streetCell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? SettingsInputTableViewCell, let street = streetCell.textField.text,
             let zipCell = tableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? SettingsInputTableViewCell, let zip = zipCell.textField.text
         else {
+            return
+        }
+        
+        if street.isEmpty || zip.isEmpty {
+            showError(message: "Please fill out all the fields")
             return
         }
         
@@ -86,7 +95,7 @@ class AddressDetailViewController: UIViewController {
                 case .success(_):
                     self.dismiss(animated: true, completion: nil)
                 case .failure(let error):
-                    print(error)
+                    self.showError(message: "Please try again")
                 }
             }
         } else {
@@ -95,16 +104,16 @@ class AddressDetailViewController: UIViewController {
                 case .success(_):
                     self.dismiss(animated: true, completion: nil)
                 case .failure(let error):
-                    print(error)
+                    self.showError(message: "Please try again")
                 }
             }
         }
     }
     
     @objc private func close(_ sender: UIBarButtonItem) {
+        view.endEditing(true)
         navigationController?.dismiss(animated: true, completion: nil)
     }
-
 }
 
 extension AddressDetailViewController: UITableViewDelegate, UITableViewDataSource {

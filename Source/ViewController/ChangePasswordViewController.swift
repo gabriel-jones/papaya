@@ -39,8 +39,43 @@ class ChangePasswordViewController: UIViewController {
         }
     }
     
+    private func getValueForCell(at: Int) -> String? {
+        return (tableView.cellForRow(at: IndexPath(row: at, section: 0)) as? SettingsInputTableViewCell)?.textField.text
+    }
+    
+    func showError(message: String) {
+        let alert = UIAlertController(title: "Cannot change password", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+    
     @objc func submit(_ sender: LoadingButton) {
         sender.showLoading()
+        
+        let oldPassword = getValueForCell(at: 0)!
+        let newPassword = getValueForCell(at: 1)!
+        let newRepeatPassword = getValueForCell(at: 2)!
+        
+        if oldPassword.isEmpty || newPassword.isEmpty || newRepeatPassword.isEmpty {
+            showError(message: "Please fill out all the fields.")
+            return
+        }
+        
+        if newPassword != newRepeatPassword {
+            showError(message: "Your new password is repeated incorrectly.")
+            return
+        }
+        
+        Request.shared.updatePassword(oldPassword: oldPassword, newPassword: newPassword) { result in
+            sender.hideLoading()
+            switch result {
+            case .success(_):
+                self.navigationController?.popViewController(animated: true)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+        
     }
 }
 

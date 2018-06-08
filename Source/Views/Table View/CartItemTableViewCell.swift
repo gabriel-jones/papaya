@@ -9,11 +9,11 @@
 import UIKit
 
 extension UIButton {
-    func centerTextAndImage(spacing: CGFloat) {
+    public func centerTextAndImage(spacing: CGFloat) {
         let insetAmount = spacing / 2
-        imageEdgeInsets = UIEdgeInsets(top: 0, left: -insetAmount, bottom: 0, right: insetAmount)
-        titleEdgeInsets = UIEdgeInsets(top: 0, left: insetAmount, bottom: 0, right: -insetAmount)
-        contentEdgeInsets = UIEdgeInsets(top: insetAmount, left: insetAmount+spacing, bottom: insetAmount, right: insetAmount+spacing)
+        imageEdgeInsets = UIEdgeInsets(top: insetAmount, left: -(insetAmount / 3), bottom: insetAmount, right: insetAmount / 3)
+        titleEdgeInsets = UIEdgeInsets(top: 0, left: (insetAmount / 3), bottom: 0, right: -(insetAmount / 3))
+        contentEdgeInsets = UIEdgeInsets(top: insetAmount, left: spacing, bottom: insetAmount, right: spacing)
     }
 }
 
@@ -48,6 +48,11 @@ class CartItemTableViewCell: UITableViewCell {
     }
     
     private func buildViews() {
+        isHeroEnabled = true
+        
+        itemImage.pin_setPlaceholder(with: #imageLiteral(resourceName: "Picture").tintable)
+        itemImage.tintColor = .gray
+        self.setImageTemplate(to: true)
         addSubview(itemImage)
         
         itemName.font = Font.gotham(size: 15)
@@ -60,7 +65,8 @@ class CartItemTableViewCell: UITableViewCell {
         
         stepper.minimum = 1
         stepper.maximum = 100
-        stepper.value = 1
+        stepper.shouldDelete = true
+        stepper.delegate = self
         addSubview(stepper)
         
         removeButton.setImage(#imageLiteral(resourceName: "Delete").tintable, for: .normal)
@@ -85,14 +91,17 @@ class CartItemTableViewCell: UITableViewCell {
     }
     
     @objc private func remove(_ sender: UIButton) {
-        if let item = self.item {
-            delegate?.delete(selectedItem: item)
+        self.stepper.showLoading()
+        Request.shared.deleteCartItem(item: self.item!.item) { result in
+            self.stepper.hideLoading()
+            if case .success(_) = result {
+                self.delegate?.delete(selectedItem: self.item!)
+            }
         }
     }
     
     @objc private func addInstructions(_ sender: UIButton) {
         if let item = self.item {
-            print("add instructions")
             delegate?.addInstructions(selectedItem: item)
         }
     }
@@ -100,7 +109,7 @@ class CartItemTableViewCell: UITableViewCell {
     private func buildConstraints() {
         itemImage.snp.makeConstraints { make in
             make.leadingMargin.equalToSuperview()
-            make.topMargin.equalToSuperview()
+            make.top.equalTo(self.snp.topMargin)
             make.width.equalTo(50)
             make.height.equalTo(50)
         }
@@ -140,13 +149,25 @@ class CartItemTableViewCell: UITableViewCell {
         itemName.text = cartItem.item.name
         itemPrice.text = cartItem.item.price.currencyFormat
         stepper.value = cartItem.quantity
-        itemImage.contentMode = .center
-        itemImage.pin_setPlaceholder(with: #imageLiteral(resourceName: "Picture").tintable)
-        itemImage.pin_setImage(from: cartItem.item.img, completion: { result in
-            if result.error == nil {
-                self.itemImage.contentMode = .scaleAspectFit
+        if let url = cartItem.item.img {
+            itemImage.pin_updateWithProgress = true
+            itemImage.pin_setImage(from: url)
+            itemImage.pin_setImage(from: url, placeholderImage: #imageLiteral(resourceName: "Picture").tintable) { result in
+                self.setImageTemplate(to: result.error != nil)
             }
-        })
+            
+            itemImage.heroID = self.getImageId()
+        }
+    }
+    
+    private func setImageTemplate(to: Bool) {
+        itemImage.contentMode = to ? .center : .scaleAspectFit
+        itemImage.backgroundColor = to ? UIColor(named: .backgroundGrey) : .clear
+        itemImage.layer.cornerRadius = to ? 5 : 0
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
     }
     
     public func getImageId() -> String {
@@ -154,5 +175,30 @@ class CartItemTableViewCell: UITableViewCell {
             "item_img_" + $0.debugDescription
         }
     }
+}
 
+extension CartItemTableViewCell: StepperDelegate {
+    func changedQuantity(to: Int) {
+        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
+            if to == self.stepper.value {
+                self.stepper.showLoading()
+                Request.shared.updateCartQuantity(item: self.item!.item, quantity: to) { result in
+                    self.stepper.hideLoading()
+                    if case .success(_) = result {
+                        self.delegate?.changeQuantity(new: to, selectedItem: self.item!)
+                    }
+                }
+            }
+        }
+    }
+    
+    func delete() {
+        self.stepper.showLoading()
+        Request.shared.deleteCartItem(item: self.item!.item) { result in
+            self.stepper.hideLoading()
+            if case .success(_) = result {
+                self.delegate?.delete(selectedItem: self.item!)
+            }
+        }
+    }
 }
