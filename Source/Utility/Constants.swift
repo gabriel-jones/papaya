@@ -16,40 +16,53 @@ struct C {
     
     struct URL {
         public static let main = development
-        static let production = "https://www.papaya.bm"
+        static let staging = "https://papaya-backend.herokuapp.com"
+        static let production = "https://www.papaya.bm:5000"
         static let development = "http://localhost:5000"
-        static let developmentTunnel = "https://papaya.localtunnel.me"
         static let help = "https://www.papaya.bm/help"
         static let termsOfService = "https://www.papaya.bm/terms"
         static let privacyPolicy = "https://www.papaya.bm/privacy"
-        static func categoryImage(with imageId: String) -> String {
-            return main + "/static/img/\(imageId).jpg"
-        }
-    }
-    
-    enum Notification: String {
-        static let base = C.domain
-        
-        case cartBadgeUpdate
-        case updateCartItem
-        
-        var value: String {
-            get {
-                return Notification.base + "." + rawValue
-            }
-        }
-        
-        static func convert(name: String) -> C.Notification? {
-            return C.Notification(rawValue: name.components(separatedBy: ".").last ?? "")
-        }
-        
-        static let allNotifications = [cartBadgeUpdate]
-        static let allRoutedNotifications = [updateCartItem]
     }
     
     struct KeychainStore {
         static let user_email = "user_email"
         static let user_password = "user_password"
         static let user_auth_token = "user_auth_token"
+    }
+    
+    struct ViewModel {
+        enum CellIdentifier: String {
+            case cartItemCell, emptyCell, cartDetailCell
+            case browseCell, browseSpecialCell
+            case aisleSectionBarCell
+            case instructionsItemCell, instructionsReplaceCell
+            case itemGroupCell, itemCell, specialItemCell
+            case listGroupCell, listCell, listItemGridCell
+            case itemDetailCell, itemActionCell
+            case settingsInputCell, settingsLargeInputCell, settingsButtonCell, settingsUserCell
+            case addressCell
+            case notificationSettingSwitchCell
+            case aboutCell, libraryCell
+            case searchPopularCell, searchRecommendCell
+            case similarItemCell
+            case deliveryTimeCell, deliveryLocationCell
+            case checkoutCartCell, checkoutTotalCell, checkoutMapCell
+            case listHeaderView
+            case clubCell
+            case statusPending, statusSupport, statusPremiumAdvert, statusPickup, statusDelivery, statusPacking, statusCompleted, statusDeclined
+        }
+        
+        enum Nib: String {
+            case itemGroupCell = "ItemGroupTableViewCell"
+            case itemCell = "ItemCollectionViewCell"
+            case listGroupCell = "ListGroupTableViewCell"
+            case listCell = "ListCollectionViewCell"
+        }
+        
+        enum StoryboardIdentifier: String {
+            case homeTabBar = "HomeTabBarVC"
+            case getStartedNav = "GetStartedNavVC"
+            case itemNav = "ItemNavVC"
+        }
     }
 }

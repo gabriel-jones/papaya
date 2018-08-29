@@ -24,8 +24,7 @@ struct Club: BaseObject {
             guard let imageId = imageId else {
                 return nil
             }
-            print(C.URL.categoryImage(with: imageId))
-            return URL(string: C.URL.categoryImage(with: imageId))
+            return URL(string: C.URL.main + imageId)
         }
     }
     
@@ -43,7 +42,7 @@ struct Club: BaseObject {
         name = _name
         blurb = _blurb
         specialStatus = dict["special_status"].string
-        imageId = dict["img_id"].string
+        imageId = dict["img_url"].string
         isMember = _isMember
     }
 }

@@ -14,7 +14,7 @@ protocol CartViewControllerDelegate: class {
 
 class ViewControllerWithCart: UIViewController {
     
-    @objc func openCart(_ sender: UIBarButtonItem) {
+    @objc private func openCart(_ sender: UIBarButtonItem) {
         isHeroEnabled = true
         let cart = CartViewController()
         cart.delegate = self
@@ -27,14 +27,25 @@ class ViewControllerWithCart: UIViewController {
         present(nav, animated: true, completion: nil)
     }
     
+    @objc private func openSettings(_ sender: UIBarButtonItem) {
+        let settings = SettingsViewController()
+        let vc = UINavigationController(rootViewController: settings)
+        self.present(vc, animated: true, completion: nil)
+    }
+    
     override func viewDidLoad() {
+        let cartButton = UIButton(frame: CGRect(x: 0, y: 0, width: #imageLiteral(resourceName: "Cart").size.width, height: #imageLiteral(resourceName: "Cart").size.height))
+        cartButton.addTarget(self, action: #selector(openCart(_:)), for: .touchUpInside)
+        cartButton.setImage(#imageLiteral(resourceName: "Cart").tintable, for: .normal)
+        cartButton.imageView?.tintColor = UIColor(named: .green)
+        let cartBarButton = UIBarButtonItem(customView: cartButton)
+        navigationItem.rightBarButtonItem = cartBarButton
         
-        let b = UIButton(frame: CGRect(x: 0, y: 0, width: #imageLiteral(resourceName: "Cart").size.width, height: #imageLiteral(resourceName: "Cart").size.height))
-        b.addTarget(self, action: #selector(openCart(_:)), for: .touchUpInside)
-        b.setImage(#imageLiteral(resourceName: "Cart").tintable, for: .normal)
-        b.imageView?.tintColor = UIColor(named: .green)
-        let cartButton = UIBarButtonItem(customView: b)
-        navigationItem.rightBarButtonItem = cartButton
+        if tabBarController?.selectedIndex != 1 {
+            let settingsButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Settings"), style: .plain, target: self, action: #selector(openSettings(_:)))
+            settingsButton.tintColor = UIColor(named: .green)
+            navigationItem.leftBarButtonItem = settingsButton
+        }
     }
 }
 

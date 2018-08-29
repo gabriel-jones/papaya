@@ -29,7 +29,7 @@ class CategoryViewController: ViewControllerWithCart {
     private let sectionBar = UIView()
     private let bottomBorder = UIView()
     private var sectionsCollectionView: UICollectionView!
-    private let activityIndicator = UIActivityIndicatorView()
+    private let activityIndicator = LoadingView()
     private let retryButton = UIButton()
     private let topWhite = UIView()
 
@@ -54,8 +54,7 @@ class CategoryViewController: ViewControllerWithCart {
                 self.sectionsCollectionView.reloadData()
                 self.tableView.reloadData()
                 self.hideMessage()
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure(_):
                 self.retryButton.isHidden = false
                 self.showMessage("Can't fetch department", type: .error, options: [
                     .autoHide(false),
@@ -74,8 +73,11 @@ class CategoryViewController: ViewControllerWithCart {
                     cell.model?.set(new: paginatedResults.results)
                     cell.reload()
                 }
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure(_):
+                self.showMessage("Can't fetch groceries", type: .error, options: [
+                    .autoHide(false),
+                    .hideOnTap(false)
+                ])
             }
         }
     }
@@ -91,8 +93,11 @@ class CategoryViewController: ViewControllerWithCart {
                         cell.reload()
                     }
                 }
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure(_):
+                self.showMessage("Can't fetch groceries", type: .error, options: [
+                    .autoHide(false),
+                    .hideOnTap(false)
+                ])
             }
         }
     }
@@ -110,6 +115,7 @@ class CategoryViewController: ViewControllerWithCart {
         navigationController?.interactivePopGestureRecognizer?.delegate = self
         navigationItem.title = category?.name
         navigationItem.backBarButtonItem = UIBarButtonItem(title: " ", style: .done, target: self, action: nil)
+        navigationItem.leftBarButtonItem = nil
 
         tableView.allowsSelection = false
         tableView.backgroundColor = .clear
@@ -143,8 +149,7 @@ class CategoryViewController: ViewControllerWithCart {
         bottomBorder.backgroundColor = .lightGray
         sectionBar.addSubview(bottomBorder)
         
-        activityIndicator.activityIndicatorViewStyle = .gray
-        activityIndicator.hidesWhenStopped = true
+        activityIndicator.color = .lightGray
         view.addSubview(activityIndicator)
         
         retryButton.setTitle("Retry", for: .normal)
@@ -174,6 +179,7 @@ class CategoryViewController: ViewControllerWithCart {
         
         activityIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()
+            make.width.height.equalTo(35)
         }
         
         retryButton.snp.makeConstraints { make in
@@ -263,6 +269,19 @@ extension CategoryViewController: UICollectionViewDelegate, UICollectionViewData
         cell.load(section: sections[indexPath.row])
         cell.delegate = self
         return cell
+    }
+}
+
+extension CategoryViewController: GroupDelegateAction {
+    func open(item: Item, imageId: String) {
+        let vc = ItemViewController()
+        vc.item = item
+        vc.imageId = imageId
+        
+        let nav = UINavigationController(rootViewController: vc)
+        nav.isHeroEnabled = true
+        nav.heroModalAnimationType = .selectBy(presenting: .auto, dismissing: .uncover(direction: .down))
+        present(nav, animated: true, completion: nil)
     }
 }
 

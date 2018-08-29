@@ -27,7 +27,7 @@ class Config {
         bundleIdentifier = Bundle.infoValueInMainBundle(for: "CFBundleIdentifier") as? String ?? ""
         buildNumber = Bundle.infoValueInMainBundle(for: "CFBundleVersion") as? String ?? ""
         deviceVendorId = UIDevice.current.identifierForVendor?.uuidString ?? ""
-        print(deviceVendorId)
+        print("Device Vendor ID: ", deviceVendorId)
     }
 }
 

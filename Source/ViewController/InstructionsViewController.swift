@@ -24,7 +24,7 @@ class InstructionsViewController: UIViewController {
     private var saveButton: UIBarButtonItem!
     private var closeButton: UIBarButtonItem!
     private let tableView = UITableView(frame: .zero, style: .grouped)
-    private let activityIndicator = UIActivityIndicatorView()
+    private let activityIndicator = LoadingView()
     private let retryButton = UIButton()
     
     override func viewDidLoad() {
@@ -49,10 +49,13 @@ class InstructionsViewController: UIViewController {
                 self.item = cartItem
                 self.tableView.isHidden = false
                 self.tableView.reloadData()
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure(_):
                 self.retryButton.isHidden = false
-                self.showMessage("Cannot fetch item details", type: .error)
+                self.showMessage("Can't fetch details", type: .error, options: [
+                    .autoHide(false),
+                    .hideOnTap(false)
+                ])
+                
             }
         }
     }
@@ -77,8 +80,7 @@ class InstructionsViewController: UIViewController {
         tableView.register(SettingsLargeInputTableViewCell.classForCoder(), forCellReuseIdentifier: SettingsLargeInputTableViewCell.identifier)
         view.addSubview(tableView)
         
-        activityIndicator.activityIndicatorViewStyle = .gray
-        activityIndicator.hidesWhenStopped = true
+        activityIndicator.color = .lightGray
         view.addSubview(activityIndicator)
         
         retryButton.setTitle("Retry", for: .normal)
@@ -98,8 +100,8 @@ class InstructionsViewController: UIViewController {
         }
         
         activityIndicator.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.top.equalTo(50)
+            make.center.equalToSuperview()
+            make.width.height.equalTo(35)
         }
         
         retryButton.snp.makeConstraints { make in
@@ -115,9 +117,11 @@ class InstructionsViewController: UIViewController {
     private func update() {
         activeRequest?.cancel()
         activeRequest = Request.shared.updateCartItem(cartItem: self.item!) { result in
-            if case .failure(let error) = result {
-                print(error.localizedDescription)
-                self.showMessage("Cannot update instructions", type: .error)
+            if case .failure(_) = result {
+                self.showMessage("Can't update instructions", type: .error, options: [
+                    .autoHide(true),
+                    .hideOnTap(true)
+                ])
             }
         }
         delegate?.didMakeChanges(toCartItem: self.item!)

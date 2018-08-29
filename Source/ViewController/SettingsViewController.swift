@@ -13,20 +13,23 @@ class SettingsViewController: UIViewController {
     
     private let tableView = UITableView(frame: .zero, style: .grouped)
     private let settings: [SettingField] = [
-        SettingField(id: 0, image: #imageLiteral(resourceName: "Settings"), name: "Account Settings"),
-        SettingField(id: 1, image: #imageLiteral(resourceName: "Settings"), name: "Password"),
-        SettingField(id: 2, image: #imageLiteral(resourceName: "Address"), name: "Addresses"),
-        SettingField(id: 3, image: #imageLiteral(resourceName: "Notification"), name: "Notifications"),
-        SettingField(id: 4, image: #imageLiteral(resourceName: "History"), name: "Order History"),
-        SettingField(id: 5, image: #imageLiteral(resourceName: "Star"), name: "Papaya Express"),
-        SettingField(id: 6, image: #imageLiteral(resourceName: "Help"), name: "Help"),
-        SettingField(id: 7, image: #imageLiteral(resourceName: "About"), name: "About")
+        SettingField(id: 0, image: UIImage(), name: String(), isModifier: true),
+        SettingField(id: 1, image: #imageLiteral(resourceName: "Key"), name: "Password", isModifier: true),
+        SettingField(id: 2, image: #imageLiteral(resourceName: "Address"), name: "Addresses", isModifier: false),
+        SettingField(id: 3, image: #imageLiteral(resourceName: "Card"), name: "Payment Methods", isModifier: false),
+        SettingField(id: 4, image: #imageLiteral(resourceName: "Notification"), name: "Notifications", isModifier: false),
+        SettingField(id: 5, image: #imageLiteral(resourceName: "History"), name: "Order History", isModifier: false),
+        SettingField(id: 6, image: #imageLiteral(resourceName: "Star-Express"), name: "Papaya Express", isModifier: false),
+        SettingField(id: 7, image: #imageLiteral(resourceName: "Help"), name: "Help", isModifier: false),
+        SettingField(id: 8, image: #imageLiteral(resourceName: "About"), name: "About", isModifier: false),
+        SettingField(id: 9, image: #imageLiteral(resourceName: "Star-Express"), name: "Acknowledgments", isModifier: false)
     ]
     
     struct SettingField {
         let id: Int
         let image: UIImage
         let name: String
+        let isModifier: Bool
         
         func getViewController(_ sender: SFSafariViewControllerDelegate) -> UIViewController? {
             switch id {
@@ -37,15 +40,21 @@ class SettingsViewController: UIViewController {
             case 2:
                 return AddressListViewController()
             case 3:
+                return PaymentListViewController()
+            case 4:
                 return NotificationSettingsViewController()
             case 5:
-                return ExpressViewController()
+                return OrderHistoryViewController()
             case 6:
+                return ExpressViewController()
+            case 7:
                 let vc = SFSafariViewController(url: URL(string: C.URL.help)!)
                 vc.delegate = sender
                 return vc
-            case 7:
+            case 8:
                 return AboutViewController()
+            case 9:
+                return AcknowledgementsViewController()
             default: return nil
             }
         }
@@ -62,11 +71,11 @@ class SettingsViewController: UIViewController {
         navigationController?.navigationBar.tintColor = UIColor(named: .green)
 
         navigationItem.title = "Settings"
-        navigationItem.backBarButtonItem = UIBarButtonItem(title: " ", style: .done, target: self, action: nil)
         
         tableView.backgroundColor = .clear
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.register(SettingsUserTableViewCell.classForCoder(), forCellReuseIdentifier: SettingsUserTableViewCell.identifer)
         view.addSubview(tableView)
         
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Close").tintable, style: .done, target: self, action: #selector(close(_:)))
@@ -83,13 +92,30 @@ class SettingsViewController: UIViewController {
     @objc func logout(_ sender: UIButton) {
         let confirmAlert = UIAlertController(title: "Log out?", message: nil, preferredStyle: .alert)
         confirmAlert.addAction(UIAlertAction(title: "Yes", style: .default) { _ in
-            AuthenticationStore.logout { didLogout in
-                print(didLogout)
+            let loadingAlert = UIAlertController(title: "", message: nil, preferredStyle: .alert)
+            let loading = LoadingView()
+            loading.color = .lightGray
+            loading.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            loading.isUserInteractionEnabled = false
+            loading.startAnimating()
+            loadingAlert.view.addSubview(loading)
+            loading.snp.makeConstraints { make in
+                make.width.height.equalTo(25)
+            }
+            let task = AuthenticationStore.logout { didLogout in
                 if didLogout {
                     self.navigationController?.isNavigationBarHidden = true
                     self.hero_replaceViewController(with: LoadingViewController())
+                } else {
+                    loadingAlert.dismiss(animated: true) {
+                        self.showMessage("Cannot logout", type: .error)
+                    }
                 }
             }
+            loadingAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in
+                task?.cancel()
+            })
+            self.present(loadingAlert, animated: true, completion: nil)
         })
         confirmAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         present(confirmAlert, animated: true, completion: nil)
@@ -111,14 +137,20 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.section == 0 && indexPath.row == 0 {
+            let cell = SettingsUserTableViewCell(style: .subtitle, reuseIdentifier: SettingsUserTableViewCell.identifer)
+            cell.user = User.current
+            return cell
+        }
+        
         if indexPath.section == 0 {
             let cell = UITableViewCell(style: .default, reuseIdentifier: "settingCell")
             cell.accessoryType = .disclosureIndicator
             cell.textLabel?.text = settings[indexPath.row].name
             cell.textLabel?.font = Font.gotham(size: 16)
-            cell.textLabel?.textColor = .darkGray
+            cell.textLabel?.textColor = indexPath.row == 6 ? UIColorFromRGB(0x6216C2) : .darkGray
             cell.imageView?.image = settings[indexPath.row].image.tintable
-            cell.imageView?.tintColor = .gray
+            cell.imageView?.tintColor = indexPath.row == 6 ? UIColorFromRGB(0x6216C2) : .gray
             return cell
         }
         
@@ -129,19 +161,19 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
         logoutButton.titleLabel?.font = Font.gotham(size: 15)
         logoutButton.addTarget(self, action: #selector(logout(_:)), for: .touchUpInside)
         cell.addSubview(logoutButton)
-        logoutButton.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
+        logoutButton.snp.makeConstraints { $0.edges.equalToSuperview() }
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 44
+        return indexPath.section == 0 && indexPath.row == 0 ? 75 : 44
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        if let vc = settings[indexPath.row].getViewController(self) {
+        let setting = settings[indexPath.row]
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: setting.isModifier ? "Cancel" : "", style: .done, target: self, action: nil)
+        if let vc = setting.getViewController(self) {
             if vc is SFSafariViewController {
                 present(vc, animated: true, completion: nil)
             } else {
@@ -149,7 +181,6 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
             }
         }
     }
-    
 }
 
 extension SettingsViewController: SFSafariViewControllerDelegate {

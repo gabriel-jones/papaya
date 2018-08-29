@@ -52,8 +52,17 @@ extension Request {
     }
     
     @discardableResult
+    public func resendConfirmationEmail(completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.post(path: "/user/validate") else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, completion: completion)
+    }
+    
+    @discardableResult
     public func updateUser(user: User, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
-        print("update user")
         let body = [
             "email": user.email,
             "fname": user.fname,
@@ -147,7 +156,7 @@ extension Request {
             "email": email
         ]
         
-        guard let request = URLRequest.get(path: "/user/forgot", urlParameters: body) else {
+        guard let request = URLRequest.post(path: "/user/forgot", urlParameters: body) else {
             completion?(Result(error: .cannotBuildRequest))
             return nil
         }
@@ -157,7 +166,7 @@ extension Request {
     
     @discardableResult
     public func logout(completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
-        guard let request = URLRequest.get(path: "/user/logout") else {
+        guard let request = URLRequest.post(path: "/user/logout") else {
             completion?(Result(error: .cannotBuildRequest))
             return nil
         }

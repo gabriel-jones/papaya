@@ -41,8 +41,8 @@ class AuthenticationStore {
         self.store.set(key: C.KeychainStore.user_password, value: password)
     }
     
-    static func logout(_ completion: @escaping (Bool) -> Void) {
-        Request.shared.logout() { result in
+    static func logout(_ completion: @escaping (Bool) -> Void) -> URLSessionDataTask? {
+        return Request.shared.logout() { result in
             switch result {
             case .success(_):
                 do {
@@ -53,7 +53,7 @@ class AuthenticationStore {
                     print(error.localizedDescription)
                 }
                 completion(true)
-            case .failure(let error):
+            case .failure(_):
                 completion(false)
             }
         }

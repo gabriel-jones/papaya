@@ -22,7 +22,7 @@ class CheckoutMapTableViewCell: UITableViewCell {
     private let addressImage = UIImageView()
     private let addressMap = UIImageView()
     private let addressFadeGradient = CAGradientLayer()
-    private let mapLoading = UIActivityIndicatorView()
+    private let mapLoading = LoadingView()
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -65,7 +65,8 @@ class CheckoutMapTableViewCell: UITableViewCell {
         addSubview(addressMap)
         
         mapLoading.hidesWhenStopped = true
-        mapLoading.activityIndicatorViewStyle = .gray
+        mapLoading.lineWidth = 2
+        mapLoading.color = .lightGray
         addSubview(mapLoading)
     }
     
@@ -104,6 +105,7 @@ class CheckoutMapTableViewCell: UITableViewCell {
         
         mapLoading.snp.makeConstraints { make in
             make.center.equalTo(addressMap.snp.center)
+            make.width.height.equalTo(20)
         }
     }
     
@@ -129,5 +131,11 @@ class CheckoutMapTableViewCell: UITableViewCell {
                 self.addressMap.image = image
             }
         }
+    }
+    
+    public func loadEmpty() {
+        addressLabel.text = "No address selected"
+        zipLabel.text = nil
+        addressMap.image = nil
     }
 }

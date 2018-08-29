@@ -65,7 +65,7 @@ extension AboutViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         let label = UILabel()
-        label.text = "Version \(Config.shared.version) (\(Config.shared.buildNumber))"
+        label.text = "Version \(Config.shared.version) (Build #\(Config.shared.buildNumber))"
         label.textAlignment = .center
         label.font = Font.gotham(size: 12)
         return label

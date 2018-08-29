@@ -7,255 +7,66 @@
 //
 
 import UIKit
-import SafariServices
 
-fileprivate func benefitView(_image: UIImage, _title: String, _subtitle: String) -> UIView {
-    let v = UIView()
-    v.backgroundColor = .white
-    v.layer.cornerRadius = 7
-    v.layer.shadowOpacity = 0.10
-    v.layer.shadowOffset = .zero
-    v.layer.shadowRadius = 15
+fileprivate func createBenefitView(benefit: NSAttributedString) -> UIView {
+    let container = UIView()
+    let view = UIView()
     
     let image = UIImageView()
-    image.image = _image
-    image.contentMode = .scaleAspectFit
-    v.addSubview(image)
-    
-    let title = UILabel()
-    title.text = _title
-    title.font = Font.gotham(size: 17)
-    title.textColor = .black
-    v.addSubview(title)
-    
-    let subtitle = UILabel()
-    subtitle.text = _subtitle
-    subtitle.font = Font.gotham(size: 13)
-    subtitle.textColor = .gray
-    subtitle.numberOfLines = 0
-    v.addSubview(subtitle)
+    image.tintColor = UIColorFromRGB(0x00a745)
+    image.image = #imageLiteral(resourceName: "Check").tintable
+    view.addSubview(image)
     
     image.snp.makeConstraints { make in
-        make.left.top.equalToSuperview().inset(16)
-        make.height.width.equalTo(50)
+        make.left.equalToSuperview().inset(12)
+        make.top.equalToSuperview()
+        make.width.height.equalTo(25)
     }
     
-    title.snp.makeConstraints { make in
-        make.top.equalTo(16)
-        make.left.equalTo(image.snp.right).offset(12)
-    }
+    let label = UILabel()
+    label.attributedText = benefit
+    label.font = Font.gotham(size: 17)
+    label.textColor = UIColorFromRGB(0x696969)
+    label.numberOfLines = 0
+    view.addSubview(label)
     
-    subtitle.snp.makeConstraints { make in
-        make.top.equalTo(title.snp.bottom).offset(12)
+    label.snp.makeConstraints { make in
         make.left.equalTo(image.snp.right).offset(16)
-        make.right.equalTo(-32)
-    }
-
-    return v
-}
-
-fileprivate func separatorView() -> UIView {
-    let v = UIView()
-    v.backgroundColor = UIColorFromRGB(0xd9d9d9)
-    return v
-}
-
-protocol PricingViewDelegate: class {
-    func didSelectBuy(sender: PricingView)
-}
-
-class PricingView: UIView {
-    public var topText: String = String() {
-        didSet {
-            topLabel.text = topText
-        }
+        make.bottom.right.equalToSuperview()
+        make.centerY.equalTo(image.snp.centerY)
     }
     
-    public var topMainText: String = String() {
-        didSet {
-            topMainLabel.text = topMainText
-        }
+    container.addSubview(view)
+    
+    view.snp.makeConstraints { make in
+        make.left.right.equalToSuperview()
+        make.top.bottom.equalToSuperview().inset(12)
     }
     
-    public var priceText: String = String() {
-        didSet {
-            priceLabel.text = priceText
-        }
-    }
-    
-    public var priceSecondaryText: String = String() {
-        didSet {
-            priceSecondaryLabel.text = priceSecondaryText
-        }
-    }
-    
-    public var descriptionText: String = String() {
-        didSet {
-            let attr = NSMutableAttributedString(string: descriptionText)
-            let paragraphStyle = NSMutableParagraphStyle()
-            paragraphStyle.paragraphSpacing = 16
-            attr.addAttribute(.paragraphStyle, value: paragraphStyle, range: NSMakeRange(0, descriptionText.count))
-            descriptionLabel.attributedText = attr
-        }
-    }
-    
-    public var delegate: PricingViewDelegate?
-    
-    private let topBar = UIView()
-    private let topBarGradient = CAGradientLayer()
-    private let topLabel = UILabel()
-    private let topMainLabel = UILabel()
-    private let priceLabel = UILabel()
-    private let priceSecondaryLabel = UILabel()
-    private let descriptionLabel = UILabel()
-    private let buyButton = UIButton()
-    private let buyButtonGradient = CAGradientLayer()
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.buildViews()
-        self.buildConstraints()
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        self.buildViews()
-        self.buildConstraints()
-    }
-    
-    private func buildViews() {
-        backgroundColor = .white
-        
-        layer.cornerRadius = 7
-        layer.shadowOpacity = 0.10
-        layer.shadowOffset = .zero
-        layer.shadowRadius = 15
-        
-        masksToBounds = false
-        clipsToBounds = false
-        
-        topBar.masksToBounds = true
-        addSubview(topBar)
-        
-        topBarGradient.colors = [UIColorFromRGB(0x3300FF), UIColorFromRGB(0xBC26BF)].map { $0.cgColor }
-        topBarGradient.startPoint = CGPoint(x: -0.2, y: -0.2)
-        topBarGradient.endPoint = CGPoint(x: 1.0, y: 1.0)
-        topBar.layer.insertSublayer(topBarGradient, at: 1)
-        
-        topLabel.font = Font.gotham(size: 14)
-        topLabel.textColor = .white
-        topBar.addSubview(topLabel)
-        
-        topMainLabel.font = Font.gotham(weight: .bold, size: 24)
-        topMainLabel.textColor = .white
-        topBar.addSubview(topMainLabel)
-        
-        priceLabel.font = Font.gotham(size: 32)
-        priceLabel.textColor = .black
-        addSubview(priceLabel)
-        
-        priceSecondaryLabel.font = Font.gotham(size: 14)
-        priceSecondaryLabel.textColor = .black
-        addSubview(priceSecondaryLabel)
-        
-        descriptionLabel.font = Font.gotham(size: 14)
-        descriptionLabel.textColor = .gray
-        descriptionLabel.numberOfLines = 0
-        addSubview(descriptionLabel)
-        
-        buyButton.setTitle("BUY NOW", for: .normal)
-        buyButton.setTitleColor(.white, for: .normal)
-        buyButton.titleLabel?.font = Font.gotham(size: 14)
-        buyButton.contentEdgeInsets = UIEdgeInsets(top: 16, left: 48, bottom: 16, right: 48)
-        buyButton.addTarget(self, action: #selector(buy(_:)), for: .touchUpInside)
-        buyButton.masksToBounds = true
-        addSubview(buyButton)
-        
-        buyButtonGradient.colors = [UIColorFromRGB(0x3300FF), UIColorFromRGB(0xBC26BF)].map { $0.cgColor }
-        buyButtonGradient.startPoint = CGPoint(x: -0.2, y: -0.2)
-        buyButtonGradient.endPoint = CGPoint(x: 1.0, y: 1.0)
-        buyButton.layer.insertSublayer(buyButtonGradient, at: 0)
-    }
-    
-    private func buildConstraints() {
-        topBar.snp.makeConstraints { make in
-            make.leading.top.trailing.equalToSuperview()
-            make.height.equalTo(70)
-        }
-        
-        topLabel.snp.makeConstraints { make in
-            make.top.equalTo(16)
-            make.left.equalTo(20)
-        }
-        
-        topMainLabel.snp.makeConstraints { make in
-            make.top.equalTo(topLabel.snp.bottom).offset(6)
-            make.left.equalTo(20)
-        }
-        
-        priceLabel.snp.makeConstraints { make in
-            make.top.equalTo(topBar.snp.bottom).offset(30)
-            make.left.equalTo(32)
-        }
-        
-        priceSecondaryLabel.snp.makeConstraints { make in
-            make.bottom.equalTo(priceLabel.snp.bottom).offset(-4)
-            make.left.equalTo(priceLabel.snp.right)
-        }
-        
-        descriptionLabel.snp.makeConstraints { make in
-            make.top.equalTo(priceLabel.snp.bottom).offset(16)
-            make.left.equalTo(32)
-            make.right.equalTo(-50)
-        }
-        
-        buyButton.snp.makeConstraints { make in
-            make.right.equalToSuperview().offset(-16)
-            make.centerY.equalTo(snp.bottom)
-        }
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        topBarGradient.frame = topBar.bounds
-        buyButtonGradient.frame = buyButton.bounds
-        
-        buyButton.layer.cornerRadius = buyButton.frame.height / 2
-        
-        let path = UIBezierPath(roundedRect: topBar.bounds, byRoundingCorners:[.topRight, .topLeft], cornerRadii: CGSize(width: 7, height: 7))
-        let maskLayer = CAShapeLayer()
-        maskLayer.path = path.cgPath
-        topBar.layer.mask = maskLayer
-    }
-    
-    @objc private func buy(_ sender: UIButton) {
-        delegate?.didSelectBuy(sender: self)
-    }
+    return container
 }
 
 class ExpressViewController: UIViewController {
     
-    private let scrollView = UIScrollView()
+    private let scroll = UIScrollView()
     private let stack = UIStackView()
     
-    private let titleView = UIView()
-    private let titleLabel = UILabel()
-    private let subtitleLabel = UILabel()
-    private let benefitLabel = UILabel()
-    private let freeDelivery = benefitView(_image: #imageLiteral(resourceName: "Free Delivery Purple"), _title: "Free deliveries", _subtitle: "Unlimited free deliveries for orders over $25")
-    private let fasterOrders = benefitView(_image: #imageLiteral(resourceName: "Time Purple"), _title: "Faster orders", _subtitle: "Skip the queue and have your priority orders finished first")
-    private let peakPricing = benefitView(_image: #imageLiteral(resourceName: "No Money Purple"), _title: "No peak pricing", _subtitle: "Never pay more during busy periods")
-    private let separatorOne = separatorView()
-    private let segmentedControl = ADVSegmentedControl()
-    private let pricingScrollView = UIScrollView()
-    private let yearlyView = PricingView()
-    private let monthlyView = PricingView()
-    private let separatorTwo = separatorView()
+    private let benefits = [
+        "Free deliveries *",
+        "Schedule orders up to a week in advance",
+        "No surge pricing during peak hours",
+        "Priority order status"
+    ]
     
-    private let supportView = benefitView(_image: #imageLiteral(resourceName: "Help Purple"), _title: "Need some help?", _subtitle: "Contact our support if you have any questions")
-    private let supportButton = UIButton()
-    private let supportButtonGradient = CAGradientLayer()
-
+    private let selectPlanContainer = UIView()
+    private let selectPlanLabel = UILabel()
+    
+    private let annualPlanView = ExpressPlanView()
+    private let monthlyPlanView = ExpressPlanView()
+    
+    private let disclaimerContainer = UIView()
+    private let disclaimerLabel = UILabel()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.buildViews()
@@ -263,237 +74,215 @@ class ExpressViewController: UIViewController {
     }
     
     private func buildViews() {
-        view.backgroundColor = UIColor(named: .backgroundGrey)
-
-        navigationItem.title = "Buy Express"
+        view.backgroundColor = .white
         
-        scrollView.contentInset = UIEdgeInsets(top: 16, left: 16, bottom: 48, right: 16)
-        scrollView.alwaysBounceVertical = true
-        view.addSubview(scrollView)
+        navigationItem.title = "Papaya Express"
+        navigationItem.largeTitleDisplayMode = .always
+        
+        scroll.alwaysBounceVertical = true
+        scroll.showsVerticalScrollIndicator = false
+        view.addSubview(scroll)
         
         stack.alignment = .fill
-        stack.axis = .vertical
-        stack.spacing = 16
         stack.distribution = .equalSpacing
-        stack.backgroundColor = .blue
-        scrollView.addSubview(stack)
-        
-        titleView.frame = CGRect(x: 0, y: 0, width: view.frame.width - 32, height: 110)
-        titleView.gradientBackground(colors: [UIColorFromRGB(0x3300FF), UIColorFromRGB(0xBC26BF)], position: (.topLeft, .bottomRight))
-        titleView.layer.cornerRadius = 7
-        titleView.masksToBounds = true
+        stack.spacing = 0
+        stack.axis = .vertical
+        scroll.addSubview(stack)
 
-        titleLabel.text = "Papaya Express"
-        titleLabel.font = Font.gotham(weight: .bold, size: 30)
-        titleLabel.textAlignment = .center
-        titleLabel.textColor = .white
-        titleView.addSubview(titleLabel)
-        
-        subtitleLabel.text = "Upgrade your experience"
-        subtitleLabel.font = Font.gotham(size: 14)
-        subtitleLabel.textAlignment = .center
-        subtitleLabel.textColor = .white
-        titleView.addSubview(subtitleLabel)
-        
-        stack.addArrangedSubview(titleView)
-        stack.setCustomSpacing(24, after: titleView)
-
-        benefitLabel.text = "Amazing Benefits"
-        benefitLabel.font = Font.gotham(size: 20)
-        benefitLabel.textAlignment = .left
-        benefitLabel.textColor = .black
-        stack.addArrangedSubview(benefitLabel)
-        
-        stack.addArrangedSubview(freeDelivery)
-        stack.addArrangedSubview(fasterOrders)
-        stack.addArrangedSubview(peakPricing)
-        
-        stack.addArrangedSubview(separatorOne)
-        
-        segmentedControl.frame = CGRect(x: 0, y: 0, width: 200, height: 50)
-        segmentedControl.items = ["YEARLY", "MONTHLY"]
-        segmentedControl.font = Font.gotham(size: 14)
-        segmentedControl.borderColor = .lightGray
-        segmentedControl.addTarget(self, action: #selector(segmentedControlChanged(_:)), for: .valueChanged)
-        segmentedControl.layer.cornerRadius = segmentedControl.frame.height / 2
-        stack.addArrangedSubview(segmentedControl)
-        
-        pricingScrollView.isUserInteractionEnabled = false
-        pricingScrollView.showsHorizontalScrollIndicator = false
-        pricingScrollView.showsVerticalScrollIndicator = false
-        pricingScrollView.contentSize = CGSize(width: view.frame.width * 2 + 16, height: 275)
-        pricingScrollView.masksToBounds = false
-        stack.addArrangedSubview(pricingScrollView)
-        
-        yearlyView.topText = "Most Popular"
-        yearlyView.topMainText = "Save 25%"
-        yearlyView.priceText = "$12"
-        yearlyView.priceSecondaryText = " / month"
-        yearlyView.descriptionText = "Billed annually\nGet a full year’s subscription to Papaya Express"
-        yearlyView.delegate = self
-        yearlyView.tag = 0
-        pricingScrollView.addSubview(yearlyView)
-        
-        monthlyView.topText = "Basic Plan"
-        monthlyView.topMainText = "Monthly"
-        monthlyView.priceText = "$15"
-        monthlyView.priceSecondaryText = " / month"
-        monthlyView.descriptionText = "Billed monthly\nSubscription must be renewed every month"
-        monthlyView.delegate = self
-        monthlyView.tag = 1
-        pricingScrollView.addSubview(monthlyView)
-        
-        //stack.addArrangedSubview(monthlyView)
-
-        stack.addArrangedSubview(separatorTwo)
-        
-        stack.addArrangedSubview(supportView)
-
-        supportButton.setTitle("SUPPORT", for: .normal)
-        supportButton.setTitleColor(.white, for: .normal)
-        supportButton.titleLabel?.font = Font.gotham(size: 14)
-        supportButton.contentEdgeInsets = UIEdgeInsets(top: 16, left: 48, bottom: 16, right: 48)
-        supportButton.addTarget(self, action: #selector(getSupport), for: .touchUpInside)
-        supportButton.masksToBounds = true
-        supportView.addSubview(supportButton)
-        
-        supportButtonGradient.colors = [UIColorFromRGB(0x3300FF), UIColorFromRGB(0xBC26BF)].map { $0.cgColor }
-        supportButtonGradient.startPoint = CGPoint(x: -0.2, y: -0.2)
-        supportButtonGradient.endPoint = CGPoint(x: 1.0, y: 1.0)
-        supportButton.layer.insertSublayer(supportButtonGradient, at: 0)
-    }
-    
-    @objc private func getSupport() {
-        if let url = URL(string: C.URL.help) {
-            let vc = SFSafariViewController(url: url)
-            vc.delegate = self
-            present(vc, animated: true, completion: nil)
+        for benefit in benefits {
+            let benefitString = NSMutableAttributedString(string: benefit)
+            let benefitView = createBenefitView(benefit: benefitString)
+            stack.addArrangedSubview(benefitView)
         }
-    }
-    
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        segmentedControl.thumbGradientColor = [UIColorFromRGB(0x3300FF), UIColorFromRGB(0xBC26BF)]
-        supportButtonGradient.frame = supportButton.bounds
-        supportButton.layer.cornerRadius = supportButton.frame.height / 2
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        supportButtonGradient.frame = supportButton.bounds
-        supportButton.layer.cornerRadius = supportButton.frame.height / 2
-//        supportButton.gradientBackground(colors: [UIColorFromRGB(0x3300FF), UIColorFromRGB(0xBC26BF)], position: (.topLeft, .bottomRight))
-//        supportButton.layoutSubviews()
-//        segmentedControl.thumbGradientColor = [UIColorFromRGB(0x3300FF), UIColorFromRGB(0xBC26BF)]
-//        segmentedControl.layoutSubviews()
-    }
-    
-    @objc private func segmentedControlChanged(_ sender: ADVSegmentedControl) {
-        let point: CGPoint = sender.selectedIndex == 0 ? .zero : CGPoint(x: stack.frame.width + 16, y: 0)
-        pricingScrollView.setContentOffset(point, animated: true)
+        
+        selectPlanLabel.text = "Select a Plan"
+        selectPlanLabel.font = Font.gotham(weight: .bold, size: 26)
+        selectPlanContainer.addSubview(selectPlanLabel)
+        stack.addArrangedSubview(selectPlanContainer)
+        
+        annualPlanView.image = #imageLiteral(resourceName: "PremiumAnnualPlan")
+        annualPlanView.amount = 12.99
+        annualPlanView.savings = "Save 35%"
+        annualPlanView.subtitle = "Our most popular and cheapest plan. Billed annually. Cancel anytime."
+        stack.addArrangedSubview(annualPlanView)
+        stack.setCustomSpacing(25, after: annualPlanView)
+        
+        monthlyPlanView.image = #imageLiteral(resourceName: "PremiumMonthlyPlan")
+        monthlyPlanView.amount = 19.99
+        monthlyPlanView.subtitle = "Billed monthly. Cancel anytime."
+        stack.addArrangedSubview(monthlyPlanView)
+        
+        disclaimerLabel.text = "* Free deliveries only for orders over $20"
+        disclaimerLabel.font = Font.gotham(size: 12)
+        disclaimerLabel.textColor = UIColorFromRGB(0xA7A7A7)
+        disclaimerContainer.addSubview(disclaimerLabel)
+        stack.addArrangedSubview(disclaimerContainer)
     }
     
     private func buildConstraints() {
-        scrollView.snp.makeConstraints { make in
-            make.width.height.equalToSuperview()
-            make.top.left.equalToSuperview()
+        scroll.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
         
         stack.snp.makeConstraints { make in
-            make.leading.trailing.top.bottom.equalToSuperview()
-            make.width.equalToSuperview().offset(-32)
+            make.left.right.equalToSuperview().inset(32)
+            make.top.bottom.equalToSuperview()
+            make.width.equalToSuperview().inset(32)
         }
         
-        titleView.snp.makeConstraints { make in
-            make.width.equalToSuperview()
-            make.height.equalTo(110)
+        selectPlanLabel.snp.makeConstraints { make in
+            make.left.right.equalToSuperview()
+            make.top.equalToSuperview().inset(75)
+            make.bottom.equalToSuperview().inset(24)
         }
         
-        titleLabel.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.top.equalTo(25)
-        }
-        
-        subtitleLabel.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.top.equalTo(titleLabel.snp.bottom).offset(16)
-        }
-        
-        freeDelivery.snp.makeConstraints { make in
-            make.width.equalToSuperview()
-            make.height.equalTo(90)
-        }
-        
-        fasterOrders.snp.makeConstraints { make in
-            make.width.equalToSuperview()
-            make.height.equalTo(90)
-        }
-        
-        peakPricing.snp.makeConstraints { make in
-            make.width.equalToSuperview()
-            make.height.equalTo(90)
-        }
-        
-        separatorOne.snp.makeConstraints { make in
-            make.left.equalTo(32)
-            make.right.equalTo(-32)
-            make.height.equalTo(0.5)
-        }
-        
-        segmentedControl.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.height.equalTo(50)
-            make.trailing.leading.equalToSuperview().inset(32)
-        }
-        
-        pricingScrollView.snp.makeConstraints { make in
-            make.width.equalToSuperview()
-            make.height.equalTo(275)
-        }
-        
-        yearlyView.snp.makeConstraints { make in
-            make.left.top.equalToSuperview()
-            make.width.equalTo(stack.snp.width)
-            make.height.equalTo(250)
-        }
-        
-        monthlyView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.left.equalTo(yearlyView.snp.right).offset(16)
-            make.width.equalTo(stack.snp.width)
-            make.height.equalTo(250)
-        }
-        
-        separatorTwo.snp.makeConstraints { make in
-            make.left.equalTo(32)
-            make.right.equalTo(-32)
-            make.height.equalTo(0.5)
-        }
-        
-        supportView.snp.makeConstraints { make in
-            make.width.equalToSuperview()
-            make.height.equalTo(110)
-        }
-        
-        supportButton.snp.makeConstraints { make in
-            make.right.equalToSuperview().offset(-16)
-            make.centerY.equalTo(supportView.snp.bottom)
+        disclaimerLabel.snp.makeConstraints { make in
+            make.left.right.equalToSuperview()
+            make.top.equalToSuperview().inset(50)
+            make.bottom.equalToSuperview().inset(24)
         }
     }
 }
 
-extension ExpressViewController: SFSafariViewControllerDelegate {
-    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        controller.dismiss(animated: true, completion: nil)
+class ExpressPlanView: UIView {
+    public var image: UIImage? {
+        didSet {
+            imageBackgroundView.image = image?.alpha(0.65)
+        }
+    }
+    public var subtitle: String? {
+        didSet {
+            descriptionLabel.text = subtitle
+        }
+    }
+    public var savings: String? {
+        didSet {
+            savingsContainer.isHidden = savings == nil
+            if let savings = self.savings {
+                let savingsAttributed = NSMutableAttributedString(string: savings)
+                savingsAttributed.addAttribute(.font, value: Font.gotham(weight: .bold, size: 12), range: NSMakeRange(savings.count - 2, 1))
+                savingsLabel.attributedText = savingsAttributed
+            }
+        }
+    }
+    public var amount: Double? {
+        didSet {
+            priceLabel.text = (self.amount ?? 0).currencyFormat
+        }
+    }
+    
+    private let imageBackgroundView = UIImageView()
+    private let containerView = UIView()
+    private let priceLabel = UILabel()
+    private let priceIntervalLabel = UILabel()
+    private let descriptionLabel = UILabel()
+    private let savingsLabel = UILabel()
+    private let savingsContainer = UIView()
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.setup()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        self.setup()
+    }
+    
+    private func setup() {
+        self.buildViews()
+        self.buildConstraints()
+    }
+    
+    private func buildViews() {
+        masksToBounds = false
+        clipsToBounds = false
+        
+        layer.shadowOffset = CGSize(width: 0, height: 10)
+        layer.shadowOpacity = 0.2
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowRadius = 20
+        
+        imageBackgroundView.masksToBounds = true
+        imageBackgroundView.clipsToBounds = true
+        imageBackgroundView.layer.cornerRadius = 10
+        addSubview(imageBackgroundView)
+        
+        imageBackgroundView.addSubview(containerView)
+        
+        priceLabel.textColor = .white
+        priceLabel.font = Font.gotham(weight: .bold, size: 44)
+        containerView.addSubview(priceLabel)
+        
+        priceIntervalLabel.textColor = .white
+        priceIntervalLabel.font = Font.gotham(size: 20)
+        priceIntervalLabel.text = "/month"
+        containerView.addSubview(priceIntervalLabel)
+        
+        descriptionLabel.textColor = UIColorFromRGB(0xEBEBEB)
+        descriptionLabel.font = Font.gotham(size: 12)
+        descriptionLabel.numberOfLines = 0
+        containerView.addSubview(descriptionLabel)
+        
+        savingsLabel.textAlignment = .center
+        savingsLabel.textColor = .white
+        savingsLabel.font = Font.gotham(size: 12)
+        savingsContainer.addSubview(savingsLabel)
+        
+        savingsContainer.backgroundColor = .black
+        containerView.addSubview(savingsContainer)
+    }
+    
+    private func buildConstraints() {
+        imageBackgroundView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        containerView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        priceLabel.snp.makeConstraints { make in
+            make.top.equalTo(40)
+            make.left.equalTo(25)
+        }
+        
+        priceIntervalLabel.snp.makeConstraints { make in
+            make.lastBaseline.equalTo(priceLabel.snp.lastBaseline)
+            make.left.equalTo(priceLabel.snp.right).offset(12)
+        }
+        
+        descriptionLabel.snp.makeConstraints { make in
+            make.left.equalTo(priceLabel.snp.left).offset(10)
+            make.top.equalTo(priceLabel.snp.bottom).offset(24)
+            make.right.equalToSuperview().inset(50)
+            make.bottom.equalToSuperview().inset(32)
+        }
+        
+        savingsContainer.snp.makeConstraints { make in
+            make.top.equalTo(10)
+            make.right.equalToSuperview().inset(24)
+        }
+        
+        savingsLabel.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview().inset(8)
+            make.left.right.equalToSuperview().inset(16)
+        }
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        containerView.gradientBackground(colors: [UIColorFromRGB(0x6216C2), UIColorFromRGB(0x75158D)], position: (.bottomLeft, .topRight), opacity: 0.85)
+        savingsContainer.layer.cornerRadius = savingsContainer.frame.height / 2
     }
 }
 
-extension ExpressViewController: PricingViewDelegate {
-    func didSelectBuy(sender: PricingView) {
-        if sender.tag == 0 {
-            
-        } else {
-            
-        }
+extension UIImage {
+    func alpha(_ value:CGFloat) -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(size, false, scale)
+        draw(at: CGPoint.zero, blendMode: .normal, alpha: value)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return newImage!
     }
 }

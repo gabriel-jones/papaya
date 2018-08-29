@@ -44,6 +44,8 @@ class Request: NSObject, URLSessionDelegate, URLSessionDataDelegate {
     }
     
     internal func execute<T>(request: URLRequest, withAuth: Bool = true, parseMethod: ((JSON) -> Result<T>)? = nil, completion: (CompletionHandler<T>)? = nil) -> URLSessionDataTask? {
+        print(request.papayaDescription)
+
         if reachability.connection == .none {
             completion?(Result(error: RequestError.networkOffline))
             return nil
@@ -58,6 +60,7 @@ class Request: NSObject, URLSessionDelegate, URLSessionDataDelegate {
                     self.reauthoriseAndExecute(request: request, handleResponse: handleResponse, completion: completion)
                     return
                 }
+                print("Failed: ", request.httpMethod!, request.url!.path, error.localizedDescription)
             default: break
             }
             if self.threadType == .main {
@@ -73,11 +76,9 @@ class Request: NSObject, URLSessionDelegate, URLSessionDataDelegate {
     }
     
     private func reauthoriseAndExecute<T>(request: URLRequest, handleResponse: @escaping HandleResponse<T>, completion: (CompletionHandler<T>)? = nil) {
-        print("Reauthorising and reexecuting...")
         self.reauthorise { result in
             switch result {
             case .failure(let error):
-                print("Reauth failed: \(error)")
                 if self.threadType == .main {
                     DispatchQueue.main.async {
                         completion?(Result(error: error))
@@ -86,13 +87,11 @@ class Request: NSObject, URLSessionDelegate, URLSessionDataDelegate {
                     completion?(Result(error: error))
                 }
             case .success(let token):
-                print("Reauth succeeded: \(token)")
                 AuthenticationStore.set(token: token)
                 
                 var request = request
                 request.setAuthorisation(token: token)
                 self.session.dataTask(with: request) { data, response, error in
-                    print("Reexecuted with error:", error)
                     if self.threadType == .main {
                         DispatchQueue.main.async {
                             completion?(handleResponse(data, response, error as NSError?))

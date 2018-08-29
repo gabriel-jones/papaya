@@ -8,17 +8,23 @@
 
 import UIKit
 
-class MainTabViewController: UITabBarController, UITabBarControllerDelegate {
+class MainTabViewController: UITabBarController, UITabBarControllerDelegate, CurrentOrderViewDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         delegate = self
         
-        tabBar.barTintColor = UIColor(named: .green)
-        tabBar.tintColor = UIColor(named: .yellow)
-        tabBar.unselectedItemTintColor = .white
-        tabBar.shadowImage = UIImage()
+        tabBar.tintColor = UIColor(named: .green)
+
+    }
+    
+    func openOrder(orderId: Int) {
+        let vc = StatusViewController()
+        vc.orderId = orderId
+        
+        self.present(vc, animated: true, completion: nil)
+        
     }
 
 }

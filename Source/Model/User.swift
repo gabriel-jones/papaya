@@ -18,6 +18,8 @@ struct User: BaseObject {
     public var fname: String
     public var lname: String
     public var phone: String
+    public var isValidated: Bool
+    public var isExpress: Bool
     
     public var name: String {
         get {
@@ -31,7 +33,9 @@ struct User: BaseObject {
             let _email = dict["email"].string,
             let _fname = dict["fname"].string,
             let _lname = dict["lname"].string,
-            let _phone = dict["phone"].string
+            let _phone = dict["phone"].string,
+            let _isValidated = dict["is_validated"].bool,
+            let _isExpress = dict["is_express"].bool
         else {
             return nil
         }
@@ -41,5 +45,7 @@ struct User: BaseObject {
         fname = _fname
         lname = _lname
         phone = _phone
+        isValidated = _isValidated
+        isExpress = _isExpress
     }
 }

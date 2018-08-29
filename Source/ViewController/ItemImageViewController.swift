@@ -29,12 +29,6 @@ class ItemImageViewController: UIViewController, UIScrollViewDelegate {
         isHeroEnabled = true
         view.backgroundColor = .white
         
-        closeButton.tintColor = UIColor(named: .green)
-        closeButton.setImage(#imageLiteral(resourceName: "Close").tintable, for: .normal)
-        closeButton.layer.zPosition = 1001
-        closeButton.addTarget(self, action: #selector(close(_:)), for: .touchUpInside)
-        view.addSubview(closeButton)
-        
         scrollView.minimumZoomScale = 1
         scrollView.zoomScale = 1
         scrollView.maximumZoomScale = 6.0
@@ -55,6 +49,12 @@ class ItemImageViewController: UIViewController, UIScrollViewDelegate {
         let double = UITapGestureRecognizer(target: self, action: #selector(doubleTap))
         double.numberOfTapsRequired = 2
         scrollView.addGestureRecognizer(double)
+        
+        closeButton.tintColor = UIColor(named: .green)
+        closeButton.setImage(#imageLiteral(resourceName: "Close").tintable, for: .normal)
+        closeButton.layer.zPosition = 1001
+        closeButton.addTarget(self, action: #selector(close(_:)), for: .touchUpInside)
+        view.addSubview(closeButton)
     }
     
     private func buildConstraints() {
@@ -70,7 +70,6 @@ class ItemImageViewController: UIViewController, UIScrollViewDelegate {
     }
 
     @objc private func close(_ sender: UIButton) {
-        print("CLOSE")
         dismiss(animated: true, completion: nil)
     }
     

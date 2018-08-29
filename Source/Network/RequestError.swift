@@ -14,7 +14,7 @@ public enum RequestError: Int, Error {
     case failedToParseJson = -3
     case networkOffline = -4
     
-    case /* give me the */succ = 0, unauthorised, other, userNotFound, emailRequired, passwordRequired, jsonBodyRequired, streetNameRequired, zipCodeRequired, addressIdRequired, addressNotFound, categoryNotFound, likeRequired, itemNotFound, nameTooLong, emailTooLong, emailExists, nameRequired, streetNameTooLong, zipCodeTooLong, listNotFound, listNameRequired, listNameTooLong, itemsRequired, quantityRequired, cartNotFound, replaceOptionRequired, replaceSpecificRequired, replaceOptionInvalid, itemIdRequired, phoneRequired, phoneTooLong, invalidEmail, notesTooLong, checkoutLineExists, checkoutLineNotFound, isDeliveryRequired, timeRequired, userLevelTooLow, totalTooLow
+    case /* give me the */succ = 0, unauthorised, other, userNotFound, emailRequired, passwordRequired, jsonBodyRequired, streetNameRequired, zipCodeRequired, addressIdRequired, addressNotFound, categoryNotFound, likeRequired, itemNotFound, nameTooLong, emailTooLong, emailExists, nameRequired, streetNameTooLong, zipCodeTooLong, listNotFound, listNameRequired, listNameTooLong, itemsRequired, quantityRequired, cartNotFound, replaceOptionRequired, replaceSpecificRequired, replaceOptionInvalid, itemIdRequired, phoneRequired, phoneTooLong, invalidEmail, notesTooLong, checkoutLineExists, checkoutLineNotFound, isDeliveryRequired, timeRequired, userLevelTooLow, totalTooLow, paymentNotFound, paymentIdRequired, expressRequired, invalidJsonBody, emailNotValidated, orderNotFound, invalidPhone, tooManyOrders
     
     public var _domain: String {
         return "bm.papaya"
@@ -22,5 +22,9 @@ public enum RequestError: Int, Error {
     
     public var errorUserInfo: [String : AnyObject] {
         return [:]
+    }
+    
+    public var localizedDescription: String {
+        return "\(_domain): (\(self.rawValue)) \(String(describing: self))"
     }
 }

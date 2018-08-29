@@ -18,15 +18,17 @@ class LoadingButton: UIButton {
     
     private (set) var buttonStates: [ButtonState] = []
     
-    private lazy var activityIndicator: UIActivityIndicatorView = {
-        let activityIndicator = UIActivityIndicatorView()
-        activityIndicator.hidesWhenStopped = true
-        activityIndicator.color = self.titleColor(for: .normal)
+    private lazy var activityIndicator: LoadingView = {
+        let activityIndicator = LoadingView()
+        activityIndicator.lineWidth = 2.5
+        activityIndicator.color = self.titleColor(for: .normal) ?? .black
         self.addSubview(activityIndicator)
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         let xCenterConstraint = NSLayoutConstraint(item: self, attribute: .centerX, relatedBy: .equal, toItem: activityIndicator, attribute: .centerX, multiplier: 1, constant: 0)
         let yCenterConstraint = NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal, toItem: activityIndicator, attribute: .centerY, multiplier: 1, constant: 0)
-        self.addConstraints([xCenterConstraint, yCenterConstraint])
+        let widthConstraint = NSLayoutConstraint(item: activityIndicator, attribute: .width, relatedBy: .equal, toItem: nil, attribute: NSLayoutAttribute.notAnAttribute, multiplier: 1, constant: 25)
+        let heightConstraint = NSLayoutConstraint(item: activityIndicator, attribute: .height, relatedBy: .equal, toItem: nil, attribute: NSLayoutAttribute.notAnAttribute, multiplier: 1, constant: 25)
+        self.addConstraints([xCenterConstraint, yCenterConstraint, widthConstraint, heightConstraint])
         return activityIndicator
     }()
     

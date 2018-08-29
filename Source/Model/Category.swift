@@ -19,7 +19,7 @@ struct Category: BaseObject {
     public var imageURL: URL? {
         get {
             guard let imageId = imageId else { return nil }
-            return URL(string: C.URL.categoryImage(with: imageId))
+            return URL(string: C.URL.main + imageId)
         }
     }
     
@@ -34,7 +34,7 @@ struct Category: BaseObject {
         id = _id
         name = _name
         isSpecial = _isSpecial
-        imageId = dict["img_id"].string
+        imageId = dict["img_url"].string
         specialClubId = dict["special_club_id"].int
     }
 }

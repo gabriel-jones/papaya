@@ -10,7 +10,7 @@ import Foundation
 
 class ClubViewController: UIViewController {
     
-    
+    public var club: Club!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,7 +24,7 @@ class ClubViewController: UIViewController {
         Request.shared.getClub { result in
             switch result {
             case .success(let club):
-            case .failure(let error):
+            case .failure(_):
                 
             }
         }

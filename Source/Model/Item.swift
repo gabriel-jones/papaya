@@ -13,9 +13,11 @@ struct Item: BaseObject {
     let id: Int
     let name: String
     let img: URL?
-    let price: Double
     let category: Category?
     let size: String?
+    
+    let price: Double
+    let unitPrice: String?
     
     init?(dict: JSON) {
         guard
@@ -34,7 +36,8 @@ struct Item: BaseObject {
         } else {
             img = nil
         }
-        category = Category(dict: dict)
+        category = Category(dict: dict["category"])
         size = dict["size"].string
+        unitPrice = dict["unit_str"].string
     }
 }

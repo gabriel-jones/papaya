@@ -147,7 +147,25 @@ extension Request {
         func json2PaginatedSpecialItems(from json: JSON) -> Result<PaginatedResults<SpecialItem>> {
             return json2Paginated(from: json, arrJson: json["items"], with: SpecialItem.self)
         }
-
+        
+        func json2Order(from json: JSON) -> Result<Order> {
+            return jsonDict2Object(from: json["order"], to: Order.self)
+        }
+        
+        func json2OrderId(from json: JSON) -> Result<Int> {
+            return Result(fromOptional: json["order_id"].int, error: .failedToParseJson)
+        }
+        
+        func json2OrderStatus(from json: JSON) -> Result<OrderStatus> {
+            return jsonDict2Object(from: json["order"], to: OrderStatus.self)
+        }
+        
+        func json2PaymentMethods(from json: JSON) -> Result<Array<PaymentMethod>> {
+            return jsonArray2Array(from: json["payments"], to: PaymentMethod.self)
+        }
+        
+        func json2PaymentMethod(from json: JSON) -> Result<PaymentMethod> {
+            return jsonDict2Object(from: json["payment"], to: PaymentMethod.self)
+        }
     }
 }
-

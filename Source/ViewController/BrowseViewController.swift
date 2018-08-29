@@ -21,7 +21,7 @@ class BrowseViewController: ViewControllerWithCart {
     }
     
     private var collectionView: UICollectionView!
-    private let activityIndicator = UIActivityIndicatorView()
+    private let activityIndicator = LoadingView()
     private let retryButton = UIButton()
     
     override func viewDidLoad() {
@@ -44,8 +44,7 @@ class BrowseViewController: ViewControllerWithCart {
                 self.collectionView.isHidden = false
                 self.collectionView.reloadData()
                 self.hideMessage()
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure(_):
                 self.retryButton.isHidden = false
                 self.showMessage("Can't fetch departments", type: .error, options: [
                     .autoHide(false),
@@ -79,8 +78,7 @@ class BrowseViewController: ViewControllerWithCart {
         collectionView.showsHorizontalScrollIndicator = false
         view.addSubview(collectionView)
         
-        activityIndicator.activityIndicatorViewStyle = .gray
-        activityIndicator.hidesWhenStopped = true
+        activityIndicator.color = .lightGray
         view.addSubview(activityIndicator)
         
         retryButton.setTitle("Retry", for: .normal)
@@ -101,6 +99,7 @@ class BrowseViewController: ViewControllerWithCart {
         
         activityIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()
+            make.width.height.equalTo(35)
         }
         
         retryButton.snp.makeConstraints { make in

@@ -30,14 +30,17 @@ class CartMinimalViewController: UIViewController {
         closeButton?.tintColor = UIColor(named: .green)
         navigationItem.leftBarButtonItem = closeButton
         
-        itemCount = UIBarButtonItem(title: "\(cart.items.count) items", style: .plain, target: nil, action: nil)
+        itemCount = UIBarButtonItem(title: "\(cart.items.count) groceries", style: .plain, target: nil, action: nil)
         itemCount?.tintColor = .black
+        itemCount?.action = nil
         itemCount?.setTitleTextAttributes([.font: Font.gotham(size: 15)], for: .normal)
+        itemCount?.setTitleTextAttributes([.font: Font.gotham(size: 15)], for: .highlighted)
         navigationItem.rightBarButtonItem = itemCount
         
         tableView.backgroundColor = .clear
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.estimatedRowHeight = UITableViewAutomaticDimension
         tableView.tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 0.01))
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: C.ViewModel.CellIdentifier.cartItemCell.rawValue)
         view.addSubview(tableView)
@@ -60,11 +63,12 @@ extension CartMinimalViewController: UITableViewDelegate, UITableViewDataSource 
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .value1, reuseIdentifier: C.ViewModel.CellIdentifier.cartItemCell.rawValue)
+        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: C.ViewModel.CellIdentifier.cartItemCell.rawValue)
         let item = cart.items[indexPath.row]
         cell.textLabel?.text = "(\(item.quantity))  " + item.item.name
         cell.textLabel?.textColor = .black
         cell.textLabel?.font = Font.gotham(size: 14)
+        cell.textLabel?.numberOfLines = 0
         cell.detailTextLabel?.text = (Double(item.quantity) * item.item.price).currencyFormat
         cell.detailTextLabel?.textColor = .gray
         cell.detailTextLabel?.font = Font.gotham(size: 14)

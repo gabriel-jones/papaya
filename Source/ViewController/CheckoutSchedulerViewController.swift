@@ -149,6 +149,7 @@ class CheckoutSchedulerViewController: UIViewController {
     private let tableView = UITableView(frame: .zero, style: .grouped)
     
     private let toolbar = UIView()
+    private let toolbarContentView = UIView()
     private let toolbarBorder = UIView()
     private let scheduleButton = LoadingButton()
     private var closeButton: UIBarButtonItem?
@@ -157,6 +158,7 @@ class CheckoutSchedulerViewController: UIViewController {
     public var isModal: Bool = false
     public var schedule: [ScheduleDay]!
     public var modalDelegate: SchedulerDelegate?
+    private var isAsap = true
     
     private let dayModel = PickerDayModel()
     private let timeModel = PickerTimeModel()
@@ -180,7 +182,6 @@ class CheckoutSchedulerViewController: UIViewController {
 //                    while t < day.closesAt {
 //                        if timeIsBetween(time: extractTimeOnly(date: selectedDate), start: extractTimeOnly(date: t)!, end: extractTimeOnly(date: Calendar.current.date(byAdding: .hour, value: 1, to: t)!)!) {
 //                            let timeIndexPath = IndexPath(row: i, section: 0)
-//                            print(timeIndexPath)
 //                            timePickerView.scrollToCell(at: timeIndexPath)
 //                            break
 //                        }
@@ -214,22 +215,24 @@ class CheckoutSchedulerViewController: UIViewController {
         toolbar.backgroundColor = UIColorFromRGB(0xf7f7f7)
         view.addSubview(toolbar)
         
+        toolbar.addSubview(toolbarContentView)
+        
         tableView.backgroundColor = .clear
         tableView.delegate = self
         tableView.dataSource = self
         tableView.showsVerticalScrollIndicator = false
-        tableView.bounces = false
+        tableView.alwaysBounceVertical = true
         view.addSubview(tableView)
         
         toolbarBorder.backgroundColor = UIColor(red: 0.796, green: 0.796, blue: 0.812, alpha: 1.0)
-        toolbar.addSubview(toolbarBorder)
+        toolbarContentView.addSubview(toolbarBorder)
         
         scheduleButton.backgroundColor = UIColor(named: .green)
         scheduleButton.layer.cornerRadius = 5
         scheduleButton.titleLabel?.textColor = .white
         scheduleButton.titleLabel?.font = Font.gotham(size: 17)
         scheduleButton.addTarget(self, action: #selector(schedule(_:)), for: .touchUpInside)
-        toolbar.addSubview(scheduleButton)
+        toolbarContentView.addSubview(scheduleButton)
         
         if isModal {
             closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Close").tintable, style: .done, target: self, action: #selector(close(_:)))
@@ -253,6 +256,10 @@ class CheckoutSchedulerViewController: UIViewController {
     }
     
     private func setButton(to date: Date) {
+        if isAsap {
+            scheduleButton.setTitle("Schedule for ASAP", for: .normal)
+            return
+        }
         let formatter = DateFormatter()
         formatter.dateFormat = "EEEE"
         scheduleButton.setTitle("Schedule for \(formatter.string(from: date))", for: .normal)
@@ -297,34 +304,57 @@ class CheckoutSchedulerViewController: UIViewController {
     
     @objc private func schedule(_ sender: LoadingButton) {
         sender.showLoading()
-        checkout.orderDate = self.selectedDate
-        Request.shared.updateCheckout(orderDate: selectedDate) { result in
-            sender.hideLoading()
-            switch result {
-            case .success(_):
-                print("success in update")
-                if self.isModal {
-                    print("is modalll")
-                    self.modalDelegate?.didUpdateCheckout(new: self.checkout)
-                    self.navigationController?.dismiss(animated: true, completion: nil)
-                    return
-                }
-                self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .done, target: self, action: nil)
-                let vc = CheckoutViewController()
-                vc.checkout = self.checkout
-                vc.schedule = self.schedule
-                self.navigationController?.pushViewController(vc, animated: true)
-            case .failure(let error):
-                print(error.localizedDescription)
+        Request.shared.updateCheckout(isAsap: isAsap) { result in
+            if result.value == nil {
                 self.showError(message: "Cannot schedule order. Please check your connection and try again.")
+                return
+            }
+            if !self.isAsap {
+                self.checkout.startDate = self.selectedDate
+                Request.shared.updateCheckout(startDate: self.selectedDate, endDate: self.selectedDate.addingTimeInterval(60 * 60)) { result in
+                    sender.hideLoading()
+                    switch result {
+                    case .success(_):
+                        if self.isModal {
+                            self.modalDelegate?.didUpdateCheckout(new: self.checkout)
+                            self.navigationController?.dismiss(animated: true, completion: nil)
+                            return
+                        }
+                        self.next()
+                    case .failure(_):
+                        self.showMessage("Can't schedule order", type: .error, options: [
+                            .autoHide(true),
+                            .hideOnTap(true)
+                        ])
+                    }
+                }
+            } else {
+                sender.hideLoading()
+                self.next()
             }
         }
+    }
+    
+    func next() {
+        self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .done, target: self, action: nil)
+        let vc = CheckoutViewController()
+        vc.checkout = self.checkout
+        vc.schedule = self.schedule
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
     private func buildConstraints() {
         toolbar.snp.makeConstraints { make in
             make.left.right.bottom.equalToSuperview()
-            make.height.equalTo(60)
+        }
+        
+        toolbarContentView.snp.makeConstraints { make in
+            make.left.right.top.equalToSuperview()
+            if #available(iOS 11, *) {
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide)
+            } else {
+                make.bottom.equalToSuperview()
+            }
         }
         
         toolbarBorder.snp.makeConstraints { make in
@@ -334,12 +364,22 @@ class CheckoutSchedulerViewController: UIViewController {
         
         scheduleButton.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(8)
+            make.height.equalTo(49)
         }
         
         tableView.snp.makeConstraints { make in
             make.left.right.top.equalToSuperview()
             make.bottom.equalTo(toolbar.snp.top)
         }
+    }
+    
+    @objc private func asapChanged(_ sender: UISwitch) {
+        if !User.current!.isExpress {
+            sender.isOn = true
+        }
+        isAsap = sender.isOn
+        tableView.reloadData()
+        self.setButton(to: self.selectedDate)
     }
 }
 
@@ -364,11 +404,51 @@ extension CheckoutSchedulerViewController: PickerDayDelegate {
 }
 
 extension CheckoutSchedulerViewController: UITableViewDelegate, UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        if isAsap {
+            return 1
+        }
+        return 2
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == 0 {
+            return User.current!.isExpress ? 1 : 2
+        }
         return 2
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.section == 0 {
+            if indexPath.row == 0 {
+                let cell = UITableViewCell(style: .value1, reuseIdentifier: "asapCell")
+                cell.selectionStyle = .none
+                cell.backgroundColor = .white
+                cell.separatorInset.left = 0
+                
+                cell.textLabel?.text = "ASAP"
+                cell.textLabel?.font = Font.gotham(size: cell.textLabel!.font.pointSize)
+                
+                let switchView = UISwitch()
+                switchView.isOn = isAsap
+                switchView.addTarget(self, action: #selector(asapChanged(_:)), for: .valueChanged)
+                switchView.isUserInteractionEnabled = User.current!.isExpress
+                cell.accessoryView = switchView
+                return cell
+            } else {
+                let cell = UITableViewCell(style: .value1, reuseIdentifier: "expressCell")
+                cell.selectionStyle = .gray
+                cell.backgroundColor = .white
+                cell.separatorInset.left = 0
+                
+                cell.textLabel?.text = "Unlock Express"
+                cell.textLabel?.font = Font.gotham(size: cell.textLabel!.font.pointSize)
+                
+                cell.accessoryType = .disclosureIndicator
+                return cell
+            }
+        }
+        
         let cell = UITableViewCell(style: .default, reuseIdentifier: "cell")
         switch indexPath.row {
         case 0:
@@ -406,11 +486,21 @@ extension CheckoutSchedulerViewController: UITableViewDelegate, UITableViewDataS
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section == 0 && indexPath.row == 1 {
+            tableView.deselectRow(at: indexPath, animated: true)
+            present(ExpressViewController(), animated: true, completion: nil)
+        }
+    }
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableViewAutomaticDimension
     }
     
     func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        if section == 0 {
+            return User.current!.isExpress ? nil : "Scheduled orders are only available to Express members."
+        }
         if isModal {
             return nil
         }
@@ -418,6 +508,9 @@ extension CheckoutSchedulerViewController: UITableViewDelegate, UITableViewDataS
     }
     
     func tableView(_ tableView: UITableView, willDisplayFooterView view: UIView, forSection section: Int) {
+        if section == 0 {
+            return
+        }
         if let v = view as? UITableViewHeaderFooterView {
             v.textLabel?.font = Font.gotham(size: 16)
             v.textLabel?.textAlignment = .center

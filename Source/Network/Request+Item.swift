@@ -21,6 +21,36 @@ extension Request {
     }
     
     @discardableResult
+    public func getCartSuggestions(page: Int = 1, completion: (CompletionHandler<PaginatedResults<Item>>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.get(path: "/item/cart_suggest/\(page)") else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, parseMethod: parse.json2PaginatedItems, completion: completion)
+    }
+    
+    @discardableResult
+    public func getTodaysSpecials(page: Int = 1, completion: (CompletionHandler<PaginatedResults<Item>>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.get(path: "/item/featured/\(page)") else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, parseMethod: parse.json2PaginatedItems, completion: completion)
+    }
+    
+    @discardableResult
+    public func getRecommendedItems(page: Int = 1, completion: (CompletionHandler<PaginatedResults<Item>>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.get(path: "/item/recommended/\(page)") else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, parseMethod: parse.json2PaginatedItems, completion: completion)
+    }
+    
+    @discardableResult
     public func getCommonItems(page: Int = 1, completion: (CompletionHandler<PaginatedResults<Item>>)? = nil) -> URLSessionDataTask? {
         guard let request = URLRequest.get(path: "/item/common/\(page)") else {
             completion?(Result(error: .cannotBuildRequest))

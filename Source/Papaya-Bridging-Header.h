@@ -10,3 +10,4 @@
 
 #import <UIScrollView_InfiniteScroll/UIScrollView+InfiniteScroll.h>
 #import "UIViewController+BackButtonHandler.h"
+#import "UITextView+Placeholder.h"

@@ -41,11 +41,10 @@ extension Request {
     }
     
     @discardableResult
-    public func updateCheckout(orderDate: Date, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
-        print(orderDate)
-        print(dateTimeFormatter.string(from: orderDate))
+    public func updateCheckout(startDate: Date, endDate: Date, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
         let body = [
-            "order_time": dateTimeFormatter.string(from: orderDate)
+            "request_window_start": dateTimeFormatter.string(from: startDate),
+            "request_window_end": dateTimeFormatter.string(from: endDate)
         ]
         guard let request = URLRequest.put(path: "/checkout/update/time", body: body) else {
             completion?(Result(error: .cannotBuildRequest))
@@ -61,6 +60,19 @@ extension Request {
             "address_id": address.id
         ]
         guard let request = URLRequest.put(path: "/checkout/update/address", body: body) else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, completion: completion)
+    }
+    
+    @discardableResult
+    public func updateCheckout(paymentMethod: PaymentMethod, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
+        let body = [
+            "payment_id": paymentMethod.id
+        ]
+        guard let request = URLRequest.put(path: "/checkout/update/payment", body: body) else {
             completion?(Result(error: .cannotBuildRequest))
             return nil
         }
@@ -90,5 +102,33 @@ extension Request {
         
         return self.execute(request: request, completion: completion)
     }
+    
+    @discardableResult
+    public func buyCheckout(purchasePriority: Bool, purchaseExpress: Bool, completion: (CompletionHandler<Int>)? = nil) -> URLSessionDataTask? {
+        let body = [
+            "priority": purchasePriority,
+            "express": purchaseExpress
+        ]
+        guard let request = URLRequest.post(path: "/checkout/buy", body: body) else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, parseMethod: parse.json2OrderId, completion: completion)
+    }
+    
+    @discardableResult
+    public func updateCheckout(isAsap: Bool, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
+        let body = [
+            "is_asap": isAsap
+        ]
+        guard let request = URLRequest.put(path: "/checkout/update/asap", body: body) else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, completion: completion)
+    }
+    
 }
 

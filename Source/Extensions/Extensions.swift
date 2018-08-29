@@ -49,13 +49,13 @@ extension UIView {
         }
     }
     
-    func gradientBackground(colors: [UIColor] = [UIColorFromRGB(0x00d44d)/*UIColor(named: .green)*/, UIColor(named: .turquoise)], position: (GradientPosition, GradientPosition) = (.bottomLeft, .topRight)) {
+    func gradientBackground(colors: [UIColor] = [UIColorFromRGB(0x00d44d)/*UIColor(named: .green)*/, UIColor(named: .turquoise)], position: (GradientPosition, GradientPosition) = (.bottomLeft, .topRight), opacity: Float = 1.0) {
         let gradient = CAGradientLayer()
         gradient.frame = frame
         gradient.colors = colors.map { $0.cgColor }
         gradient.startPoint = position.0.cgPoint
         gradient.endPoint = position.1.cgPoint
-        print(gradient)
+        gradient.opacity = opacity
         layer.insertSublayer(gradient, at: 0)
     }
     

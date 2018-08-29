@@ -11,11 +11,16 @@ import SwiftyJSON
 
 class HomeViewController: ViewControllerWithCart {
     
-    private var items = [Item]()
     public var scheduleDays: [ScheduleDay]?
     public var checkout: Checkout?
     
     private let tableView = UITableView()
+    
+    var isCartPopulated: Bool {
+        get {
+            return BaseStore.cartItemCount ?? 0 != 0
+        }
+    }
         
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,21 +28,55 @@ class HomeViewController: ViewControllerWithCart {
         self.buildViews()
         self.buildConstraints()
         
-        Request.shared.getAllItemsTemp { result in
+        Request.shared.getTodaysSpecials { result in
             switch result {
             case .success(let paginatedResults):
-                if let cell = self.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? GroupTableViewCell {
+                if let cell = self.tableView.cellForRow(at: IndexPath(row: self.isCartPopulated ? 1 : 0, section: 0)) as? GroupTableViewCell {
                     cell.model?.set(new: paginatedResults.results)
                     cell.reload()
                 }
-            case .failure(let error):
-                print(error.localizedDescription)
-                self.showMessage("Can't fetch items", type: .error)
+            case .failure(_):
+                self.showMessage("Can't fetch groceries", type: .error, options: [
+                    .autoHide(false),
+                    .hideOnTap(false)
+                ])
+            }
+        }
+        
+        Request.shared.getRecommendedItems { result in
+            switch result {
+            case .success(let paginatedResults):
+                if let cell = self.tableView.cellForRow(at: IndexPath(row: self.isCartPopulated ? 2 : 1, section: 0)) as? GroupTableViewCell {
+                    cell.model?.set(new: paginatedResults.results)
+                    cell.reload()
+                }
+            case .failure(_):
+                self.showMessage("Can't fetch groceries", type: .error, options: [
+                    .autoHide(false),
+                    .hideOnTap(false)
+                ])
+            }
+        }
+        
+        if isCartPopulated {
+            Request.shared.getCartSuggestions { result in
+                switch result {
+                case .success(let paginatedResults):
+                    if let cell = self.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? GroupTableViewCell {
+                        cell.model?.set(new: paginatedResults.results)
+                        cell.reload()
+                    }
+                case .failure(_):
+                    self.showMessage("Can't fetch groceries", type: .error, options: [
+                        .autoHide(false),
+                        .hideOnTap(false)
+                    ])
+                }
             }
         }
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {        
 //        if let checkout = checkout, let scheduleDays = scheduleDays {
 //            isHeroEnabled = true
 //            let cart = CartViewController()
@@ -73,6 +112,8 @@ class HomeViewController: ViewControllerWithCart {
         isHeroEnabled = true
         view.backgroundColor = UIColor(named: .backgroundGrey)
         navigationController?.interactivePopGestureRecognizer?.delegate = self
+        navigationController?.navigationBar.tintColor = UIColor(named: .green)
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: " ", style: .done, target: self, action: nil)
 
         tableView.allowsSelection = false
         tableView.backgroundColor = .clear
@@ -112,6 +153,7 @@ class HomeViewController: ViewControllerWithCart {
     private func buildConstraints() {
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+            //TODO: if order status view then shift up to be above it
         }
     }
     
@@ -120,27 +162,27 @@ class HomeViewController: ViewControllerWithCart {
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        return isCartPopulated ? 3 : 2
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: GroupTableViewCell.identifier, for: indexPath) as! GroupTableViewCell
         cell.delegate = self
-        cell.model?.identifier = indexPath.row
-
-        switch indexPath.row {
-        case 0:
-            cell.set(title: "Today's Specials")
-            cell.register(class: ItemCollectionViewCell.classForCoder(), identifier: ItemCollectionViewCell.identifier)
-            cell.model = ItemGroupModel(items: items)
-        case 1:
-            cell.set(title: "Recommended for You")
-            cell.register(class: ItemCollectionViewCell.classForCoder(), identifier: ItemCollectionViewCell.identifier)
-            cell.model = ItemGroupModel(items: items)
-        default: break
+        
+        var rowData = [
+            ("Today's Specials", ItemCollectionViewCell.classForCoder(), ItemCollectionViewCell.identifier),
+            ("Recommended for You", ItemCollectionViewCell.classForCoder(), ItemCollectionViewCell.identifier)
+        ]
+        
+        if isCartPopulated {
+            rowData.insert(("Based on your Cart", ItemCollectionViewCell.classForCoder(), ItemCollectionViewCell.identifier), at: 0)
         }
         
+        cell.set(title: rowData[indexPath.row].0)
+        cell.register(class: rowData[indexPath.row].1, identifier: rowData[indexPath.row].2)
+        cell.model = ItemGroupModel(items: [])
         cell.model?.delegate = self
+        cell.model?.identifier = indexPath.row
         return cell
     }
     
@@ -157,16 +199,22 @@ extension HomeViewController: UIGestureRecognizerDelegate {
 
 extension HomeViewController: ViewAllDelegate {
     func viewAll(identifier: Int?) {
-        
+        let vc = ItemGroupViewController()
+        if isCartPopulated && identifier == 0 { // Based on your cart
+            vc.groupTitle = "Based on your Cart"
+            vc.items = .cartSuggestions
+        } else if (isCartPopulated && identifier == 1) || identifier == 0 { // Specials
+            vc.groupTitle = "Today's Specials"
+            vc.items = .todaysSpecials
+        } else if (isCartPopulated && identifier == 2) || identifier == 1 { // Recommended for you
+            vc.groupTitle = "Recommended for You"
+            vc.items = .recommended
+        }
+        navigationController?.pushViewController(vc, animated: true)
     }
-    
 }
 
-protocol ViewAllDelegate: class {
-    func viewAll(identifier: Int?)
-}
-
-extension UIViewController: GroupDelegateAction {
+extension HomeViewController: GroupDelegateAction {
     func open(item: Item, imageId: String) {
         let vc = ItemViewController()
         vc.item = item
@@ -177,11 +225,8 @@ extension UIViewController: GroupDelegateAction {
         nav.heroModalAnimationType = .selectBy(presenting: .auto, dismissing: .uncover(direction: .down))
         present(nav, animated: true, completion: nil)
     }
-    
-    func open(list: List, imageIds: [String]) {
-        let vc = ListDetailViewController()
-        vc.list = list
-        //vc.imageIds = imageIds
-        present(vc, animated: true, completion: nil)
-    }
+}
+
+protocol ViewAllDelegate: class {
+    func viewAll(identifier: Int?)
 }

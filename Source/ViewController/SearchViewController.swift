@@ -41,8 +41,7 @@ class SearchViewController: ViewControllerWithCart {
                 self.isLoadingPopular = false
                 self.popularModel.searches = searches
                 self.popularTableView.reloadSections(IndexSet(integer: 0), with: .fade)
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure(_):
                 self.showMessage("Can't fetch searches", type: .error)
             }
         }
@@ -51,8 +50,7 @@ class SearchViewController: ViewControllerWithCart {
             switch result {
             case .success(let searches):
                 self.recommended = searches
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure(_):
                 self.showMessage("Can't fetch searches", type: .error)
             }
         }
@@ -115,8 +113,8 @@ class SearchViewController: ViewControllerWithCart {
                         self.page += 1
                         collectionView.finishInfiniteScroll()
                     })
-                case .failure(let error):
-                    print(error.localizedDescription)
+                case .failure(_):
+                    break
                 }
             }
         }
@@ -232,8 +230,7 @@ class SearchViewController: ViewControllerWithCart {
                 self.collectionView.isUserInteractionEnabled = true
                 self.itemsModel.items = paginatedItems
                 self.collectionView.reloadData()
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure(_):
                 self.retryButton.isHidden = false
                 self.collectionView.isHidden = true
                 self.itemsModel.items = PaginatedResults(isLast: false, results: [Item]())
@@ -386,7 +383,6 @@ class SearchItemsModel: SearchModel, UICollectionViewDelegate, UICollectionViewD
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if items.isLast && items.results.isEmpty {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchEmptyCollectionViewCell.identifier, for: indexPath) as! SearchEmptyCollectionViewCell
-            print(query)
             cell.query = query
             return cell
         }

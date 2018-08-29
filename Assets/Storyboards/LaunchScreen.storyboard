@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -34,12 +33,12 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="tx6-RD-R4f" firstAttribute="centerX" secondItem="VJs-Lr-Kil" secondAttribute="centerX" id="5hR-B5-jEj"/>
-                            <constraint firstItem="tx6-RD-R4f" firstAttribute="centerY" secondItem="VJs-Lr-Kil" secondAttribute="centerY" id="5q5-E5-ZkG"/>
-                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="VJs-Lr-Kil" secondAttribute="bottom" id="ReI-st-duN"/>
-                            <constraint firstItem="VJs-Lr-Kil" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="Uha-Q1-a1N"/>
-                            <constraint firstItem="VJs-Lr-Kil" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="ceF-Iu-O6k"/>
-                            <constraint firstAttribute="trailing" secondItem="VJs-Lr-Kil" secondAttribute="trailing" id="etC-Wv-ddF"/>
+                            <constraint firstItem="VJs-Lr-Kil" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="4O2-Ux-Aje"/>
+                            <constraint firstAttribute="trailing" secondItem="VJs-Lr-Kil" secondAttribute="trailing" id="ALC-4R-pfX"/>
+                            <constraint firstAttribute="bottom" secondItem="VJs-Lr-Kil" secondAttribute="bottom" id="eYk-81-mhc"/>
+                            <constraint firstItem="tx6-RD-R4f" firstAttribute="centerY" secondItem="VJs-Lr-Kil" secondAttribute="centerY" id="g24-gT-ld7"/>
+                            <constraint firstItem="VJs-Lr-Kil" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="lwk-oo-V1V"/>
+                            <constraint firstItem="tx6-RD-R4f" firstAttribute="centerX" secondItem="VJs-Lr-Kil" secondAttribute="centerX" id="udN-1c-shu"/>
                         </constraints>
                     </view>
                 </viewController>

@@ -49,12 +49,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
             print(exception.name)
         }
         /**/
-        
-        NotificationRouter.shared.setupObservers()
-        
+                
         window = UIWindow(frame: UIScreen.main.bounds)
-        let loadingVC = LoadingViewController()
-        window?.rootViewController = loadingVC
+        let initialVC = LoadingViewController()
+        window?.rootViewController = initialVC
         window?.makeKeyAndVisible()
         return !j()
     }

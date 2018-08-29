@@ -36,7 +36,7 @@ class Stepper: UIView {
     private let valueLabel = UILabel()
     private let decreaseButton = UIButton()
     private let increaseButton = UIButton()
-    private let activityIndicator = UIActivityIndicatorView()
+    private let activityIndicator = LoadingView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -74,7 +74,8 @@ class Stepper: UIView {
         addSubview(valueLabel)
         
         activityIndicator.hidesWhenStopped = true
-        activityIndicator.activityIndicatorViewStyle = .gray
+        activityIndicator.color = .lightGray
+        activityIndicator.lineWidth = 2
         addSubview(activityIndicator)
         
         value = minimum
@@ -104,6 +105,7 @@ class Stepper: UIView {
         
         activityIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()
+            make.width.height.equalTo(20)
         }
     }
     

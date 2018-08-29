@@ -21,20 +21,23 @@ class MeViewController: ViewControllerWithCart {
         self.buildViews()
         self.buildConstraints()
         
-        Request.shared.getCommonItems { result in
+        Request.shared.getLikedItems { result in
             switch result {
             case .success(let paginatedResult):
-                self.commonItems = paginatedResult.results
+                self.favouriteItems = paginatedResult.results
                 if let cell = self.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? GroupTableViewCell {
                     cell.model?.set(new: paginatedResult.results)
                     cell.reload()
                 }
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure(_):
+                self.showMessage("Can't fetch groceries", type: .error, options: [
+                    .autoHide(false),
+                    .hideOnTap(false)
+                ])
             }
         }
         
-        Request.shared.getRecentItems { result in
+        Request.shared.getCommonItems { result in
             switch result {
             case .success(let paginatedResult):
                 self.commonItems = paginatedResult.results
@@ -42,21 +45,27 @@ class MeViewController: ViewControllerWithCart {
                     cell.model?.set(new: paginatedResult.results)
                     cell.reload()
                 }
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure(_):
+                self.showMessage("Can't fetch groceries", type: .error, options: [
+                    .autoHide(false),
+                    .hideOnTap(false)
+                ])
             }
         }
         
-        Request.shared.getLikedItems { result in
+        Request.shared.getRecentItems { result in
             switch result {
             case .success(let paginatedResult):
-                self.favouriteItems = paginatedResult.results
+                self.commonItems = paginatedResult.results
                 if let cell = self.tableView.cellForRow(at: IndexPath(row: 2, section: 0)) as? GroupTableViewCell {
                     cell.model?.set(new: paginatedResult.results)
                     cell.reload()
                 }
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure(_):
+                self.showMessage("Can't fetch groceries", type: .error, options: [
+                    .autoHide(false),
+                    .hideOnTap(false)
+                ])
             }
         }
     }
@@ -77,10 +86,6 @@ class MeViewController: ViewControllerWithCart {
         tableView.backgroundColor = .clear
         tableView.register(GroupTableViewCell.classForCoder(), forCellReuseIdentifier: C.ViewModel.CellIdentifier.listGroupCell.rawValue)
         view.addSubview(tableView)
-        
-        let settingsButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Settings"), style: .plain, target: self, action: #selector(openSettings(_:)))
-        settingsButton.tintColor = UIColor(named: .green)
-        navigationItem.leftBarButtonItem = settingsButton
     }
     
     private func buildConstraints() {
@@ -88,11 +93,18 @@ class MeViewController: ViewControllerWithCart {
             make.edges.equalToSuperview()
         }
     }
-    
-    @objc func openSettings(_ sender: UIBarButtonItem) {
-        let settingsVC = SettingsViewController()
-        let vc = UINavigationController(rootViewController: settingsVC)
-        self.present(vc, animated: true, completion: nil)
+}
+
+extension MeViewController: GroupDelegateAction {
+    func open(item: Item, imageId: String) {
+        let vc = ItemViewController()
+        vc.item = item
+        vc.imageId = imageId
+        
+        let nav = UINavigationController(rootViewController: vc)
+        nav.isHeroEnabled = true
+        nav.heroModalAnimationType = .selectBy(presenting: .auto, dismissing: .uncover(direction: .down))
+        present(nav, animated: true, completion: nil)
     }
 }
 
@@ -105,22 +117,16 @@ extension MeViewController: UITableViewDataSource, UITableViewDelegate {
         let cell = tableView.dequeueReusableCell(withIdentifier: C.ViewModel.CellIdentifier.listGroupCell.rawValue, for: indexPath) as! GroupTableViewCell
         cell.delegate = self
         switch indexPath.row {
-            /*
         case 0:
-            cell.set(title: "Lists")
-            cell.register(class: ListCollectionViewCell.classForCoder(), identifier: ListCollectionViewCell.identifier)
-            cell.model = ListGroupModel(lists: self.lists)
-             */
-        case 0:
-            cell.set(title: "Commonly ordered")
+            cell.set(title: "Liked")
             cell.register(class: ItemCollectionViewCell.classForCoder(), identifier: ItemCollectionViewCell.identifier)
             cell.model = ItemGroupModel(items: self.favouriteItems)
         case 1:
-            cell.set(title: "Recently ordered")
+            cell.set(title: "Commonly ordered")
             cell.register(class: ItemCollectionViewCell.classForCoder(), identifier: ItemCollectionViewCell.identifier)
             cell.model = ItemGroupModel(items: self.favouriteItems)
         case 2:
-            cell.set(title: "Liked")
+            cell.set(title: "Recently ordered")
             cell.register(class: ItemCollectionViewCell.classForCoder(), identifier: ItemCollectionViewCell.identifier)
             cell.model = ItemGroupModel(items: self.favouriteItems)
         default: break
@@ -145,7 +151,7 @@ extension MeViewController: ViewAllDelegate {
     func viewAll(identifier: Int?) {
         if let identifier = identifier {
             let vc = ItemGroupViewController()
-            vc.groupTitle = ["Commonly ordered", "Recently ordered", "Liked"][identifier]
+            vc.groupTitle = ["Liked", "Commonly ordered", "Recently ordered"][identifier]
             vc.items = [.common, .recent, .liked][identifier]
             navigationController?.pushViewController(vc, animated: true)
         }

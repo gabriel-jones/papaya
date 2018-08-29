@@ -320,16 +320,18 @@ class SignupViewController: UIViewController {
             return
         }
         
+        // E.164
+        
         var phoneNumber = ""
         do {
-            let pn = try phoneNumberKit.parse(phone, withRegion: "BM", ignoreType: true)
-            phoneNumber = String(pn.nationalNumber)
+            let pn = try phoneNumberKit.parse(phone, withRegion: "BM")
+            phoneNumber = phoneNumberKit.format(pn, toType: .e164)
         }
         catch {
             phone = "(441) " + phone
             do {
-                let pn = try phoneNumberKit.parse(phone, withRegion: "BM", ignoreType: true)
-                phoneNumber = String(pn.nationalNumber)
+                let pn = try phoneNumberKit.parse(phone, withRegion: "BM")
+                phoneNumber = phoneNumberKit.format(pn, toType: .e164)
             } catch {
                 showSignupError(message: "Invalid phone number.")
                 sender.hideLoading()
@@ -385,6 +387,7 @@ extension SignupViewController: UITextFieldDelegate {
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
+        didScrollUp = false
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
             if view.frame.origin.y == 0 {
                 if let active = activeTextField {

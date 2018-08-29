@@ -42,13 +42,13 @@ import UIKit
             setSelectedColors()
         }
     }
-    
-    @IBInspectable var borderColor: UIColor = .white {
+    /*
+    @IBInspectable var borderColor: UIColor? = .white {
         didSet {
             layer.borderColor = borderColor.cgColor
             layer.cornerRadius = frame.height / 2
         }
-    }
+    }*/
     
     @IBInspectable var font : UIFont! = UIFont.systemFont(ofSize: 12) {
         didSet {

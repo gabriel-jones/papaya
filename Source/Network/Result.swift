@@ -64,7 +64,7 @@ enum Result<A> {
     
     public var error: RequestError? {
         switch self {
-        case .failure(let error):
+        case .failure(_):
             return error
         default:
             return nil

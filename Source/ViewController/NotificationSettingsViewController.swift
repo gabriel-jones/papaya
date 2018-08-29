@@ -11,7 +11,7 @@ import UIKit
 class NotificationSettingsViewController: UIViewController {
     
     private let tableView = UITableView(frame: .zero, style: .grouped)
-    private let activityIndicator = UIActivityIndicatorView()
+    private let activityIndicator = LoadingView()
     private let retryButton = UIButton()
     
     private var model = [NotificationSettingGroup]()
@@ -29,8 +29,7 @@ class NotificationSettingsViewController: UIViewController {
                 self.model = notificationSettings
                 self.tableView.isHidden = false
                 self.tableView.reloadData()
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure(_):
                 self.retryButton.isHidden = false
                 self.showMessage("Can't load notification settings", type: .error, options: [
                     .autoHide(false),
@@ -57,8 +56,7 @@ class NotificationSettingsViewController: UIViewController {
         tableView.backgroundColor = .clear
         view.addSubview(tableView)
         
-        activityIndicator.activityIndicatorViewStyle = .gray
-        activityIndicator.hidesWhenStopped = true
+        activityIndicator.color = .lightGray
         view.addSubview(activityIndicator)
         
         retryButton.setTitle("Retry", for: .normal)
@@ -79,6 +77,7 @@ class NotificationSettingsViewController: UIViewController {
         
         activityIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()
+            make.width.height.equalTo(35)
         }
         
         retryButton.snp.makeConstraints { make in

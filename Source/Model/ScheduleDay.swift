@@ -17,9 +17,6 @@ struct ScheduleDay: BaseObject {
     public let closesAt: Date
     
     init?(dict: JSON) {
-        print(dict)
-        print(dateFormatter.date(from: "2018-04-08"))
-        print(timeFormatter.date(from: "17:00:00"))
         guard
             let _dateString = dict["date"].string,
             let _isOpen = dict["is_open"].bool,

@@ -10,6 +10,15 @@ import Foundation
 import SwiftyJSON
 
 extension URLRequest {
+    var papayaDescription: String {
+        get {
+            var str = self.httpMethod! + " \(self.url!.path)"
+            if let body = self.httpBody {
+                str += " \(JSON(body))"
+            }
+            return str
+        }
+    }
     
     mutating func setAuthorisation(token: String) {
         self.setValue("Bearer " + token, forHTTPHeaderField: "Authorization")

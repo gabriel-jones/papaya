@@ -18,7 +18,7 @@ class SpecialCategoryViewController: ViewControllerWithCart {
     private let group = DispatchGroup()
 
     private var collectionView: UICollectionView!
-    private let activityIndicator = UIActivityIndicatorView()
+    private let activityIndicator = LoadingView()
     private let retryButton = UIButton()
     
     @objc private func loadCategory() {
@@ -30,7 +30,7 @@ class SpecialCategoryViewController: ViewControllerWithCart {
             switch result {
             case .success(let club):
                 
-            case .failure(let error):
+            case .failure(_):
                 
             }
         }*/
@@ -47,8 +47,7 @@ class SpecialCategoryViewController: ViewControllerWithCart {
                 self.collectionView.reloadData()
                 self.collectionView.isUserInteractionEnabled = true
                 self.hideMessage()
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure(_):
                 self.retryButton.isHidden = false
                 self.showMessage("Can't fetch department", type: .error, options: [
                     .autoHide(false),
@@ -87,15 +86,14 @@ class SpecialCategoryViewController: ViewControllerWithCart {
         view.addSubview(collectionView)
         
         collectionView.addInfiniteScroll { [unowned self] collectionView in
-            print("load next page")
+            //TODO:
         }
         
         collectionView.setShouldShowInfiniteScrollHandler { [unowned self] _ -> Bool in
             return !self.items.isLast
         }
         
-        activityIndicator.activityIndicatorViewStyle = .gray
-        activityIndicator.hidesWhenStopped = true
+        activityIndicator.color = .lightGray
         view.addSubview(activityIndicator)
         
         retryButton.setTitle("Retry", for: .normal)
@@ -116,6 +114,7 @@ class SpecialCategoryViewController: ViewControllerWithCart {
         
         activityIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()
+            make.width.height.equalTo(35)
         }
         
         retryButton.snp.makeConstraints { make in

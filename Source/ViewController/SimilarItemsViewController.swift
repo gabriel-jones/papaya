@@ -30,13 +30,16 @@ class SimilarItemsViewController: UIViewController {
     }
     
     func loadSimilarForItem() {
-        Request.shared.getAllItemsTemp() { result in
+        Request.shared.getSimilarItems(toItem: itemToCompare) { result in
             switch result {
             case .success(let paginatedResults):
                 self.items = paginatedResults
                 self.collectionView.reloadData()
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure(_):
+                self.showMessage("Can't fetch similar items", type: .error, options: [
+                    .autoHide(false),
+                    .hideOnTap(false)
+                ])
             }
         }
     }
@@ -47,8 +50,11 @@ class SimilarItemsViewController: UIViewController {
             case .success(let items):
                 self.items = items
                 self.collectionView.reloadData()
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure(_):
+                self.showMessage("Can't fetch search results", type: .error, options: [
+                    .autoHide(false),
+                    .hideOnTap(false)
+                ])
             }
         }
     }

@@ -9,11 +9,12 @@
 import UIKit
 import JVFloatLabeledTextField
 import PhoneNumberKit
+import GSMessages
 
 class AccountSettingsViewController: UIViewController {
     
     private let tableView = UITableView(frame: .zero, style: .grouped)
-    private let activityIndicator = UIActivityIndicatorView()
+    private let activityIndicator = LoadingView()
     private let retryButton = UIButton()
     private var activeTextField: UITextField?
     
@@ -35,10 +36,9 @@ class AccountSettingsViewController: UIViewController {
                 self.user = user
                 self.tableView.isHidden = false
                 self.tableView.reloadData()
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure(_):
                 self.retryButton.isHidden = false
-                self.showMessage("Cannot fetch account settings", type: .error, options: [
+                self.showMessage("Can't fetch account settings", type: .error, options: [
                     .autoHide(false),
                     .hideOnTap(false)
                 ])
@@ -76,8 +76,7 @@ class AccountSettingsViewController: UIViewController {
         tableView.register(SettingsButtonTableViewCell.classForCoder(), forCellReuseIdentifier: SettingsButtonTableViewCell.identifier)
         view.addSubview(tableView)
         
-        activityIndicator.activityIndicatorViewStyle = .gray
-        activityIndicator.hidesWhenStopped = true
+        activityIndicator.color = .lightGray
         view.addSubview(activityIndicator)
         
         retryButton.setTitle("Retry", for: .normal)
@@ -98,6 +97,7 @@ class AccountSettingsViewController: UIViewController {
         
         activityIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()
+            make.width.height.equalTo(35)
         }
         
         retryButton.snp.makeConstraints { make in
@@ -107,7 +107,7 @@ class AccountSettingsViewController: UIViewController {
     }
     
     private func getValueForCell(at: Int) -> String? {
-        return (tableView.cellForRow(at: IndexPath(row: at, section: 0)) as? SettingsInputTableViewCell)?.textField.text
+        return (tableView.cellForRow(at: IndexPath(row: at, section: user?.isValidated ?? false ? 0 : 1)) as? SettingsInputTableViewCell)?.textField.text
     }
     
     func showError(message: String) {
@@ -177,14 +177,44 @@ class AccountSettingsViewController: UIViewController {
             }
         }
     }
+    
+    @objc private func confirmEmail(_ sender: LoadingButton) {
+        sender.showLoading()
+        Request.shared.resendConfirmationEmail { result in
+            sender.hideLoading()
+            if result.error != nil {
+                self.showMessage("Can't resend confirmation email.", type: .error)
+            } else {
+                self.showMessage("Confirmation email sent to \(self.user!.email)!", type: .success)
+            }
+        }
+    }
 }
 
 extension AccountSettingsViewController: UITableViewDelegate, UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return user?.isValidated ?? false ? 1 : 2
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return user == nil ? 0 : 4
+        return user == nil ? 0 : (!user!.isValidated && section == 0 ? 1 : 4)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.section == 0 && !user!.isValidated {
+            let cell = UITableViewCell(style: .default, reuseIdentifier: "confirmEmailCell")
+            let button = LoadingButton()
+            button.setTitle("Resend Confirmation Email", for: .normal)
+            button.setTitleColor(UIColor(named: .green), for: .normal)
+            button.titleLabel?.font = Font.gotham(size: 15)
+            button.addTarget(self, action: #selector(confirmEmail(_:)), for: .touchUpInside)
+            cell.addSubview(button)
+            button.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+            return cell
+        }
+        
         switch indexPath.row {
         case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: SettingsInputTableViewCell.identifier, for: indexPath) as! SettingsInputTableViewCell
@@ -236,10 +266,13 @@ extension AccountSettingsViewController: UITableViewDelegate, UITableViewDataSou
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 60
+        return section == 0 && !(user?.isValidated ?? true) ? 0 : 60
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        if section == 0 && !(user?.isValidated ?? true) {
+            return nil
+        }
         let container = UIView()
         
         let button = LoadingButton()

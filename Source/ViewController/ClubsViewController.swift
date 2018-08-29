@@ -127,7 +127,7 @@ class ClubsViewController: ViewControllerWithCart {
     private var clubs = [Club]()
     
     private var collectionView: UICollectionView!
-    private let activityIndicator = UIActivityIndicatorView()
+    private let activityIndicator = LoadingView()
     private let retryButton = UIButton()
     
     override func viewDidLoad() {
@@ -150,8 +150,7 @@ class ClubsViewController: ViewControllerWithCart {
                 self.collectionView.isHidden = false
                 self.collectionView.reloadData()
                 self.hideMessage()
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure(_):
                 self.retryButton.isHidden = false
                 self.showMessage("Can't fetch clubs", type: .error, options: [
                     .autoHide(false),
@@ -181,8 +180,7 @@ class ClubsViewController: ViewControllerWithCart {
         collectionView.alwaysBounceVertical = true
         view.addSubview(collectionView)
         
-        activityIndicator.activityIndicatorViewStyle = .gray
-        activityIndicator.hidesWhenStopped = true
+        activityIndicator.color = .lightGray
         view.addSubview(activityIndicator)
         
         retryButton.setTitle("Retry", for: .normal)
@@ -203,6 +201,7 @@ class ClubsViewController: ViewControllerWithCart {
         
         activityIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()
+            make.width.height.equalTo(35)
         }
         
         retryButton.snp.makeConstraints { make in
@@ -230,7 +229,9 @@ extension ClubsViewController: UICollectionViewDelegate, UICollectionViewDataSou
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
+        let vc = ClubViewController()
+        vc.club = clubs[indexPath.row]
+        present(vc, animated: true, completion: nil)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

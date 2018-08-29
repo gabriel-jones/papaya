@@ -16,6 +16,9 @@ enum ItemGroupRequestType {
     case of(category: Category)
     case featured(from: Category)
     case similar(to: Item)
+    case cartSuggestions
+    case todaysSpecials
+    case recommended
 }
 
 class ItemGroupViewController: ViewControllerWithCart {
@@ -30,7 +33,6 @@ class ItemGroupViewController: ViewControllerWithCart {
     private var collectionView: UICollectionView!
     private let sectionBar = UIView()
     private let bottomBorder = UIView()
-    private let activityIndicator = UIActivityIndicatorView()
     private let retryButton = UIButton()
     
     override func viewDidLoad() {
@@ -54,6 +56,12 @@ class ItemGroupViewController: ViewControllerWithCart {
             Request.shared.getSimilarItems(toItem: item, page: page, completion: completion)
         case .featured(let category):
             Request.shared.getFeaturedItems(forCategory: category, page: page, completion: completion)
+        case .cartSuggestions:
+            Request.shared.getCartSuggestions(page: page, completion: completion)
+        case .todaysSpecials:
+            Request.shared.getTodaysSpecials(page: page, completion: completion)
+        case .recommended:
+            Request.shared.getRecommendedItems(page: page, completion: completion)
         }
     }
     
@@ -62,6 +70,9 @@ class ItemGroupViewController: ViewControllerWithCart {
         view.backgroundColor = UIColor(named: .backgroundGrey)
         navigationItem.title = groupTitle
         navigationController?.interactivePopGestureRecognizer?.delegate = self
+        
+        navigationItem.leftBarButtonItem = nil
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: " ", style: .done, target: self, action: nil)
 
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -109,8 +120,7 @@ class ItemGroupViewController: ViewControllerWithCart {
                 self.hideMessage()
                 completion(paginatedResults, nil)
             case .failure(let error):
-                print(error.localizedDescription)
-                self.showMessage("Can't fetch items", type: .error, options: [
+                self.showMessage("Can't fetch groceries", type: .error, options: [
                     .autoHide(false),
                     .hideOnTap(false)
                 ])

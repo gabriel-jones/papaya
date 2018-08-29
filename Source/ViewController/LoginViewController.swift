@@ -33,6 +33,15 @@ class LoginViewController: UIViewController {
         self.buildConstraints()
     }
     
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        view.endEditing(true)
+    }
+    
     private func buildViews() {
         view.gradientBackground()
         
@@ -196,19 +205,17 @@ class LoginViewController: UIViewController {
         }
         
         Request.shared.login(email: email, password: password) { result in
-            print("Login result: \(result)")
             sender.hideLoading()
             switch result {
             case .success(let user):
                 self.navigationController?.dismiss(animated: true, completion: nil)
             case .failure(let error):
-                switch error as? RequestError {
-                case .userNotFound?: // Email incorrect
+                switch error {
+                case .userNotFound: // Email incorrect
                     self.showLoginError(message: "Incorrect email")
-                case .unauthorised?: // Password incorrect
+                case .unauthorised: // Password incorrect
                     self.showLoginError(message: "Incorrect password")
                 default: // Generic error
-                    print(error)
                     self.showLoginError(message: "An error occurred")
                 }
             }
@@ -235,8 +242,8 @@ class LoginViewController: UIViewController {
                 self.present(alert, animated: true, completion: nil)
             case .failure(let error):
                 var alert: UIAlertController!
-                switch error as? RequestError {
-                case .userNotFound?:
+                switch error {
+                case .userNotFound:
                     alert = UIAlertController(title: "Invalid email", message: "That email doesn't belong to any user account.", preferredStyle: .alert)
                 default:
                     alert = UIAlertController(title: "There was an error", message: "Please try again.", preferredStyle: .alert)

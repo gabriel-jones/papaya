@@ -17,9 +17,9 @@ class AddressListViewController: UIViewController {
     
     private let tableView = UITableView(frame: .zero, style: .grouped)
     private var addButton: UIBarButtonItem!
-    private let refreshControl = UIRefreshControl()
     private var closeButton: UIBarButtonItem?
     private let retryButton = UIButton()
+    private let activityIndicator = LoadingView()
     
     private var addresses = [Address]()
     private var isLoading = true
@@ -36,6 +36,7 @@ class AddressListViewController: UIViewController {
     
     @objc private func add(_ sender: UIBarButtonItem?) {
         let vc = AddressDetailViewController()
+        vc.delegate = self
         let nav = UINavigationController(rootViewController: vc)
         present(nav, animated: true, completion: nil)
     }
@@ -43,18 +44,17 @@ class AddressListViewController: UIViewController {
     @objc private func loadAddresses() {
         isLoading = true
         retryButton.isHidden = true
-        
+        activityIndicator.startAnimating()
         Request.shared.getAllAddresses { result in
             self.isLoading = false
-            self.refreshControl.endRefreshing()
+            self.activityIndicator.stopAnimating()
             switch result {
             case .success(let addresses):
                 self.hideMessage()
                 self.addresses = addresses
                 self.tableView.isHidden = false
                 self.tableView.reloadData()
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure(_):
                 self.retryButton.isHidden = false
                 self.showMessage("Can't fetch addresses", type: .error, options: [
                     .autoHide(false),
@@ -65,7 +65,6 @@ class AddressListViewController: UIViewController {
     }
     
     private func initialLoad() {
-        refreshControl.beginRefreshing()
         tableView.isHidden = true
         self.loadAddresses()
     }
@@ -89,8 +88,8 @@ class AddressListViewController: UIViewController {
         tableView.register(EmptyTableViewCell.classForCoder(), forCellReuseIdentifier: EmptyTableViewCell.identifier)
         view.addSubview(tableView)
 
-        refreshControl.addTarget(self, action: #selector(refreshTable), for: .valueChanged)
-        tableView.addSubview(refreshControl)
+        activityIndicator.color = .gray
+        view.addSubview(activityIndicator)
         
         retryButton.setTitle("Retry", for: .normal)
         retryButton.setImage(#imageLiteral(resourceName: "Replace").tintable, for: .normal)
@@ -124,6 +123,11 @@ class AddressListViewController: UIViewController {
             make.edges.equalToSuperview()
         }
         
+        activityIndicator.snp.makeConstraints { make in
+            make.width.height.equalTo(35)
+            make.center.equalToSuperview()
+        }
+        
         retryButton.snp.makeConstraints { make in
             make.width.height.equalTo(50)
             make.center.equalToSuperview()
@@ -139,7 +143,7 @@ extension AddressListViewController: UITableViewDelegate, UITableViewDataSource 
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if addresses.isEmpty {
-            tableView.separatorColor = .clear
+            tableView.separatorStyle = .none
             let cell = tableView.dequeueReusableCell(withIdentifier: EmptyTableViewCell.identifier, for: indexPath) as! EmptyTableViewCell
             cell.buttonText = "Add an address"
             cell.emptyText = "You have no saved addresses."
@@ -147,6 +151,7 @@ extension AddressListViewController: UITableViewDelegate, UITableViewDataSource 
             cell.delegate = self
             return cell
         }
+        tableView.separatorStyle = .singleLine
         let address = addresses[indexPath.row]
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: C.ViewModel.CellIdentifier.addressCell.rawValue)
         cell.textLabel?.text = address.street
@@ -180,7 +185,18 @@ extension AddressListViewController: UITableViewDelegate, UITableViewDataSource 
         
         let vc = AddressDetailViewController()
         vc.address = address
+        vc.delegate = self
         navigationController?.pushViewController(vc, animated: true)
+    }
+}
+
+protocol AddressListDelegate: class {
+    func refresh()
+}
+
+extension AddressListViewController: AddressListDelegate {
+    func refresh() {
+        self.loadAddresses()
     }
 }
 

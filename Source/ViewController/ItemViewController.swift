@@ -33,11 +33,13 @@ class ItemViewController: UIViewController {
     
     private var isLoading = true
     
-    private let activityIndicator = UIActivityIndicatorView()
+    private let activityIndicator = LoadingView()
     private var closeButton: UIBarButtonItem!
     private var shareButton: UIBarButtonItem!
     private let tableView = UITableView()
+    
     private let toolbar = UIView()
+    private let toolbarContentView = UIView()
     private let toolbarBorder = UIView()
     private let addToCart = LoadingButton()
     private let stepper = Stepper()
@@ -45,8 +47,10 @@ class ItemViewController: UIViewController {
     private var isLiked: Bool?
     private var isInCart: Bool?
     private var numberInCart: Int?
-    private var items = [Item]()
     private var disclaimer: String?
+    
+    private var similarItems = [Item]()
+    private var featuredItems = [Item]()
     
     //MARK: - Methods
     override func viewDidLoad() {
@@ -61,20 +65,26 @@ class ItemViewController: UIViewController {
         group.enter()
         Request.shared.getDetail(item: self.item!) { result in
             if case .success(let detail) = result {
-                print("got detail, \(detail)")
                 self.isLiked = detail["item"]["is_liked"].bool
                 self.isInCart = detail["item"]["in_cart"].bool
                 self.numberInCart = detail["item"]["number_in_cart"].int
                 self.disclaimer = detail["item"]["disclaimer"].string
-                
             }
             group.leave()
         }
         
         group.enter()
-        Request.shared.getAllItemsTemp() { result in
+        Request.shared.getSimilarItems(toItem: self.item!) { result in
             if case .success(let paginatedResult) = result {
-                self.items = paginatedResult.results
+                self.similarItems = paginatedResult.results
+            }
+            group.leave()
+        }
+        
+        group.enter()
+        Request.shared.getFeaturedItems(forCategory: self.item!.category!) { result in
+            if case .success(let paginatedResult) = result {
+                self.featuredItems = paginatedResult.results
             }
             group.leave()
         }
@@ -99,6 +109,13 @@ class ItemViewController: UIViewController {
         if let n = numberInCart, n > 0 {
             stepper.value = n
         }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        let isPastTop = tableView.contentOffset.y > 0
+        self.navigationController?.navigationBar.shadowImage = isPastTop ? nil : UIImage()
+        self.navigationController?.navigationBar.setBackgroundImage(isPastTop ? nil : UIImage(), for: .default)
+        self.navigationItem.title = isPastTop ? self.item?.name : nil
     }
     
     private func buildViews() {
@@ -136,9 +153,11 @@ class ItemViewController: UIViewController {
         toolbar.backgroundColor = UIColorFromRGB(0xf7f7f7)
         view.addSubview(toolbar)
         
+        toolbar.addSubview(toolbarContentView)
+        
         // Toolbar border
         toolbarBorder.backgroundColor = UIColor(red: 0.796, green: 0.796, blue: 0.812, alpha: 1.0)
-        toolbar.addSubview(toolbarBorder)
+        toolbarContentView.addSubview(toolbarBorder)
         
         // Add to cart
         addToCart.backgroundColor = UIColor(named: .green)
@@ -146,22 +165,30 @@ class ItemViewController: UIViewController {
         addToCart.titleLabel?.textColor = .white
         addToCart.titleLabel?.font = Font.gotham(size: 17)
         addToCart.addTarget(self, action: #selector(addToCart(_:)), for: .touchUpInside)
-        toolbar.addSubview(addToCart)
+        toolbarContentView.addSubview(addToCart)
         
         stepper.backgroundColor = .white
         stepper.delegate = self
         stepper.shouldDelete = false
-        toolbar.addSubview(stepper)
+        toolbarContentView.addSubview(stepper)
         
-        activityIndicator.hidesWhenStopped = true
-        activityIndicator.activityIndicatorViewStyle = .gray
+        activityIndicator.lineWidth = 3
+        activityIndicator.color = .lightGray
         DispatchQueue.main.async { self.activityIndicator.startAnimating() }
     }
     
     private func buildConstraints() {
         toolbar.snp.makeConstraints { make in
-            make.bottom.right.left.equalToSuperview()
-            make.height.equalTo(60)
+            make.right.left.bottom.equalToSuperview()
+        }
+        
+        toolbarContentView.snp.makeConstraints { make in
+            make.top.right.left.equalToSuperview()
+            if #available(iOS 11, *) {
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide)
+            } else {
+                make.bottom.equalToSuperview()
+            }
         }
         
         toolbarBorder.snp.makeConstraints { make in
@@ -174,6 +201,7 @@ class ItemViewController: UIViewController {
             make.top.equalTo(8)
             make.bottom.equalTo(-8)
             make.width.equalToSuperview().multipliedBy(0.5).offset(-8)
+            make.height.equalTo(44)
         }
         
         tableView.snp.makeConstraints { make in
@@ -221,6 +249,18 @@ class ItemViewController: UIViewController {
         activity.popoverPresentationController?.sourceView = self.view
         activity.excludedActivityTypes = [.airDrop]
         present(activity, animated: true, completion: nil)
+    }
+}
+
+extension ItemViewController: GroupDelegateAction {
+    func open(item: Item, imageId: String) {
+        if item.id == self.item!.id {
+            return
+        }
+        let vc = ItemViewController()
+        vc.item = item
+        vc.isOnNavigationStack = true
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
 
@@ -279,12 +319,12 @@ extension ItemViewController: ItemActionDelegate {
     }
     
     internal func addToList() {
-        let vc = ListListViewController()
+        /*let vc = ListListViewController()
         vc.isModal = true
         vc.delegate = self
         let nav = UINavigationController(rootViewController: vc)
         nav.navigationBar.tintColor = UIColor(named: .green)
-        present(nav, animated: true, completion: nil)
+        present(nav, animated: true, completion: nil)*/
     }
     
     internal func addInstructions() {
@@ -298,15 +338,15 @@ extension ItemViewController: ItemActionDelegate {
 
 extension ItemViewController: InstructionsViewControllerDelegate {
     func didMakeChanges(toCartItem: CartItem) {
-        print("made changes")
+        //TODO: something here
     }
 }
 
-extension ItemViewController: ListModalDelegate {
+/*extension ItemViewController: ListModalDelegate {
     func chose(list: List) {
         Request.shared.addToList(item: self.item!)
     }
-}
+}*/
 
 protocol ItemActionDelegate {
     func set(liked: Bool)
@@ -316,9 +356,17 @@ protocol ItemActionDelegate {
 
 extension ItemViewController: ViewAllDelegate {
     internal func viewAll(identifier: Int?) {
+        guard let id = identifier else {
+            return
+        }
         let vc = ItemGroupViewController()
-        vc.items = .similar(to: item!)
-        vc.groupTitle = "Similar to \(item!.name)"
+        if id == 3 { // Featured Items
+            vc.items = ItemGroupRequestType.featured(from: self.item!.category!)
+            vc.groupTitle = "Featured from \(self.item!.category!.name)"
+        } else { // Similar Items
+            vc.items = .similar(to: item!)
+            vc.groupTitle = "Similar to \(item!.name)"
+        }
         navigationController?.pushViewController(vc, animated: true)
     }
 }
@@ -374,13 +422,14 @@ extension ItemViewController: UITableViewDelegate, UITableViewDataSource {
             return cell
         } else if indexPath.row == 2 || indexPath.row == 3 {
             let cell = tableView.dequeueReusableCell(withIdentifier: GroupTableViewCell.identifier, for: indexPath) as! GroupTableViewCell
-            cell.set(title: "Similar Items")
+            cell.set(title: indexPath.row == 2 ? "Similar" : "Featured")
             cell.register(class: ItemCollectionViewCell.self, identifier: ItemCollectionViewCell.identifier)
             cell.delegate = self
             cell.backgroundColor = UIColor(named: .backgroundGrey)
             cell.separatorInset = UIEdgeInsets(top: 0, left: tableView.bounds.size.width, bottom: 0, right: 0)
-            cell.model = ItemGroupModel(items: self.items)
+            cell.model = ItemGroupModel(items: indexPath.row == 2 ? self.similarItems : self.featuredItems)
             cell.model?.delegate = self
+            cell.model?.identifier = indexPath.row
             return cell
         } else if indexPath.row == 4 {
             let cell = UITableViewCell(style: .default, reuseIdentifier: "disclaimerCell")
@@ -411,7 +460,9 @@ extension ItemViewController: UITableViewDelegate, UITableViewDataSource {
             let container = UIView()
             container.addSubview(activityIndicator)
             activityIndicator.snp.makeConstraints { make in
-                make.center.equalToSuperview()
+                make.centerX.equalToSuperview()
+                make.top.equalTo(24)
+                make.width.height.equalTo(30)
             }
             return container
         }
@@ -425,20 +476,3 @@ extension ItemViewController: UITableViewDelegate, UITableViewDataSource {
         return 0.3
     }
 }
-//TODO: fix
-/*
-extension ItemViewController: GroupDelegateAction {
-    internal func open(item: Item, imageId: String) {
-        if item.id == self.item!.id {
-            return
-        }
-        let vc = ItemViewController()
-        vc.item = item
-        vc.isOnNavigationStack = true
-        navigationController?.pushViewController(vc, animated: true)
-        /*let newItem = ItemVC.instantiate(from: .main)
-        newItem.item = item
-        navigationController?.pushViewController(newItem, animated: true)*/
-        // Allow next controller to have back button
-    }
-}*/

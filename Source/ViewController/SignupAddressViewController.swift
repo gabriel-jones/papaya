@@ -86,11 +86,11 @@ class SignupAddressViewController: UIViewController {
     }
     
     @objc private func next(_ sender: LoadingButton) {
-        print("next")
+
     }
     
     @objc private func skip(_ sender: UIButton) {
-        print("skip")
+
     }
     
     private func buildConstraints() {
@@ -157,7 +157,6 @@ class SignupAddressViewController: UIViewController {
         filter.country = "bm"
         GMSPlacesClient.shared().autocompleteQuery(q!, bounds: nil, filter: filter) { results, error in
             guard let results = results, error == nil else {
-                print(error!)
                 return
             }
             

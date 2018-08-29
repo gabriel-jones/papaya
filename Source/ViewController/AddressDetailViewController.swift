@@ -16,6 +16,7 @@ struct AddressDetailField {
 class AddressDetailViewController: UIViewController {
     
     public var address: Address?
+    public var delegate: AddressListDelegate?
     
     private let tableView = UITableView(frame: .zero, style: .grouped)
     private var saveButton: UIBarButtonItem!
@@ -93,9 +94,10 @@ class AddressDetailViewController: UIViewController {
             Request.shared.updateAddress(address: a) { result in
                 switch result {
                 case .success(_):
-                    self.dismiss(animated: true, completion: nil)
-                case .failure(let error):
-                    self.showError(message: "Please try again")
+                    self.navigationController?.popViewController(animated: true)
+                    self.delegate?.refresh()
+                case .failure(_):
+                    self.showMessage("Can't update address", type: .error)
                 }
             }
         } else {
@@ -103,8 +105,9 @@ class AddressDetailViewController: UIViewController {
                 switch result {
                 case .success(_):
                     self.dismiss(animated: true, completion: nil)
-                case .failure(let error):
-                    self.showError(message: "Please try again")
+                    self.delegate?.refresh()
+                case .failure(_):
+                    self.showMessage("Can't create address", type: .error)
                 }
             }
         }
@@ -114,11 +117,24 @@ class AddressDetailViewController: UIViewController {
         view.endEditing(true)
         navigationController?.dismiss(animated: true, completion: nil)
     }
+    
+    @objc private func deleteAddress(_ sender: UIButton) {
+        Request.shared.deleteAddress(address: self.address!) { result in
+            switch result {
+            case .success(_):
+                self.hideMessage(animated: true)
+                self.navigationController?.popViewController(animated: true)
+                self.delegate?.refresh()
+            case .failure(_):
+                self.showMessage("Can't delete address", type: .error)
+            }
+        }
+    }
 }
 
 extension AddressDetailViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return address == nil ? 2 : 3
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -126,7 +142,7 @@ extension AddressDetailViewController: UITableViewDelegate, UITableViewDataSourc
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return indexPath.section == 0 ? 55 : 150
+        return indexPath.section == 1 ? 150 : 55
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -140,6 +156,20 @@ extension AddressDetailViewController: UITableViewDelegate, UITableViewDataSourc
             let cell = tableView.dequeueReusableCell(withIdentifier: SettingsLargeInputTableViewCell.identifier, for: indexPath) as! SettingsLargeInputTableViewCell
             cell.textView.placeholder = String(repeating: " ", count: 8) + "Delivery Instructions, e.g. call number or knock (optional)"
             //cell.textValue = address?.instructions
+            return cell
+        case 2:
+            let cell = UITableViewCell()
+            let button = UIButton()
+            button.setTitleColor(UIColor(named: .red), for: .normal)
+            button.setTitle("Delete Address", for: .normal)
+            button.addTarget(self, action: #selector(deleteAddress), for: .touchUpInside)
+            button.titleLabel?.font = Font.gotham(size: 15)
+            cell.addSubview(button)
+            
+            button.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+            
             return cell
         default: return UITableViewCell()
         }

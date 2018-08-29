@@ -8,33 +8,31 @@ target 'Papaya' do
 
   # Pods for Papaya
   
-  #UI
+  # UI
   pod 'SnapKit', '~> 3.2.0'
   pod 'UIImageViewAlignedSwift'
   
-  #Custom Controls / Views
+  # Views
   pod 'GSMessages'
   pod 'CHIPageControl/Jaloro'
   pod 'JVFloatLabeledTextField'
-  #pod 'TOMSMorphingLabel', '~> 0.5'
   pod 'Mandoline'
-  pod 'Presentr'
-  pod 'TCProgressBar'
   pod 'HCSStarRatingView', '~> 1.5'
   pod 'UIScrollView-InfiniteScroll', '~> 1.0.0'
   pod 'PhoneNumberKit', '~> 2.1'
-  pod 'TagListView', '~> 1.0'
+  pod 'TagListView', '~> 1.0' #not using
   
-  #HTTP
+  # Network
   pod 'SwiftyJSON'
   #pod 'SocketRocket'
   pod 'PINRemoteImage'
   pod 'ReachabilitySwift'
 
-  #Animations
+  # Transitions
   pod 'Hero', '1.0.0-alpha.4'
+  pod 'Presentr'
   
-  #Security
+  # Security
   pod 'KeychainAccess'
   
 end

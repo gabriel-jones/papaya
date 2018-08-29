@@ -13,11 +13,15 @@ class LoadingViewController: UIViewController {
     private let logoView = UIView()
     private let logoName = UILabel()
     private let logoImage = UIImageView()
+    private let activityIndicator = LoadingView()
+    private let offlineMessage = UILabel()
+    private let retryButton = UIButton()
     
     private var error: RequestError?
     private let group = DispatchGroup()
     private var checkout: Checkout?
     private var scheduleDays: [ScheduleDay]?
+    private var order: OrderStatus?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,7 +51,28 @@ class LoadingViewController: UIViewController {
         
         logoView.heroID = "logoView"
         view.addSubview(logoView)
-                
+        
+        activityIndicator.color = .white
+        view.addSubview(activityIndicator)
+        DispatchQueue.main.async { self.activityIndicator.startAnimating() }
+        
+        offlineMessage.text = "The internet connection appears to be offline."
+        offlineMessage.textColor = .white
+        offlineMessage.font = Font.gotham(size: 14)
+        offlineMessage.numberOfLines = 0
+        offlineMessage.isHidden = true
+        offlineMessage.textAlignment = .center
+        view.addSubview(offlineMessage)
+        
+        retryButton.setTitle("Retry", for: .normal)
+        retryButton.setImage(#imageLiteral(resourceName: "Replace").tintable, for: .normal)
+        retryButton.setTitleColor(.white, for: .normal)
+        retryButton.tintColor = .white
+        retryButton.titleLabel?.font = Font.gotham(size: 15)
+        retryButton.addTarget(self, action: #selector(load), for: .touchUpInside)
+        retryButton.alignVertical()
+        retryButton.isHidden = true
+        view.addSubview(retryButton)
     }
     
     private func buildConstraints() {
@@ -69,6 +94,23 @@ class LoadingViewController: UIViewController {
             make.height.equalTo(50)
             make.width.equalTo(168)
         }
+        
+        activityIndicator.snp.makeConstraints { make in
+            make.top.equalTo(logoView.snp.bottom).offset(24)
+            make.centerX.equalToSuperview()
+            make.width.height.equalTo(35)
+        }
+        
+        offlineMessage.snp.makeConstraints { make in
+            make.top.equalTo(logoView.snp.bottom).offset(24)
+            make.leading.trailing.equalToSuperview().inset(32)
+        }
+        
+        retryButton.snp.makeConstraints { make in
+            make.width.height.equalTo(50)
+            make.centerX.equalToSuperview()
+            make.top.equalTo(offlineMessage.snp.bottom).offset(16)
+        }
     }
     
     private func animateLogo() {
@@ -86,20 +128,34 @@ class LoadingViewController: UIViewController {
         }
     }
     
-    private func load() {
+    private func handleErrors() {
+        switch self.error {
+        case nil:
+            self.openHomeScreen()
+        case .networkOffline?, .unknown?:
+            self.setOffline(true)
+        default:
+            self.openGetStarted()
+        }
+    }
+    
+    @objc private func load() {
         error = nil
+        setOffline(false)
 
-        group.enter()
         Request.shared.getUserDetails { [weak self] result in
             switch result {
             case .success(let user):
                 User.current = user
+                self?.loadOthers()
             case .failure(let error):
                 self?.error = error
+                self?.handleErrors()
             }
-            self?.group.leave()
         }
-        
+    }
+    
+    private func loadOthers() {
         group.enter()
         Request.shared.getCartCount { [weak self] result in
             switch result {
@@ -134,13 +190,29 @@ class LoadingViewController: UIViewController {
             self?.group.leave()
         }
         
-        group.notify(queue: .main) {
-            switch self.error {
-            case .unauthorised?:
-                self.openGetStarted()
-            default:
-                self.openHomeScreen()
+        group.enter()
+        Request.shared.getCurrentOrder { [weak self] result in
+            switch result {
+            case .success(let orderStatus):
+                self?.order = orderStatus
+            case .failure(let error):
+                if case .orderNotFound = error {} else {
+                    self?.error = error
+                }
             }
+            self?.group.leave()
+        }
+        
+        group.notify(queue: .main) {
+            self.handleErrors()
+        }
+    }
+    
+    private func setOffline(_ isOffline: Bool) {
+        DispatchQueue.main.async {
+            self.activityIndicator.isHidden = isOffline
+            self.offlineMessage.isHidden = !isOffline
+            self.retryButton.isHidden = !isOffline
         }
     }
     
@@ -172,7 +244,7 @@ class LoadingViewController: UIViewController {
         let navMe = UINavigationController(rootViewController: me)
         navMe.isHeroEnabled = true
         
-        let tabBarController = UITabBarController()
+        let tabBarController = MainTabViewController()
         tabBarController.viewControllers = [
             navHome,
             navSearch,
@@ -180,7 +252,22 @@ class LoadingViewController: UIViewController {
             navClubs,
             navMe
         ]
-        tabBarController.tabBar.tintColor = UIColor(named: .green)
+        
+        let currentOrderView = CurrentOrderView()
+        tabBarController.view.addSubview(currentOrderView)
+        
+        currentOrderView.snp.makeConstraints { make in
+            make.left.right.equalToSuperview()
+            make.height.equalTo(50)
+            make.bottom.equalToSuperview().inset(49)
+        }
+        
+        StatusFetcher.shared.delegate = currentOrderView
+        if let order = self.order {
+            StatusFetcher.shared.startFetching(id: order.id, statusOnly: true)
+        }
+        currentOrderView.set(order: self.order)
+        currentOrderView.delegate = tabBarController
         
         tabBarController.heroModalAnimationType = .cover(direction: .left)
         hero_replaceViewController(with: tabBarController)
@@ -193,5 +280,134 @@ class LoadingViewController: UIViewController {
         vc.isHeroEnabled = true
         vc.heroModalAnimationType = .fade
         present(vc, animated: true, completion: nil)
+    }
+}
+
+protocol CurrentOrderViewDelegate {
+    func openOrder(orderId: Int)
+}
+
+class CurrentOrderView: UIView, StatusFetcherDelegate {
+    public var delegate: CurrentOrderViewDelegate?
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.setup()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        self.setup()
+    }
+    
+    private let topBorder = UIView()
+    private let backgroundView = UIVisualEffectView()
+    private let orderLabel = UILabel()
+    private let statusView = UIView()
+    private let statusViewLabel = UILabel()
+    private let viewButton = UIButton()
+    private var order: OrderStatus?
+    
+    public func set(order: OrderStatus?) {
+        guard let order = order else {
+            isHidden = true
+            return
+        }
+        self.order = order
+        isHidden = false
+        orderLabel.text = "Order #\(order.id)"
+        statusViewLabel.text = order.status.rawValue.capitalizingFirstLetter()
+        if order.status == .declined {
+            statusView.backgroundColor = UIColorFromRGB(0xEE2424)
+        } else {
+            statusView.backgroundColor = UIColor(named: .green)
+        }
+    }
+    
+    private func setup() {
+        self.buildViews()
+        self.buildConstraints()
+    }
+    
+    func startedFetch() {
+
+    }
+    
+    func stoppedFetch(with result: Result<OrderStatus>) {
+        self.set(order: result.value)
+    }
+    
+    override func layoutSubviews() {
+        statusView.layer.cornerRadius = statusView.frame.height / 2
+    }
+    
+    private func buildViews() {
+        backgroundView.effect = UIBlurEffect(style: .prominent)
+        addSubview(backgroundView)
+
+        topBorder.backgroundColor = UIColorFromRGB(0xdbdbdb)
+        backgroundView.contentView.addSubview(topBorder)
+        
+        orderLabel.font = Font.gotham(size: 17)
+        orderLabel.textColor = .black
+        backgroundView.contentView.addSubview(orderLabel)
+        
+        statusView.backgroundColor = UIColor(named: .green)
+        backgroundView.contentView.addSubview(statusView)
+        
+        statusViewLabel.textColor = .white
+        statusViewLabel.font = Font.gotham(size: 12)
+        statusView.addSubview(statusViewLabel)
+        
+        viewButton.setTitle("View", for: .normal)
+        viewButton.setTitleColor(UIColorFromRGB(0x2CC664), for: .normal)
+        viewButton.setImage(#imageLiteral(resourceName: "Up Arrow").tintable, for: .normal)
+        viewButton.tintColor = UIColorFromRGB(0x2CC664)
+        viewButton.titleLabel?.font = Font.gotham(weight: .bold, size: 14)
+        viewButton.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
+        viewButton.titleLabel?.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
+        viewButton.imageView?.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
+        viewButton.addTarget(self, action: #selector(tapped), for: .touchUpInside)
+        backgroundView.contentView.addSubview(viewButton)
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(tapped))
+        backgroundView.contentView.addGestureRecognizer(tap)
+    }
+    
+    @objc private func tapped() {
+        if let order = self.order {
+            delegate?.openOrder(orderId: order.id)
+        }
+    }
+    
+    private func buildConstraints() {
+        topBorder.snp.makeConstraints { make in 
+            make.top.left.right.equalToSuperview()
+            make.height.equalTo(0.5)
+        }
+        
+        backgroundView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        orderLabel.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.left.equalToSuperview().inset(24)
+        }
+        
+        statusView.snp.makeConstraints { make in
+            make.left.equalTo(orderLabel.snp.right).offset(8)
+            make.centerY.equalTo(orderLabel.snp.centerY)
+        }
+        
+        statusViewLabel.snp.makeConstraints { make in
+            make.left.right.equalToSuperview().inset(12)
+            make.top.bottom.equalToSuperview().inset(4)
+        }
+        
+        viewButton.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.right.equalToSuperview().inset(24)
+        }
     }
 }

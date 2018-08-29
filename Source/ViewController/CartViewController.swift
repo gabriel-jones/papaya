@@ -22,11 +22,12 @@ class CartViewController: UIViewController {
     private var closeButton: UIBarButtonItem!
     private let tableView = UITableView(frame: .zero, style: .grouped)
     private let toolbar = UIView()
+    private let toolbarContentView = UIView()
     private let toolbarBorder = UIView()
     private let checkoutButton = LoadingButton()
     private let checkoutPrice = UIView()
     private let checkoutPriceLabel = UILabel()
-    private let activityIndicator = UIActivityIndicatorView()
+    private let activityIndicator = LoadingView()
     private let refreshControl = UIRefreshControl()
     private let retryButton = UIButton()
 
@@ -55,9 +56,7 @@ class CartViewController: UIViewController {
                 
                 self.cart = cart
                 self.update()
-            case .failure(let error):
-                print(error.localizedDescription)
-                
+            case .failure(_):                
                 self.checkoutButton.hideLoading()
                 self.checkoutButton.alpha = 0.5
                 self.checkoutButton.isEnabled = false
@@ -125,9 +124,11 @@ class CartViewController: UIViewController {
         toolbar.backgroundColor = UIColor(named: .backgroundGrey)
         view.addSubview(toolbar)
         
+        toolbar.addSubview(toolbarContentView)
+        
         // Toolbar border
         toolbarBorder.backgroundColor = UIColor(red: 0.796, green: 0.796, blue: 0.812, alpha: 0.5)
-        toolbar.addSubview(toolbarBorder)
+        toolbarContentView.addSubview(toolbarBorder)
         
         // Add to cart
         checkoutButton.backgroundColor = UIColor(named: .green)
@@ -138,7 +139,7 @@ class CartViewController: UIViewController {
         checkoutButton.addTarget(self, action: #selector(checkout(_:)), for: .touchUpInside)
         checkoutButton.alpha = 0.5
         checkoutButton.isEnabled = false
-        toolbar.addSubview(checkoutButton)
+        toolbarContentView.addSubview(checkoutButton)
         
         checkoutPrice.backgroundColor = UIColor.black.withAlphaComponent(0.2)
         checkoutPrice.layer.cornerRadius = 5
@@ -150,8 +151,7 @@ class CartViewController: UIViewController {
         checkoutPriceLabel.font = Font.gotham(size: 14)
         checkoutPrice.addSubview(checkoutPriceLabel)
         
-        activityIndicator.activityIndicatorViewStyle = .gray
-        activityIndicator.hidesWhenStopped = true
+        activityIndicator.color = .lightGray
         view.addSubview(activityIndicator)
         
         retryButton.setTitle("Retry", for: .normal)
@@ -177,19 +177,17 @@ class CartViewController: UIViewController {
                         let vc = CheckoutSchedulerViewController()
                         vc.checkout = checkout
                         vc.schedule = days
-                        if let date = checkout.orderDate {
+                        if let date = checkout.startDate {
                             vc.selectedDate = date
                         }
                         self.navigationController?.pushViewController(vc, animated: true)
-                    case .failure(let error):
-                        print(error.localizedDescription)
-                        self.showError(message: "Cannot checkout. Please check your connection and try again.")
+                    case .failure(_):
+                        self.showError(message: "Can't checkout. Please check your connection and try again.")
                     }
                 }
-            case .failure(let error):
+            case .failure(_):
                 sender.hideLoading()
-                print(error.localizedDescription)
-                self.showError(message: "Cannot checkout. Please check your connection and try again.")
+                self.showError(message: "Can't checkout. Please check your connection and try again.")
             }
         }
     }
@@ -203,7 +201,15 @@ class CartViewController: UIViewController {
     private func buildConstraints() {
         toolbar.snp.makeConstraints { make in
             make.left.right.bottom.equalToSuperview()
-            make.height.equalTo(65)
+        }
+        
+        toolbarContentView.snp.makeConstraints { make in
+            make.left.right.top.equalToSuperview()
+            if #available(iOS 11, *) {
+                make.bottom.equalTo(self.view.safeAreaLayoutGuide)
+            } else {
+                make.bottom.equalToSuperview()
+            }
         }
         
         toolbarBorder.snp.makeConstraints { make in
@@ -213,6 +219,7 @@ class CartViewController: UIViewController {
         
         checkoutButton.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(8)
+            make.height.equalTo(49)
         }
         
         tableView.snp.makeConstraints { make in
@@ -236,6 +243,7 @@ class CartViewController: UIViewController {
         
         activityIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()
+            make.width.height.equalTo(35)
         }
         
         retryButton.snp.makeConstraints { make in

@@ -71,8 +71,11 @@ class ChangePasswordViewController: UIViewController {
             switch result {
             case .success(_):
                 self.navigationController?.popViewController(animated: true)
-            case .failure(let error):
-                print(error.localizedDescription)
+            case .failure(_):
+                self.showMessage("Can't update password", type: .error, options: [
+                    .autoHide(false),
+                    .hideOnTap(false)
+                ])
             }
         }
         
