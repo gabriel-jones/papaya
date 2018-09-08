@@ -13,7 +13,7 @@ extension Request {
     
     @discardableResult
     public func search(query: String, page: Int = 1, completion: (CompletionHandler<PaginatedResults<Item>>)? = nil) -> URLSessionDataTask? {
-        guard let request = URLRequest.get(path: "/search/q/\(query)/\(page)") else {
+        guard let request = URLRequest.get(path: "/search/q/\(query.addPercentEncoding)/\(page)") else {
             completion?(Result(error: .cannotBuildRequest))
             return nil
         }

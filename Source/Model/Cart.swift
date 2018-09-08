@@ -10,8 +10,8 @@ import Foundation
 import SwiftyJSON
 
 struct Cart: BaseObject {    
-    let id: Int
-    var items: [CartItem]
+    public let id: Int
+    public var items: [CartItem]
     
     init?(dict: JSON) {
         guard
@@ -34,7 +34,7 @@ struct Cart: BaseObject {
         self.items = itemsBuffer
     }
 
-    var total: Double {
+    public var total: Double {
         get {
             var t = 0.0
             for cartItem in items {

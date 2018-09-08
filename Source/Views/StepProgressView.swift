@@ -101,6 +101,7 @@ class StepProgressView: UIView {
         }
         
         lineLayer.path = linePath.cgPath
+        lineLayer.isHidden = progressIndex == -1
         
         // Points
         for (index, point) in points.enumerated() {

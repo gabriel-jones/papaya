@@ -24,10 +24,10 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo" translatesAutoresizingMaskIntoConstraints="NO" id="tx6-RD-R4f">
-                                <rect key="frame" x="167" y="313" width="40" height="40"/>
+                                <rect key="frame" x="162" y="308" width="50" height="50"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="40" id="FtU-Kk-fIt"/>
-                                    <constraint firstAttribute="height" constant="40" id="evF-lf-1qB"/>
+                                    <constraint firstAttribute="height" constant="50" id="BYm-3O-uWY"/>
+                                    <constraint firstAttribute="width" constant="50" id="fdO-sz-7e9"/>
                                 </constraints>
                             </imageView>
                         </subviews>
@@ -35,10 +35,10 @@
                         <constraints>
                             <constraint firstItem="VJs-Lr-Kil" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="4O2-Ux-Aje"/>
                             <constraint firstAttribute="trailing" secondItem="VJs-Lr-Kil" secondAttribute="trailing" id="ALC-4R-pfX"/>
+                            <constraint firstItem="tx6-RD-R4f" firstAttribute="centerY" secondItem="VJs-Lr-Kil" secondAttribute="centerY" id="FOO-Sw-JqX"/>
                             <constraint firstAttribute="bottom" secondItem="VJs-Lr-Kil" secondAttribute="bottom" id="eYk-81-mhc"/>
-                            <constraint firstItem="tx6-RD-R4f" firstAttribute="centerY" secondItem="VJs-Lr-Kil" secondAttribute="centerY" id="g24-gT-ld7"/>
                             <constraint firstItem="VJs-Lr-Kil" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="lwk-oo-V1V"/>
-                            <constraint firstItem="tx6-RD-R4f" firstAttribute="centerX" secondItem="VJs-Lr-Kil" secondAttribute="centerX" id="udN-1c-shu"/>
+                            <constraint firstItem="tx6-RD-R4f" firstAttribute="centerX" secondItem="VJs-Lr-Kil" secondAttribute="centerX" id="rjy-1H-AW1"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -49,6 +49,6 @@
     </scenes>
     <resources>
         <image name="Launch Gradient" width="138" height="245"/>
-        <image name="Logo" width="580" height="580"/>
+        <image name="Logo" width="512" height="512"/>
     </resources>
 </document>

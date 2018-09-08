@@ -152,8 +152,12 @@ class HomeViewController: ViewControllerWithCart {
     
     private func buildConstraints() {
         tableView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-            //TODO: if order status view then shift up to be above it
+            if BaseStore.order == nil {
+                make.edges.equalToSuperview()
+            } else {
+                make.top.left.right.equalToSuperview()
+                make.bottom.equalToSuperview().inset(99)
+            }
         }
     }
     

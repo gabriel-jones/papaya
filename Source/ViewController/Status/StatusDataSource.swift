@@ -93,6 +93,8 @@ class Status_PendingCell: StatusCell, CellWithIdentifier {
     override func buildViews() {
         super.buildViews()
         
+        self.selectionStyle = .none
+        
         view.addSubview(progressView)
         Timer.scheduledTimer(withTimeInterval: 0.01, repeats: false) { _ in
             self.progressView.layoutSubviews()
@@ -639,9 +641,19 @@ class OrderItemView: UIView {
 class Status_SupportCell: StatusCell, CellWithIdentifier {
     public static var identifier: String = C.ViewModel.CellIdentifier.statusSupport.rawValue
     
+    public var isDeclined: Bool = false
+    
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
     private let disclosureImage = UIImageView()
+    
+    override func set(order: Order) {
+        super.set(order: order)
+        isDeclined = order.status == .declined
+        if order.status == .declined {
+            subtitleLabel.text = "Contact Miles Market if you have any questions"
+        }
+    }
     
     override func buildViews() {
         super.buildViews()
@@ -786,7 +798,7 @@ class Status_CompletedCell: StatusCell, CellWithIdentifier {
                 self.delegate?.layoutCell(self)
                 
                 let alert = UIAlertController(title: "Thanks for your feedback!", message: "If you have any more questions / concerns, feel free to contact us at support@papaya.bm", preferredStyle: .alert)
-                alert.addAction(UIAlertAction.init(title: "OK", style: .default, handler: nil))
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 // TODO: present
             } else {
                 // possible easier syntax?
@@ -1046,10 +1058,9 @@ class StatusDataSource: NSObject, UITableViewDataSource, StatusFetcherDelegate {
             cells = [Status_CompletedCell.identifier]
         } else if order.status == .declined {
             cells = [Status_DeclinedCell.identifier]
-            return
         }
         
-        if !order.isPriority && !User.current!.isExpress {
+        if !order.isPriority && !User.current!.isExpress && order.status != .declined {
             cells.insert(Status_PremiumAdvertCell.identifier, at: 1)
         }
         cells.append(Status_SupportCell.identifier)

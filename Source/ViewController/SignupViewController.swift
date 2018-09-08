@@ -130,7 +130,7 @@ class SignupViewController: UIViewController {
         view.gradientBackground()
         
         backButton.tintColor = .white
-        backButton.setImage(#imageLiteral(resourceName: "Left Arrow").tintable, for: .normal)
+        backButton.setImage(#imageLiteral(resourceName: "Close").tintable, for: .normal)
         backButton.addTarget(self, action: #selector(back(_:)), for: .touchUpInside)
         view.addSubview(backButton)
         

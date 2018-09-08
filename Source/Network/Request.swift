@@ -39,17 +39,17 @@ class Request: NSObject, URLSessionDelegate, URLSessionDataDelegate {
             return Result(from: Response(data: data, urlResponse: response), optional: error)
                 .flatMap(self.parse.response2Data)
                 .flatMap(self.parse.data2Json)
-                .flatMap(parseMethod ?? {return Result(value: $0 as! T)}) // I'm sorry for this garbage code
+                .flatMap(parseMethod ?? {return Result(fromOptional: $0 as? T, error: .failedToParseJson) }) // I'm sorry for this garbage code
         }
     }
     
     internal func execute<T>(request: URLRequest, withAuth: Bool = true, parseMethod: ((JSON) -> Result<T>)? = nil, completion: (CompletionHandler<T>)? = nil) -> URLSessionDataTask? {
         print(request.papayaDescription)
-
+        /*
         if reachability.connection == .none {
             completion?(Result(error: RequestError.networkOffline))
             return nil
-        }
+        }*/
         
         let task = session.dataTask(with: request) { data, response, error in
             let handleResponse = self.constructHandler(parseMethod: parseMethod)

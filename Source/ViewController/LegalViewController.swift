@@ -88,6 +88,7 @@ extension LegalViewController: UITableViewDelegate, UITableViewDataSource {
         let cell = UITableViewCell(style: .default, reuseIdentifier: C.ViewModel.CellIdentifier.libraryCell.rawValue)
         cell.textLabel?.text = libs[indexPath.row].name
         cell.textLabel?.font = Font.gotham(size: 16)
+        cell.textLabel?.textColor = .darkGray
         cell.accessoryType = .disclosureIndicator
         return cell
     }

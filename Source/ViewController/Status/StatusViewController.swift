@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SafariServices
 
 fileprivate let priorityColor = UIColorFromRGB(0x6216C2)
 fileprivate let primaryColor = UIColor(named: .green)
@@ -239,7 +240,7 @@ class StatusViewController: UIViewController, StatusHeaderViewDelegate {
         tableView.backgroundColor = UIColor(named: .backgroundGrey)
         tableView.alwaysBounceVertical = true
         tableView.showsVerticalScrollIndicator = false
-        tableView.allowsSelection = false
+        tableView.allowsSelection = true
         tableView.separatorStyle = .none
         tableView.contentInset = UIEdgeInsets(top: 24, left: 0, bottom: 0, right: 0)
         view.addSubview(tableView)
@@ -268,15 +269,6 @@ class StatusViewController: UIViewController, StatusHeaderViewDelegate {
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview().offset(-headerViewHeight)
             make.height.width.equalTo(40)
-        }
-    }
-    
-    private func checkDismissingCondition(_ scrollView: UIScrollView) {
-        if scrollView.contentOffset.y < -self.view.height / 6 {
-            scrollView.isScrollEnabled = false
-            scrollView.setContentOffset(scrollView.contentOffset, animated: false) // 慣性スクロールを強制停止
-            scrollView.contentOffset = CGPoint(x: 0, y: scrollView.contentOffset.y)
-            self.dismiss(animated: true, completion: nil)
         }
     }
     
@@ -350,6 +342,29 @@ extension StatusViewController: UIScrollViewDelegate {
     }
 }
 
+extension StatusViewController: SFSafariViewControllerDelegate {
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        controller.dismiss(animated: true, completion: nil)
+    }
+}
+
 extension StatusViewController: UITableViewDelegate {
-    
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        print(indexPath)
+        if let cell = tableView.cellForRow(at: indexPath) as? Status_SupportCell {
+            if cell.isDeclined {
+                guard let number = URL(string: "tel://14417035040") else { return nil }
+                UIApplication.shared.open(number)
+            } else {
+                let vc = SFSafariViewController(url: URL(string: C.URL.support)!)
+                vc.delegate = self
+                present(vc, animated: true, completion: nil)
+            }
+        } else if let cell = tableView.cellForRow(at: indexPath) as? Status_PremiumAdvertCell {
+            let vc = ExpressViewController()
+            let nav = UINavigationController(rootViewController: vc)
+            present(nav, animated: true, completion: nil)
+        }
+        return nil
+    }
 }

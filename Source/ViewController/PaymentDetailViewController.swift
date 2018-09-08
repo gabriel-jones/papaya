@@ -12,6 +12,8 @@ class PaymentDetailViewController: UIViewController {
     
     public var paymentMethod: PaymentMethod?
     public var delegate: PaymentListDelegate?
+    public var isModal: Bool = false
+    public var isModalSubscription: Bool = false
     
     private let tableView = UITableView(frame: .zero, style: .grouped)
     private var saveButton: UIBarButtonItem!
@@ -54,7 +56,7 @@ class PaymentDetailViewController: UIViewController {
         activityIndicator.startAnimating()
         activityIndicator.frame = CGRect(x: 0, y: 0, width: 25, height: 25)
         
-        if paymentMethod == nil {
+        if paymentMethod == nil || isModal {
             closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "Close").tintable, style: .done, target: self, action: #selector(close(_:)))
             closeButton?.tintColor = UIColor(named: .green)
             navigationItem.leftBarButtonItem = closeButton
@@ -108,6 +110,10 @@ class PaymentDetailViewController: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
+    @objc private func close(_ sender: UIBarButtonItem) {
+        dismiss(animated: true, completion: nil)
+    }
+    
     @objc private func save(_ sender: UIBarButtonItem) {
         guard
             let cardString = cardNumberTextField?.text,
@@ -147,22 +153,31 @@ class PaymentDetailViewController: UIViewController {
         }
     }
     
-    @objc private func close(_ sender: UIBarButtonItem) {
-        view.endEditing(true)
-        navigationController?.dismiss(animated: true, completion: nil)
-    }
-    
     @objc private func deletePayment(_ sender: LoadingButton) {
-        sender.showLoading()
-        Request.shared.deletePaymentMethod(id: self.paymentMethod!.id) { result in
-            sender.hideLoading()
-            switch result {
-            case .success(_):
-                self.hideMessage(animated: true)
-                self.navigationController?.popViewController(animated: true)
-                self.delegate?.refresh()
-            case .failure(_):
-                self.showMessage("Can't delete payment method", type: .error)
+        if isModalSubscription {
+            let vc = PaymentListViewController()
+            vc.delegate = self
+            vc.isModal = true
+            let nav = UINavigationController(rootViewController: vc)
+            present(nav, animated: true, completion: nil)
+        } else {
+            sender.showLoading()
+            Request.shared.deletePaymentMethod(id: self.paymentMethod!.id) { result in
+                sender.hideLoading()
+                switch result {
+                case .success(_):
+                    self.hideMessage(animated: true)
+                    self.navigationController?.popViewController(animated: true)
+                    self.delegate?.refresh()
+                case .failure(let error):
+                    if case .paymentProfileInUse = error {
+                        let alert = UIAlertController(title: "Can't delete payment method", message: "This payment method is already in use for a subscription. Please change your payment method for your subscriptions before deleting this payment method.", preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
+                    } else {
+                        self.showMessage("Can't delete payment method", type: .error)
+                    }
+                }
             }
         }
     }
@@ -216,7 +231,7 @@ extension PaymentDetailViewController: UITableViewDelegate, UITableViewDataSourc
             cell.textField.placeholder = ["Credit Card Number", "Expiration Date", "3-digit Security Code"][indexPath.row]
             let str = anet_ExpirationDateFormatter.date(from: paymentMethod?.expirationDate)?.format("MM/y")
 
-            cell.textField.text = [paymentMethod?.formattedCardNumber, paymentMethod?.expirationDate, nil][indexPath.row]
+            cell.textField.text = [paymentMethod?.formattedCardNumber, paymentMethod?.formattedExpirationDate, nil][indexPath.row]
             cell.textField.isUserInteractionEnabled = paymentMethod == nil
             cell.textField.tag = indexPath.row
             cell.textField.addTarget(self, action: #selector(textDidChange(_:)), for: .editingChanged)
@@ -240,8 +255,8 @@ extension PaymentDetailViewController: UITableViewDelegate, UITableViewDataSourc
         case 1:
             let cell = UITableViewCell()
             let button = LoadingButton()
-            button.setTitleColor(UIColor(named: .red), for: .normal)
-            button.setTitle("Delete Payment Method", for: .normal)
+            button.setTitleColor(isModalSubscription ? UIColor(named: .green) : UIColor(named: .red), for: .normal)
+            button.setTitle(isModalSubscription ? "Change Payment Method" : "Delete Payment Method", for: .normal)
             button.addTarget(self, action: #selector(deletePayment(_:)), for: .touchUpInside)
             button.titleLabel?.font = Font.gotham(size: 15)
             cell.addSubview(button)
@@ -252,6 +267,25 @@ extension PaymentDetailViewController: UITableViewDelegate, UITableViewDataSourc
             
             return cell
         default: return UITableViewCell()
+        }
+    }
+}
+
+extension PaymentDetailViewController: PaymentListModal {
+    func chose(paymentMethod: PaymentMethod) {
+        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 1)), let button = cell.subviews.first(where: { $0 is LoadingButton }) as? LoadingButton {
+            DispatchQueue.main.async { button.showLoading() }
+            Request.shared.updateExpress(paymentMethod: paymentMethod) { result in
+                button.hideLoading()
+                switch result {
+                case .success(_):
+                    self.hideMessage(animated: true)
+                    self.dismiss(animated: true, completion: nil)
+                case .failure(_):
+                    self.showMessage("Can't change payment method", type: .error)
+
+                }
+            }
         }
     }
 }
@@ -268,8 +302,8 @@ extension PaymentDetailViewController: UITextFieldDelegate {
 }
 
 //TODO: figure out what is changing the month components value when the year component scrolls
+//FIXED: it was a bug in simulator
 extension PaymentDetailViewController: UIPickerViewDelegate, UIPickerViewDataSource {
-    
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if component == 0 {
             expirationMonth = months[row]

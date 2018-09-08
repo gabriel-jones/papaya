@@ -40,6 +40,12 @@ struct PaymentMethod: BaseObject {
         }
     }
     
+    public var shortFormattedExpirationDate: String? {
+        get {
+            return anet_ExpirationDateFormatter.date(from: self.expirationDate)?.format("MM / yy")
+        }
+    }
+    
     public var image: UIImage {
         get {
             switch cardType {

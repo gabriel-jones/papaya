@@ -41,6 +41,7 @@ class AuthenticationStore {
         self.store.set(key: C.KeychainStore.user_password, value: password)
     }
     
+    @discardableResult
     static func logout(_ completion: @escaping (Bool) -> Void) -> URLSessionDataTask? {
         return Request.shared.logout() { result in
             switch result {

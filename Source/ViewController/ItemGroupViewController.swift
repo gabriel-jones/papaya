@@ -169,10 +169,14 @@ class ItemGroupViewController: ViewControllerWithCart {
         }
         
         collectionView.snp.makeConstraints { make in
-            make.left.equalToSuperview()
-            make.right.equalToSuperview()
-            make.bottom.equalToSuperview()
-            make.top.equalTo(sectionBar.snp.bottom)
+            if BaseStore.order == nil {
+                make.left.right.bottom.equalToSuperview()
+                make.top.equalTo(sectionBar.snp.bottom)
+            } else {
+                make.left.right.equalToSuperview()
+                make.top.equalTo(sectionBar.snp.bottom)
+                make.bottom.equalToSuperview().inset(99)
+            }
         }
         
         bottomBorder.snp.makeConstraints { make in

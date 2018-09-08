@@ -10,9 +10,9 @@ import Foundation
 import SwiftyJSON
 
 struct NotificationSettingGroup: BaseObject {
-    let id: Int
-    let name: String
-    let settings: [NotificationSetting]
+    public let id: Int
+    public let name: String
+    public let settings: [NotificationSetting]
     
     init?(dict: JSON) {
         guard
@@ -37,9 +37,9 @@ struct NotificationSettingGroup: BaseObject {
 }
 
 struct NotificationSetting: BaseObject {
-    let id: Int
-    let name: String
-    let value: Bool
+    public let id: Int
+    public let name: String
+    public let value: Bool
     
     init?(dict: JSON) {
         guard

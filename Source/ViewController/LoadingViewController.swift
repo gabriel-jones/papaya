@@ -7,6 +7,17 @@
 //
 
 import UIKit
+import UserNotifications
+
+extension UILabel {
+    func addCharacterSpacing(kernValue: Double = 1.15) {
+        if let labelText = text, labelText.count > 0 {
+            let attributedString = NSMutableAttributedString(string: labelText)
+            attributedString.addAttribute(NSAttributedStringKey.kern, value: kernValue, range: NSRange(location: 0, length: attributedString.length - 1))
+            attributedText = attributedString
+        }
+    }
+}
 
 class LoadingViewController: UIViewController {
     
@@ -41,18 +52,33 @@ class LoadingViewController: UIViewController {
         view.gradientBackground()
         
         logoImage.image = #imageLiteral(resourceName: "Logo")
+        logoImage.layer.shadowRadius = 5
+        logoImage.layer.shadowColor = UIColor.black.cgColor
+        logoImage.layer.shadowOpacity = 0.15
+        logoImage.layer.shadowOffset = CGSize(width: 0, height: 2)
+        
         logoView.addSubview(logoImage)
         
-        logoName.text = "Papaya"
-        logoName.font = Font.gotham(weight: .bold, size: 25)
+        logoName.font = Font.gotham(weight: .bold, size: 37)
         logoName.textColor = .white
         logoName.alpha = 0
+        logoName.layer.shadowRadius = 5
+        logoName.layer.shadowColor = UIColor.black.cgColor
+        logoName.layer.shadowOpacity = 0.15
+        logoName.layer.shadowOffset = CGSize(width: 0, height: 2)
+        let attributedString = NSMutableAttributedString(string: "deliveri")
+        attributedString.addAttribute(.kern, value: CGFloat(-2), range: NSRange(location: 0, length: attributedString.length))
+        attributedString.addAttribute(.foregroundColor, value: UIColorFromRGB(0xFFD600), range: NSRange(location: 7, length: 1))
+        logoName.attributedText = attributedString
         logoView.addSubview(logoName)
         
         logoView.heroID = "logoView"
+        let tap = UITapGestureRecognizer(target: self, action: #selector(tappedLogo))
+        logoView.addGestureRecognizer(tap)
         view.addSubview(logoView)
         
         activityIndicator.color = .white
+        activityIndicator.lineWidth = 4.25
         view.addSubview(activityIndicator)
         DispatchQueue.main.async { self.activityIndicator.startAnimating() }
         
@@ -75,24 +101,25 @@ class LoadingViewController: UIViewController {
         view.addSubview(retryButton)
     }
     
+    @objc private func tappedLogo() {
+
+    }
+    
     private func buildConstraints() {
         logoImage.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.left.equalTo((168 / 2) - (40 / 2))
-            make.height.equalTo(40)
-            make.width.equalTo(logoImage.snp.height)
+            make.height.width.equalTo(50)
+            make.top.bottom.equalToSuperview()
+            make.centerX.equalToSuperview()
         }
         
         logoName.snp.makeConstraints { make in
-            make.top.bottom.centerY.equalToSuperview()
-            make.width.equalTo(92)
             make.left.equalTo(logoImage.snp.right).offset(50)
+            make.right.equalToSuperview()
+            make.top.bottom.equalToSuperview()
         }
         
         logoView.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.height.equalTo(50)
-            make.width.equalTo(168)
         }
         
         activityIndicator.snp.makeConstraints { make in
@@ -115,8 +142,9 @@ class LoadingViewController: UIViewController {
     
     private func animateLogo() {
         UIView.animate(withDuration: 1.0, delay: 0, options: .curveEaseInOut, animations: {
-            self.logoImage.snp.updateConstraints { make in
-                make.left.equalTo(8)
+            self.logoImage.snp.remakeConstraints { make in
+                make.height.width.equalTo(50)
+                make.top.bottom.left.equalToSuperview()
             }
             self.logoName.snp.updateConstraints { make in
                 make.left.equalTo(self.logoImage.snp.right).offset(16)
@@ -128,10 +156,30 @@ class LoadingViewController: UIViewController {
         }
     }
     
+    private func askPermissionsThenHome() {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            switch settings.authorizationStatus {
+            case .notDetermined:
+                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+                    DispatchQueue.main.async {
+                        if granted {
+                            UIApplication.shared.registerForRemoteNotifications()
+                        }
+                        self.openHomeScreen()
+                    }
+                }
+            default:
+                DispatchQueue.main.async {
+                    self.openHomeScreen()
+                }
+            }
+        }
+    }
+    
     private func handleErrors() {
         switch self.error {
         case nil:
-            self.openHomeScreen()
+            self.askPermissionsThenHome()
         case .networkOffline?, .unknown?:
             self.setOffline(true)
         default:
@@ -309,6 +357,7 @@ class CurrentOrderView: UIView, StatusFetcherDelegate {
     private var order: OrderStatus?
     
     public func set(order: OrderStatus?) {
+        BaseStore.order = order
         guard let order = order else {
             isHidden = true
             return

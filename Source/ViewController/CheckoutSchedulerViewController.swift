@@ -489,7 +489,9 @@ extension CheckoutSchedulerViewController: UITableViewDelegate, UITableViewDataS
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 0 && indexPath.row == 1 {
             tableView.deselectRow(at: indexPath, animated: true)
-            present(ExpressViewController(), animated: true, completion: nil)
+            let vc = ExpressViewController()
+            let nav = UINavigationController(rootViewController: vc)
+            present(nav, animated: true, completion: nil)
         }
     }
     

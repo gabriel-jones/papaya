@@ -15,13 +15,14 @@ struct C {
     public static let domain = "bm.papaya"
     
     struct URL {
-        public static let main = development
+        public static let main = staging
         static let staging = "https://papaya-backend.herokuapp.com"
         static let production = "https://www.papaya.bm:5000"
         static let development = "http://localhost:5000"
         static let help = "https://www.papaya.bm/help"
         static let termsOfService = "https://www.papaya.bm/terms"
         static let privacyPolicy = "https://www.papaya.bm/privacy"
+        static let support = "https://www.papaya.bm/support"
     }
     
     struct KeychainStore {

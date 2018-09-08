@@ -10,11 +10,11 @@ import Foundation
 import SwiftyJSON
 
 struct CartItem: BaseObject {
-    let id: Int
-    var quantity: Int
-    let item: Item
-    var instructions: String?
-    var replaceOption: ReplaceOption
+    public let id: Int
+    public var quantity: Int
+    public let item: Item
+    public var instructions: String?
+    public var replaceOption: ReplaceOption
     
     enum ReplaceOption {
         case replaceAuto, replaceSpecific(item: Item?), skip

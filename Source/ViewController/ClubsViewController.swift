@@ -196,7 +196,12 @@ class ClubsViewController: ViewControllerWithCart {
     
     private func buildConstraints() {
         collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            if BaseStore.order == nil {
+                make.edges.equalToSuperview()
+            } else {
+                make.top.left.right.equalToSuperview()
+                make.bottom.equalToSuperview().inset(99)
+            }
         }
         
         activityIndicator.snp.makeConstraints { make in

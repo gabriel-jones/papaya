@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		5177A37D95D99615DD5CB95F /* Pods_Papaya.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 694F693165B9B1E6C2292FFC /* Pods_Papaya.framework */; };
 		C0003295209358B100717791 /* ClubsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0003294209358B100717791 /* ClubsViewController.swift */; };
+		C005D70D2139F1300044374B /* SubscriptionHubViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C005D70C2139F1300044374B /* SubscriptionHubViewController.swift */; };
+		C005D70F2139F13E0044374B /* ExpressBuyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C005D70E2139F13E0044374B /* ExpressBuyViewController.swift */; };
+		C005D7112139F40B0044374B /* Subscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = C005D7102139F40B0044374B /* Subscription.swift */; };
 		C00A21721FAEC27D007B04B7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C00A20E11FAEC27D007B04B7 /* AppDelegate.swift */; };
 		C00A21B31FAEC27D007B04B7 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C00A21371FAEC27D007B04B7 /* Extensions.swift */; };
 		C00A21C21FAEC27D007B04B7 /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = C00A214A1FAEC27D007B04B7 /* Font.swift */; };
@@ -92,9 +95,6 @@
 		C07255462068632A00839BB8 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = C07255452068632A00839BB8 /* Result.swift */; };
 		C07255482068747400839BB8 /* PaginatedResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = C07255472068747400839BB8 /* PaginatedResults.swift */; };
 		C073F0A921299F2000C3E300 /* StepProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C073F0A821299F2000C3E300 /* StepProgressView.swift */; };
-		C073F0AD2129B1DE00C3E300 /* StatusTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = C073F0AC2129B1DE00C3E300 /* StatusTransition.swift */; };
-		C073F0AF2129B30700C3E300 /* SemiModalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C073F0AE2129B30700C3E300 /* SemiModalViewController.swift */; };
-		C073F0B12129B3CE00C3E300 /* ButterflyHandleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C073F0B02129B3CE00C3E300 /* ButterflyHandleView.swift */; };
 		C085A3822029FDFC00AB83C6 /* CheckoutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C085A3812029FDFC00AB83C6 /* CheckoutViewController.swift */; };
 		C085A3A42038DC5600AB83C6 /* CheckoutMapTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C085A3A32038DC5600AB83C6 /* CheckoutMapTableViewCell.swift */; };
 		C09BCAB61FD4BE560041B23A /* LoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C09BCAB51FD4BE560041B23A /* LoadingViewController.swift */; };
@@ -109,6 +109,7 @@
 		C0BAA28E2135B1090068BB0A /* SettingsUserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0BAA28D2135B1090068BB0A /* SettingsUserTableViewCell.swift */; };
 		C0BAA2902135B1760068BB0A /* OrderHistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0BAA28F2135B1760068BB0A /* OrderHistoryViewController.swift */; };
 		C0BAA292213606530068BB0A /* ExpressPlanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0BAA291213606530068BB0A /* ExpressPlanViewController.swift */; };
+		C0BAA2942136ADCA0068BB0A /* Request+Express.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0BAA2932136ADCA0068BB0A /* Request+Express.swift */; };
 		C0BF2779206D1401006A2AB2 /* ItemImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0BF2778206D1401006A2AB2 /* ItemImageViewController.swift */; };
 		C0BF277B206F3D4F006A2AB2 /* ViewControllerWithCart.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0BF277A206F3D4F006A2AB2 /* ViewControllerWithCart.swift */; };
 		C0C6C7A81FB8ECCC00EF9968 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0C6C7A71FB8ECCC00EF9968 /* CategoryViewController.swift */; };
@@ -136,7 +137,11 @@
 		694F693165B9B1E6C2292FFC /* Pods_Papaya.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Papaya.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		91B9D6317289059D3C89782D /* Pods-Papaya.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Papaya.release.xcconfig"; path = "Pods/Target Support Files/Pods-Papaya/Pods-Papaya.release.xcconfig"; sourceTree = "<group>"; };
 		C0003294209358B100717791 /* ClubsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClubsViewController.swift; sourceTree = "<group>"; };
-		C00A1EC11FAEBEF6007B04B7 /* Papaya.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Papaya.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C005D70C2139F1300044374B /* SubscriptionHubViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionHubViewController.swift; sourceTree = "<group>"; };
+		C005D70E2139F13E0044374B /* ExpressBuyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpressBuyViewController.swift; sourceTree = "<group>"; };
+		C005D7102139F40B0044374B /* Subscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Subscription.swift; sourceTree = "<group>"; };
+		C005D712213B111F0044374B /* Papaya.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Papaya.entitlements; sourceTree = "<group>"; };
+		C00A1EC11FAEBEF6007B04B7 /* deliveri.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = deliveri.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C00A20E11FAEC27D007B04B7 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C00A21371FAEC27D007B04B7 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		C00A21381FAEC27D007B04B7 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -224,9 +229,6 @@
 		C07255452068632A00839BB8 /* Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
 		C07255472068747400839BB8 /* PaginatedResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaginatedResults.swift; sourceTree = "<group>"; };
 		C073F0A821299F2000C3E300 /* StepProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepProgressView.swift; sourceTree = "<group>"; };
-		C073F0AC2129B1DE00C3E300 /* StatusTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusTransition.swift; sourceTree = "<group>"; };
-		C073F0AE2129B30700C3E300 /* SemiModalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SemiModalViewController.swift; sourceTree = "<group>"; };
-		C073F0B02129B3CE00C3E300 /* ButterflyHandleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButterflyHandleView.swift; sourceTree = "<group>"; };
 		C085A3812029FDFC00AB83C6 /* CheckoutViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutViewController.swift; sourceTree = "<group>"; };
 		C085A3A32038DC5600AB83C6 /* CheckoutMapTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckoutMapTableViewCell.swift; sourceTree = "<group>"; };
 		C09BCAB51FD4BE560041B23A /* LoadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewController.swift; sourceTree = "<group>"; };
@@ -241,6 +243,7 @@
 		C0BAA28D2135B1090068BB0A /* SettingsUserTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsUserTableViewCell.swift; sourceTree = "<group>"; };
 		C0BAA28F2135B1760068BB0A /* OrderHistoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderHistoryViewController.swift; sourceTree = "<group>"; };
 		C0BAA291213606530068BB0A /* ExpressPlanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpressPlanViewController.swift; sourceTree = "<group>"; };
+		C0BAA2932136ADCA0068BB0A /* Request+Express.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Request+Express.swift"; sourceTree = "<group>"; };
 		C0BF2778206D1401006A2AB2 /* ItemImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemImageViewController.swift; sourceTree = "<group>"; };
 		C0BF277A206F3D4F006A2AB2 /* ViewControllerWithCart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerWithCart.swift; sourceTree = "<group>"; };
 		C0C6C7A71FB8ECCC00EF9968 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
@@ -288,6 +291,7 @@
 		C00A1EB81FAEBEF6007B04B7 = {
 			isa = PBXGroup;
 			children = (
+				C005D712213B111F0044374B /* Papaya.entitlements */,
 				C00A20E01FAEC27D007B04B7 /* Source */,
 				C00A21631FAEC27D007B04B7 /* Assets */,
 				C00A1EC21FAEBEF6007B04B7 /* Products */,
@@ -299,7 +303,7 @@
 		C00A1EC21FAEBEF6007B04B7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C00A1EC11FAEBEF6007B04B7 /* Papaya.app */,
+				C00A1EC11FAEBEF6007B04B7 /* deliveri.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -334,6 +338,8 @@
 				C02978CC207D02B700414E6B /* SignupAddressViewController.swift */,
 				C02978CE207D0EEA00414E6B /* ExpressViewController.swift */,
 				C0BAA291213606530068BB0A /* ExpressPlanViewController.swift */,
+				C005D70C2139F1300044374B /* SubscriptionHubViewController.swift */,
+				C005D70E2139F13E0044374B /* ExpressBuyViewController.swift */,
 				C0C8E7061FB69D1500071AE4 /* HomeViewController.swift */,
 				C01EDF351FB6C78D00A7A0CA /* MeViewController.swift */,
 				C0FA39B61FB7943800F0DC40 /* BrowseViewController.swift */,
@@ -390,6 +396,7 @@
 				C0B7E4882129E593008B8035 /* Request+Order.swift */,
 				C066CE3620276F4000FFC347 /* Request+Search.swift */,
 				C06888892132EFEC002D711E /* Request+Payment.swift */,
+				C0BAA2932136ADCA0068BB0A /* Request+Express.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -415,6 +422,7 @@
 				C0FA39BE1FB80A4300F0DC40 /* CartItem.swift */,
 				C0B7E4862129D99B008B8035 /* Order.swift */,
 				C06888852132EC5D002D711E /* PaymentMethod.swift */,
+				C005D7102139F40B0044374B /* Subscription.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -540,9 +548,7 @@
 			isa = PBXGroup;
 			children = (
 				C013010C2128341F00837514 /* StatusViewController.swift */,
-				C073F0AE2129B30700C3E300 /* SemiModalViewController.swift */,
 				C0B7E48A2129E92D008B8035 /* StatusDataSource.swift */,
-				C073F0AC2129B1DE00C3E300 /* StatusTransition.swift */,
 			);
 			path = Status;
 			sourceTree = "<group>";
@@ -558,7 +564,6 @@
 				C0B7E4842129CF96008B8035 /* LoadingView.swift */,
 				C073F0A821299F2000C3E300 /* StepProgressView.swift */,
 				C05B96F92010410F0030CD7B /* Stepper.swift */,
-				C073F0B02129B3CE00C3E300 /* ButterflyHandleView.swift */,
 				C0B7E48C212A17C8008B8035 /* ProgressView.swift */,
 			);
 			path = Views;
@@ -576,9 +581,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		C00A1EC01FAEBEF6007B04B7 /* Papaya */ = {
+		C00A1EC01FAEBEF6007B04B7 /* deliveri */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C00A1ED31FAEBEF6007B04B7 /* Build configuration list for PBXNativeTarget "Papaya" */;
+			buildConfigurationList = C00A1ED31FAEBEF6007B04B7 /* Build configuration list for PBXNativeTarget "deliveri" */;
 			buildPhases = (
 				F4A05C28BB95F8B216B4530D /* [CP] Check Pods Manifest.lock */,
 				C00A1EBD1FAEBEF6007B04B7 /* Sources */,
@@ -592,9 +597,9 @@
 			);
 			dependencies = (
 			);
-			name = Papaya;
+			name = deliveri;
 			productName = Papaya;
-			productReference = C00A1EC11FAEBEF6007B04B7 /* Papaya.app */;
+			productReference = C00A1EC11FAEBEF6007B04B7 /* deliveri.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -610,6 +615,14 @@
 					C00A1EC01FAEBEF6007B04B7 = {
 						CreatedOnToolsVersion = 9.0.1;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+							com.apple.Push = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -626,7 +639,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				C00A1EC01FAEBEF6007B04B7 /* Papaya */,
+				C00A1EC01FAEBEF6007B04B7 /* deliveri */,
 			);
 		};
 /* End PBXProject section */
@@ -776,6 +789,7 @@
 				C0FBFB7E2099FEA7002400F3 /* AlignmentImageView.swift in Sources */,
 				C03F9D14212F1E9300C1B16A /* UITextView+Placeholder.m in Sources */,
 				C0F74E042057716F00DA41D1 /* EmptyTableViewCell.swift in Sources */,
+				C005D7112139F40B0044374B /* Subscription.swift in Sources */,
 				C0BF277B206F3D4F006A2AB2 /* ViewControllerWithCart.swift in Sources */,
 				C0C8E7071FB69D1500071AE4 /* HomeViewController.swift in Sources */,
 				C07255442068630300839BB8 /* HTTPMethod.swift in Sources */,
@@ -819,15 +833,16 @@
 				C0FBFB88209B59D4002400F3 /* Country.swift in Sources */,
 				C046DEC4205F493100574CD4 /* Checkout.swift in Sources */,
 				C068888421324B6F002D711E /* AcknowledgementsViewController.swift in Sources */,
+				C005D70D2139F1300044374B /* SubscriptionHubViewController.swift in Sources */,
 				C00A21B31FAEC27D007B04B7 /* Extensions.swift in Sources */,
 				C05B9703201170160030CD7B /* SettingsButtonTableViewCell.swift in Sources */,
 				C0452ED21FB5120400240CFF /* MainTabViewController.swift in Sources */,
 				C09BCAB81FD4BEDC0041B23A /* GetStartedViewController.swift in Sources */,
 				C04FDF3B2001B3E400FEC1BC /* ItemActionTableViewCell.swift in Sources */,
 				C0BAA2902135B1760068BB0A /* OrderHistoryViewController.swift in Sources */,
-				C073F0AF2129B30700C3E300 /* SemiModalViewController.swift in Sources */,
 				C063DE1B1FEEFF83001D19BE /* Request.swift in Sources */,
 				C068888C2132F0D1002D711E /* PaymentDetailViewController.swift in Sources */,
+				C0BAA2942136ADCA0068BB0A /* Request+Express.swift in Sources */,
 				C0BAA28E2135B1090068BB0A /* SettingsUserTableViewCell.swift in Sources */,
 				C09BCAB61FD4BE560041B23A /* LoadingViewController.swift in Sources */,
 				C063DE551FF0656D001D19BE /* QueryString.swift in Sources */,
@@ -838,9 +853,9 @@
 				C063DE311FEF1E0E001D19BE /* Request+Parse.swift in Sources */,
 				C063DE451FEF5D05001D19BE /* Address.swift in Sources */,
 				C063DE4B1FEF7F48001D19BE /* Request+List.swift in Sources */,
+				C005D70F2139F13E0044374B /* ExpressBuyViewController.swift in Sources */,
 				C0003295209358B100717791 /* ClubsViewController.swift in Sources */,
 				C01F9AE82017F11300B9A6B4 /* Category.swift in Sources */,
-				C073F0AD2129B1DE00C3E300 /* StatusTransition.swift in Sources */,
 				C063DE261FEF142D001D19BE /* Papaya+Bundle.swift in Sources */,
 				C02D5CD2205C334600293095 /* Request+Checkout.swift in Sources */,
 				C01F9AED2017F45800B9A6B4 /* BaseStore.swift in Sources */,
@@ -852,7 +867,6 @@
 				C0E8BE7E20869A9100DABAC3 /* NotificationSetting.swift in Sources */,
 				C0CDA5C52018E24000FBCB9D /* ItemGroupViewController.swift in Sources */,
 				C02A02151FBA0DE300DC3DDD /* GroupTableViewCell.swift in Sources */,
-				C073F0B12129B3CE00C3E300 /* ButterflyHandleView.swift in Sources */,
 				C066CE39202771DE00FFC347 /* SearchTableViewCell.swift in Sources */,
 				C02978CF207D0EEA00414E6B /* ExpressViewController.swift in Sources */,
 				C00A21C91FAEC27D007B04B7 /* User.swift in Sources */,
@@ -990,12 +1004,13 @@
 			baseConfigurationReference = F0C28D1A4F9B5F12E794D237 /* Pods-Papaya.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Papaya.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 2URPV3567V;
+				DEVELOPMENT_TEAM = RFJRV86B8R;
 				INFOPLIST_FILE = "$(SRCROOT)/Source/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = bm.papaya.Papaya;
+				PRODUCT_BUNDLE_IDENTIFIER = bm.papaya.PapayaTemporary;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Source/Papaya-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
@@ -1008,12 +1023,13 @@
 			baseConfigurationReference = 91B9D6317289059D3C89782D /* Pods-Papaya.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Papaya.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 2URPV3567V;
+				DEVELOPMENT_TEAM = RFJRV86B8R;
 				INFOPLIST_FILE = "$(SRCROOT)/Source/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = bm.papaya.Papaya;
+				PRODUCT_BUNDLE_IDENTIFIER = bm.papaya.PapayaTemporary;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Source/Papaya-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
@@ -1033,7 +1049,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C00A1ED31FAEBEF6007B04B7 /* Build configuration list for PBXNativeTarget "Papaya" */ = {
+		C00A1ED31FAEBEF6007B04B7 /* Build configuration list for PBXNativeTarget "deliveri" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C00A1ED41FAEBEF6007B04B7 /* Debug */,

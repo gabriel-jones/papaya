@@ -10,21 +10,21 @@ import Foundation
 import SwiftyJSON
 
 struct Checkout: BaseObject {
-    let id: Int
-    let cart: Cart?
-    var address: Address?
-    var paymentMethod: PaymentMethod?
+    public let id: Int
+    public let cart: Cart?
+    public var address: Address?
+    public var paymentMethod: PaymentMethod?
     
-    var isDelivery: Bool
-    var isAsap: Bool
-    var isPriority: Bool
+    public var isDelivery: Bool
+    public var isAsap: Bool
+    public var isPriority: Bool
     
-    var startDate: Date?
-    var endDate: Date?
+    public var startDate: Date?
+    public var endDate: Date?
     
-    var priorityFee: Double
-    var deliveryFee: Double
-    var serviceFee: Double
+    public var priorityFee: Double
+    public var deliveryFee: Double?
+    public var serviceFee: Double
     
     init?(dict: JSON) {
         guard
@@ -33,7 +33,6 @@ struct Checkout: BaseObject {
             let _isAsap = dict["is_asap"].bool,
             let _isPriority = dict["is_priority"].bool,
             let _priorityFee = dict["fee"]["priority_fee"].double,
-            let _deliveryFee = dict["fee"]["delivery_fee"].double,
             let _serviceFee = dict["fee"]["service_fee"].double
         else {
             return nil
@@ -48,7 +47,7 @@ struct Checkout: BaseObject {
         isPriority = _isPriority
         
         priorityFee = _priorityFee
-        deliveryFee = _deliveryFee
+        deliveryFee = dict["fee"]["delivery_fee"].double
         serviceFee = _serviceFee
 
         if let _startDateString = dict["request_window_start"].string, let _startDate = dateTimeFormatter.date(from: _startDateString) {

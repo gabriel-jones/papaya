@@ -147,15 +147,30 @@ class SearchViewController: ViewControllerWithCart {
     
     private func buildConstraints() {
         popularTableView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            if BaseStore.order == nil {
+                make.edges.equalToSuperview()
+            } else {
+                make.top.left.right.equalToSuperview()
+                make.bottom.equalToSuperview().inset(50)
+            }
         }
         
         recommendTableView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            if BaseStore.order == nil {
+                make.edges.equalToSuperview()
+            } else {
+                make.top.left.right.equalToSuperview()
+                make.bottom.equalToSuperview().inset(50)
+            }
         }
         
         collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            if BaseStore.order == nil {
+                make.edges.equalToSuperview()
+            } else {
+                make.top.left.right.equalToSuperview()
+                make.bottom.equalToSuperview().inset(99)
+            }
         }
         
         retryButton.snp.makeConstraints { make in

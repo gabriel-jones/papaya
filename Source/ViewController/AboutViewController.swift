@@ -52,14 +52,17 @@ extension AboutViewController: SFSafariViewControllerDelegate {
 
 extension AboutViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        return 4
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .default, reuseIdentifier: C.ViewModel.CellIdentifier.aboutCell.rawValue)
-        cell.textLabel?.text = ["3rd Party Libraries", "Terms of Service", "Privacy Policy"][indexPath.row]
+        cell.textLabel?.text = ["3rd Party Libraries", "Terms of Service", "Privacy Policy", "Acknowledgements"][indexPath.row]
         cell.textLabel?.font = Font.gotham(size: 16)
+        cell.textLabel?.textColor = .darkGray
         cell.accessoryType = .disclosureIndicator
+        cell.imageView?.image = [#imageLiteral(resourceName: "Plugin"), #imageLiteral(resourceName: "Terms"), #imageLiteral(resourceName: "Privacy"), #imageLiteral(resourceName: "Star-Express")][indexPath.row].tintable
+        cell.imageView?.tintColor = .gray
         return cell
     }
     
@@ -68,6 +71,7 @@ extension AboutViewController: UITableViewDelegate, UITableViewDataSource {
         label.text = "Version \(Config.shared.version) (Build #\(Config.shared.buildNumber))"
         label.textAlignment = .center
         label.font = Font.gotham(size: 12)
+        label.textColor = .darkGray
         return label
     }
     

@@ -56,6 +56,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
         window?.makeKeyAndVisible()
         return !j()
     }
+    
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        let tokenParts = deviceToken.map { data -> String in
+            return String(format: "%02.2hhx", data)
+        }
+        let token = tokenParts.joined()
+        print("Got device token: \(token)")
+        Request.shared.addNotification(apnsToken: token)
+    }
+    
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("Failed to register for remote notifications with error: \(error)")
+    }
+    
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        if let id = userInfo["order_id"] as? Int {
+            let vc = StatusViewController()
+            vc.orderId = id
+            switch application.applicationState {
+            case .active:
+                window?.rootViewController?.present(vc, animated: true, completion: nil)
+            case .background:
+                break
+            case .inactive:
+                break
+            }
+            print(window?.rootViewController as Any)
+        }
+    }
 }
 
 /*

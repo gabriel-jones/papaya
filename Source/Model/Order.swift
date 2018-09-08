@@ -47,14 +47,14 @@ struct Transaction: BaseObject {
 
 struct OrderItem: BaseObject {
     
-    enum ReplaceOption: String {
+    public enum ReplaceOption: String {
         case skip
         case replaceBest = "replace_best"
         case replaceSpecific = "replace_specific"
     }
     
-    typealias ReplaceSpecific = (id: Int, name: String)?
-    typealias ReplacedWith = (id: Int, name: String, quantity: Int)?
+    public typealias ReplaceSpecific = (id: Int, name: String)?
+    public typealias ReplacedWith = (id: Int, name: String, quantity: Int)?
     
     public let id: Int
     public let orderItemId: Int
@@ -139,11 +139,11 @@ struct Delivery: BaseObject {
 
 struct Order: BaseObject {
     
-    enum Status: String {
+    public enum Status: String {
         case new, packing, packed, delivery, finished, declined
     }
     
-    struct Time: BaseObject {
+    public struct Time: BaseObject {
         internal let id: Int
         
         public let submitted: Date

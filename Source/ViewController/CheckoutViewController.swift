@@ -24,7 +24,7 @@ class CheckoutViewController: UIViewController {
     public var schedule: [ScheduleDay]!
     
     private var updatingCheckoutType: URLSessionDataTask?
-    private var purchaseExpress = true
+    private var purchaseExpress = false
     private var purchasePriority = false
 
     private let modalBottomTransition: Presentr = {
@@ -334,7 +334,7 @@ extension CheckoutViewController: CheckoutMapDelegate, AddressListModal, Payment
 extension CheckoutViewController: SchedulerDelegate {
     func didUpdateCheckout(new: Checkout) {
         self.checkout = new
-        tableView.reloadRows(at: [IndexPath.init(row: 0, section: 0)], with: .none)
+        tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
     }
 }
 
@@ -344,7 +344,13 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return [0: checkout.isDelivery ? 2 : 1, 1: 1, 2: 1, 3: 4 + (purchasePriority ? 1 : 0), 4: 2][section] ?? 0
+        return [
+            0: checkout.isDelivery ? 2 : 1,
+            1: 1,
+            2: 1,
+            3: User.current!.isExpress ? (4 + (purchasePriority ? 1 : 0)) : 2,
+            4: 4 + (purchasePriority ? 1 : 0)
+        ][section] ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -415,50 +421,52 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
             default: break
             }
             return cell
-        case 3:
-            let cell = UITableViewCell(style: .value1, reuseIdentifier: C.ViewModel.CellIdentifier.checkoutTotalCell.rawValue)
-            cell.textLabel?.font = Font.gotham(size: 14)
-            cell.detailTextLabel?.font = Font.gotham(size: 14)
-            cell.selectionStyle = .none
-            
-            let deliveryFee = 10.0
-            let serviceFee = 10.0
-            let priorityFee = 5.0
-            let total = checkout.cart!.total + (purchasePriority ? priorityFee : 0) + (checkout.isDelivery ? deliveryFee : 0) + serviceFee
-            var model = [
-                ("Cart Subtotal", checkout.cart!.total.currencyFormat),
-                ("Service Fee", checkout.serviceFee.currencyFormat),
-                ("Total", total.currencyFormat)
-            ]
-            if checkout.isDelivery {
-                model.insert(("Delivery Fee", deliveryFee.currencyFormat), at: 1)
+        case 3, 4:
+            if User.current!.isExpress && indexPath.section == 3 || indexPath.section == 4 {
+                let cell = UITableViewCell(style: .value1, reuseIdentifier: C.ViewModel.CellIdentifier.checkoutTotalCell.rawValue)
+                cell.textLabel?.font = Font.gotham(size: 14)
+                cell.detailTextLabel?.font = Font.gotham(size: 14)
+                cell.selectionStyle = .none
+                
+                let deliveryFee = 10.0
+                let serviceFee = 10.0
+                let priorityFee = 5.0
+                let total = checkout.cart!.total + (purchasePriority ? priorityFee : 0) + (checkout.isDelivery ? deliveryFee : 0) + serviceFee
+                var model = [
+                    ("Cart Subtotal", checkout.cart!.total.currencyFormat),
+                    ("Service Fee", checkout.serviceFee.currencyFormat),
+                    ("Total", total.currencyFormat)
+                ]
+                if checkout.isDelivery {
+                    model.insert(("Delivery Fee", deliveryFee.currencyFormat), at: 1)
+                }
+                if purchasePriority {
+                    model.insert(("Priority Fee", priorityFee.currencyFormat), at: 2)
+                }
+                switch indexPath.row {
+                case 0..<model.count:
+                    cell.textLabel?.text = model[indexPath.row].0
+                    cell.textLabel?.textColor = indexPath.row == model.count-1 ? .black : .gray
+                    cell.detailTextLabel?.text = model[indexPath.row].1
+                    cell.detailTextLabel?.textColor = indexPath.row == model.count-1 ? .black : .gray
+                    cell.imageView?.image = indexPath.row == model.count-1 ? nil : UIImage()
+                default: break
+                }
+                return cell
+            } else if indexPath.section == 3 {
+                let cell = UITableViewCell(style: .value1, reuseIdentifier: "moreChargesCell")
+                cell.textLabel?.text = indexPath.row == 0 ? "Prioritise order" : "Purchase Express for 1 Year"
+                cell.detailTextLabel?.text = indexPath.row == 0 ? "$5" : "$12 / month"
+                cell.textLabel?.font = Font.gotham(size: 14)
+                cell.detailTextLabel?.font = Font.gotham(size: 14)
+                cell.detailTextLabel?.textColor = .gray
+                let switchView = UISwitch()
+                switchView.isOn = indexPath.row == 0 ? purchasePriority : purchaseExpress
+                switchView.tag = indexPath.row
+                switchView.addTarget(self, action: #selector(switchChanged(_:)), for: .valueChanged)
+                cell.accessoryView = switchView
+                return cell
             }
-            if purchasePriority {
-                model.insert(("Priority Fee", priorityFee.currencyFormat), at: 2)
-            }
-            switch indexPath.row {
-            case 0..<model.count:
-                cell.textLabel?.text = model[indexPath.row].0
-                cell.textLabel?.textColor = indexPath.row == model.count-1 ? .black : .gray
-                cell.detailTextLabel?.text = model[indexPath.row].1
-                cell.detailTextLabel?.textColor = indexPath.row == model.count-1 ? .black : .gray
-                cell.imageView?.image = indexPath.row == model.count-1 ? nil : UIImage()
-            default: break
-            }
-            return cell
-        case 4:
-            let cell = UITableViewCell(style: .value1, reuseIdentifier: "moreChargesCell")
-            cell.textLabel?.text = indexPath.row == 0 ? "Prioritise order" : "Purchase Express for 1 Year"
-            cell.detailTextLabel?.text = indexPath.row == 0 ? "$5" : "$12 / month"
-            cell.textLabel?.font = Font.gotham(size: 14)
-            cell.detailTextLabel?.font = Font.gotham(size: 14)
-            cell.detailTextLabel?.textColor = .gray
-            let switchView = UISwitch()
-            switchView.isOn = indexPath.row == 0 ? purchasePriority : purchaseExpress
-            switchView.tag = indexPath.row
-            switchView.addTarget(self, action: #selector(switchChanged(_:)), for: .valueChanged)
-            cell.accessoryView = switchView
-            return cell
         default: break
         }
         return UITableViewCell()

@@ -12,6 +12,16 @@ import SwiftyJSON
 extension Request {
     
     @discardableResult
+    public func getFirstPayment(completion: (CompletionHandler<PaymentMethod?>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.get(path: "/payment/first") else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, parseMethod: parse.json2PaymentMethodOptional, completion: completion)
+    }
+    
+    @discardableResult
     public func getAllPayments(completion: (CompletionHandler<Array<PaymentMethod>>)? = nil) -> URLSessionDataTask? {
         guard let request = URLRequest.get(path: "/payment/all") else {
             completion?(Result(error: .cannotBuildRequest))

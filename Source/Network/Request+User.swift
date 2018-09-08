@@ -93,6 +93,20 @@ extension Request {
     }
     
     @discardableResult
+    public func addNotification(apnsToken: String, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
+        let body = [
+            "apns_token": apnsToken,
+            "gcm_token": nil
+        ]
+        guard let request = URLRequest.post(path: "/user/notification/add", body: body) else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, completion: completion)
+    }
+    
+    @discardableResult
     public func updatePassword(oldPassword: String, newPassword: String, completion: (CompletionHandler<JSON>)? = nil) -> URLSessionDataTask? {
         let body = [
             "old_password": oldPassword,
@@ -156,7 +170,7 @@ extension Request {
             "email": email
         ]
         
-        guard let request = URLRequest.post(path: "/user/forgot", urlParameters: body) else {
+        guard let request = URLRequest.post(path: "/user/forgot", body: body) else {
             completion?(Result(error: .cannotBuildRequest))
             return nil
         }

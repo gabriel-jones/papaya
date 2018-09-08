@@ -167,5 +167,13 @@ extension Request {
         func json2PaymentMethod(from json: JSON) -> Result<PaymentMethod> {
             return jsonDict2Object(from: json["payment"], to: PaymentMethod.self)
         }
+        
+        func json2PaymentMethodOptional(from json: JSON) -> Result<PaymentMethod?> {
+            return Result(value: PaymentMethod(dict: json["payment"]))
+        }
+        
+        func json2Subscription(from json: JSON) -> Result<Subscription> {
+            return jsonDict2Object(from: json["subscription"], to: Subscription.self)
+        }
     }
 }

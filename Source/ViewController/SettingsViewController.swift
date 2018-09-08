@@ -21,8 +21,7 @@ class SettingsViewController: UIViewController {
         SettingField(id: 5, image: #imageLiteral(resourceName: "History"), name: "Order History", isModifier: false),
         SettingField(id: 6, image: #imageLiteral(resourceName: "Star-Express"), name: "Papaya Express", isModifier: false),
         SettingField(id: 7, image: #imageLiteral(resourceName: "Help"), name: "Help", isModifier: false),
-        SettingField(id: 8, image: #imageLiteral(resourceName: "About"), name: "About", isModifier: false),
-        SettingField(id: 9, image: #imageLiteral(resourceName: "Star-Express"), name: "Acknowledgments", isModifier: false)
+        SettingField(id: 8, image: #imageLiteral(resourceName: "About"), name: "About", isModifier: false)
     ]
     
     struct SettingField {
@@ -53,8 +52,6 @@ class SettingsViewController: UIViewController {
                 return vc
             case 8:
                 return AboutViewController()
-            case 9:
-                return AcknowledgementsViewController()
             default: return nil
             }
         }
@@ -64,6 +61,10 @@ class SettingsViewController: UIViewController {
         super.viewDidLoad()
         self.buildViews()
         self.buildConstraints()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        self.tableView.reloadData()
     }
     
     private func buildViews() {
@@ -89,33 +90,19 @@ class SettingsViewController: UIViewController {
         }
     }
     
-    @objc func logout(_ sender: UIButton) {
+    @objc func logout(_ sender: LoadingButton) {
         let confirmAlert = UIAlertController(title: "Log out?", message: nil, preferredStyle: .alert)
         confirmAlert.addAction(UIAlertAction(title: "Yes", style: .default) { _ in
-            let loadingAlert = UIAlertController(title: "", message: nil, preferredStyle: .alert)
-            let loading = LoadingView()
-            loading.color = .lightGray
-            loading.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            loading.isUserInteractionEnabled = false
-            loading.startAnimating()
-            loadingAlert.view.addSubview(loading)
-            loading.snp.makeConstraints { make in
-                make.width.height.equalTo(25)
-            }
-            let task = AuthenticationStore.logout { didLogout in
+            sender.showLoading()
+            AuthenticationStore.logout { didLogout in
+                sender.hideLoading()
                 if didLogout {
                     self.navigationController?.isNavigationBarHidden = true
                     self.hero_replaceViewController(with: LoadingViewController())
                 } else {
-                    loadingAlert.dismiss(animated: true) {
-                        self.showMessage("Cannot logout", type: .error)
-                    }
+                    self.showMessage("Can't logout", type: .error)
                 }
             }
-            loadingAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in
-                task?.cancel()
-            })
-            self.present(loadingAlert, animated: true, completion: nil)
         })
         confirmAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         present(confirmAlert, animated: true, completion: nil)
@@ -155,7 +142,7 @@ extension SettingsViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         let cell = UITableViewCell(style: .default, reuseIdentifier: "logoutCell")
-        let logoutButton = UIButton()
+        let logoutButton = LoadingButton()
         logoutButton.setTitle("Log out", for: .normal)
         logoutButton.setTitleColor(UIColor(named: .green), for: .normal)
         logoutButton.titleLabel?.font = Font.gotham(size: 15)

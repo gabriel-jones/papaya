@@ -11,4 +11,5 @@ import Foundation
 class BaseStore {
     static var categories: [Category]!
     static var cartItemCount: Int?
+    static var order: OrderStatus?
 }

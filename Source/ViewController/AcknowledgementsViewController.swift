@@ -66,6 +66,7 @@ class AcknowledgementsViewController: UIViewController {
         textView.textContainerInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
         textView.setContentOffset(.zero, animated: false)
         textView.backgroundColor = .clear
+        textView.textColor = .darkGray
         view.addSubview(textView)
     }
     

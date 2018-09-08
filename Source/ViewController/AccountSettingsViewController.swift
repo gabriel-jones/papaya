@@ -164,6 +164,7 @@ class AccountSettingsViewController: UIViewController {
             sender.hideLoading()
             switch result {
             case .success(_):
+                User.current = self.user
                 self.navigationController?.popViewController(animated: true)
             case .failure(let error):
                 switch error {

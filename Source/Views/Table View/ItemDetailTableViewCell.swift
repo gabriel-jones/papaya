@@ -115,7 +115,8 @@ class ItemDetailTableViewCell: UITableViewCell {
         itemSize.text = item.size
         itemPrice.text = item.price.currencyFormat + " / \(item.unitPrice ?? "each")"
         if let netWeight = Double(item.size?.trimmingCharacters(in: CharacterSet(charactersIn: "01234567890.").inverted) ?? ""), let unit = item.size?.trimmingCharacters(in: CharacterSet(charactersIn: "01234567890.")) {
-            itemPriceUnit.text = (item.price / netWeight).currencyFormat + " / \(unit)"
+            itemPriceUnit.text = (item.price / netWeight).currencyFormat + " / \(unit.trimmingCharacters(in: .whitespacesAndNewlines))"
+            
         }
     }
 

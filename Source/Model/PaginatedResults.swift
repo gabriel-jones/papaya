@@ -9,8 +9,8 @@
 import Foundation
 
 struct PaginatedResults<T> {
-    var isLast: Bool
-    var results: Array<T>
+    public var isLast: Bool
+    public var results: Array<T>
     
     mutating func combine(with: PaginatedResults<T>) {
         isLast = with.isLast
