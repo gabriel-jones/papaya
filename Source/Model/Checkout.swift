@@ -3,13 +3,13 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 3/18/18.
-//  Copyright © 2018 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import Foundation
 import SwiftyJSON
 
-struct Checkout: BaseObject {
+final class Checkout: BaseObject {
     public let id: Int
     public let cart: Cart?
     public var address: Address?
@@ -41,6 +41,7 @@ struct Checkout: BaseObject {
         id = _id
         cart = Cart(dict: dict["cart"])
         address = Address(dict: dict["address"])
+        print(dict["payment"])
         paymentMethod = PaymentMethod(dict: dict["payment"])
         isDelivery = _isDelivery
         isAsap = _isAsap

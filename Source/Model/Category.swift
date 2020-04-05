@@ -3,13 +3,13 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 1/23/18.
-//  Copyright © 2018 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import Foundation
 import SwiftyJSON
 
-struct Category: BaseObject {
+final class Category: BaseObject {
     public let id: Int
     public let name: String
     public let isSpecial: Bool

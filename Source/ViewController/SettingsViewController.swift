@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 12/28/17.
-//  Copyright © 2017 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import UIKit

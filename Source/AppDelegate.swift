@@ -2,8 +2,8 @@
 //  AppDelegate.swift
 //  PrePacked
 //
-//  Created by Gabriel Jones on 11/07/2016.
-//  Copyright © 2016 Fireminds Ltd. All rights reserved.
+//  Created by Gabriel Jones on 11/07/2018.
+//  Copyright © 2018 Ltd. All rights reserved.
 //
 
 import UIKit
@@ -49,6 +49,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, URLSessionDelegate {
             print(exception.name)
         }
         /**/
+        
+        UIApplication.shared.applicationIconBadgeNumber = 0
                 
         window = UIWindow(frame: UIScreen.main.bounds)
         let initialVC = LoadingViewController()

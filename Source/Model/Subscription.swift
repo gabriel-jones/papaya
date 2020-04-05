@@ -3,13 +3,13 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 8/31/18.
-//  Copyright © 2018 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import Foundation
 import SwiftyJSON
 
-struct Subscription: BaseObject {
+final class Subscription: BaseObject {
     public let id: Int
     public let nextPayment: Date
     public let lastPayment: Date
@@ -17,7 +17,7 @@ struct Subscription: BaseObject {
     public let paymentMethod: PaymentMethod
     public let subscriptionType: SubscriptionType
     
-    class SubscriptionType: BaseObject {
+    final class SubscriptionType: BaseObject {
         public let id: Int
         public let amount: Double
         public let intervalInMonths: Int

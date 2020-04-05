@@ -3,12 +3,11 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 1/24/18.
-//  Copyright © 2018 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import UIKit
 
-// This sucks, sorry
 enum ItemGroupRequestType {
     case common
     case recent
@@ -25,14 +24,13 @@ class ItemGroupViewController: ViewControllerWithCart {
     
     public var groupTitle: String!
     public var items: ItemGroupRequestType!
+    public var isModal = false
     
     private var page = 1
     
     private var loadedItems: PaginatedResults<Item> = PaginatedResults(isLast: false, results: [Item]())
     
     private var collectionView: UICollectionView!
-    private let sectionBar = UIView()
-    private let bottomBorder = UIView()
     private let retryButton = UIButton()
     
     override func viewDidLoad() {
@@ -94,12 +92,6 @@ class ItemGroupViewController: ViewControllerWithCart {
             return !self.loadedItems.isLast
         }
         
-        sectionBar.backgroundColor = .white
-        view.addSubview(sectionBar)
-        
-        bottomBorder.backgroundColor = .lightGray
-        sectionBar.addSubview(bottomBorder)
-        
         retryButton.setTitle("Retry", for: .normal)
         retryButton.setImage(#imageLiteral(resourceName: "Replace").tintable, for: .normal)
         retryButton.setTitleColor(.black, for: .normal)
@@ -145,7 +137,8 @@ class ItemGroupViewController: ViewControllerWithCart {
     
     private func loadItems() {
         self.load { paginatedResults, error in
-            guard let paginatedResults = paginatedResults else {
+            guard let paginatedResults = paginatedResults, !paginatedResults.results.isEmpty else {
+                self.collectionView.finishInfiniteScroll()
                 return
             }
             self.collectionView.performBatchUpdates({
@@ -161,29 +154,22 @@ class ItemGroupViewController: ViewControllerWithCart {
     }
     
     private func buildConstraints() {
-        sectionBar.snp.makeConstraints { make in
-            make.height.equalTo(50)
-            make.top.equalToSuperview()
-            make.left.equalToSuperview()
-            make.right.equalToSuperview()
-        }
-        
         collectionView.snp.makeConstraints { make in
-            if BaseStore.order == nil {
-                make.left.right.bottom.equalToSuperview()
-                make.top.equalTo(sectionBar.snp.bottom)
+            if BaseStore.order == nil || self.isModal {
+                make.left.right.top.equalToSuperview()
+                if #available(iOS 11, *) {
+                    make.bottom.equalTo(self.view.safeAreaLayoutGuide)
+                } else {
+                    make.bottom.equalToSuperview()
+                }
             } else {
-                make.left.right.equalToSuperview()
-                make.top.equalTo(sectionBar.snp.bottom)
-                make.bottom.equalToSuperview().inset(99)
+                make.left.right.top.equalToSuperview()
+                if #available(iOS 11, *) {
+                    make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(49)
+                } else {
+                    make.bottom.equalToSuperview().inset(49)
+                }
             }
-        }
-        
-        bottomBorder.snp.makeConstraints { make in
-            make.height.equalTo(0.5)
-            make.bottom.equalToSuperview()
-            make.left.equalToSuperview()
-            make.right.equalToSuperview()
         }
         
         retryButton.snp.makeConstraints { make in

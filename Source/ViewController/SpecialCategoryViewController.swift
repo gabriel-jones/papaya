@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 5/3/18.
-//  Copyright © 2018 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import UIKit
@@ -70,7 +70,8 @@ class SpecialCategoryViewController: ViewControllerWithCart {
         navigationController?.interactivePopGestureRecognizer?.delegate = self
         navigationItem.title = category?.name
         navigationItem.backBarButtonItem = UIBarButtonItem(title: " ", style: .done, target: self, action: nil)
-        
+        navigationItem.leftBarButtonItem = nil
+
         let layout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
         layout.minimumLineSpacing = 16

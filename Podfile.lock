@@ -1,18 +1,18 @@
 PODS:
-  - CHIPageControl/Jaloro (0.1.4)
+  - CHIPageControl/Jaloro (0.1.7)
   - FLAnimatedImage (1.0.12)
-  - GSMessages (1.5.1)
+  - GSMessages (1.6.1)
   - HCSStarRatingView (1.5)
   - Hero (1.0.0-alpha.4)
   - JVFloatLabeledTextField (1.2.1)
-  - KeychainAccess (3.1.0)
+  - KeychainAccess (3.1.1)
   - Mandoline (1.0.0):
     - SnapKit (~> 3.2.0)
-  - PhoneNumberKit (2.1.0):
-    - PhoneNumberKit/PhoneNumberKitCore (= 2.1.0)
-    - PhoneNumberKit/UIKit (= 2.1.0)
-  - PhoneNumberKit/PhoneNumberKitCore (2.1.0)
-  - PhoneNumberKit/UIKit (2.1.0):
+  - PhoneNumberKit (2.5.0):
+    - PhoneNumberKit/PhoneNumberKitCore (= 2.5.0)
+    - PhoneNumberKit/UIKit (= 2.5.0)
+  - PhoneNumberKit/PhoneNumberKitCore (2.5.0)
+  - PhoneNumberKit/UIKit (2.5.0):
     - PhoneNumberKit/PhoneNumberKitCore
   - PINCache (2.3)
   - PINRemoteImage (2.1.4):
@@ -22,12 +22,12 @@ PODS:
   - PINRemoteImage/FLAnimatedImage (2.1.4):
     - FLAnimatedImage (>= 1.0)
     - PINRemoteImage/Core
-  - Presentr (1.3)
-  - ReachabilitySwift (4.1.0)
+  - Presentr (1.3.2)
+  - ReachabilitySwift (4.3.0)
   - SnapKit (3.2.0)
-  - SwiftyJSON (4.0.0)
-  - TagListView (1.3.0)
-  - UIImageViewAlignedSwift (0.5.0)
+  - SwiftyJSON (4.2.0)
+  - TagListView (1.3.1)
+  - UIImageViewAlignedSwift (0.5.1)
   - UIScrollView-InfiniteScroll (1.0.2)
 
 DEPENDENCIES:
@@ -48,26 +48,47 @@ DEPENDENCIES:
   - UIImageViewAlignedSwift
   - UIScrollView-InfiniteScroll (~> 1.0.0)
 
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - CHIPageControl
+    - FLAnimatedImage
+    - GSMessages
+    - HCSStarRatingView
+    - Hero
+    - JVFloatLabeledTextField
+    - KeychainAccess
+    - Mandoline
+    - PhoneNumberKit
+    - PINCache
+    - PINRemoteImage
+    - Presentr
+    - ReachabilitySwift
+    - SnapKit
+    - SwiftyJSON
+    - TagListView
+    - UIImageViewAlignedSwift
+    - UIScrollView-InfiniteScroll
+
 SPEC CHECKSUMS:
-  CHIPageControl: 032b5ab68506c00711d5a61bd83e9fdf2a7ecb22
+  CHIPageControl: bbe1ddd0c688c02ec65b7f7e7d34551a3d16f37c
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
-  GSMessages: 2e6893301ae99f59d72a6d8c920ad41be407216c
+  GSMessages: 870aa0fc8cf39bea0026535ea195376d4040313e
   HCSStarRatingView: 1d18f79654735514cd6f00e6d90e38cb6320dc31
   Hero: 6ab58fdfb16c75ce9c6bfad48ef6abb54780b263
   JVFloatLabeledTextField: cfc44e3c4d493b2ed92ede8035e8e89c2912ba64
-  KeychainAccess: 94c5540b32eabf7bc32bfb976a268e8ea05fd6da
+  KeychainAccess: 7bd430028059754a3debab3cfc0bd1fc7fb85df3
   Mandoline: 5f0c7b5bb52ce3b2757328a59e0206a003911e77
-  PhoneNumberKit: 62003f40ff75315fd3738286558bc365365ac222
+  PhoneNumberKit: 32a1cd1e0aa9e950feb01886a22fd7386b8cf903
   PINCache: ce36ed282031b92fc7733ffe831f474ff80fddc2
   PINRemoteImage: 4ac4011c5caefd6befd99758e09becede05d3226
-  Presentr: 3f0825a42cb32ecd8fc6b6d0b0de87d7d0b42482
-  ReachabilitySwift: 6849231cd4e06559f3b9ef4a97a0a0f96d41e09f
+  Presentr: 797ae6ec8904eaba4ec58a4c2065bd66e31569ea
+  ReachabilitySwift: 408477d1b6ed9779dba301953171e017c31241f3
   SnapKit: 1ca44df72cfa543218d177cb8aab029d10d86ea7
-  SwiftyJSON: 070dabdcb1beb81b247c65ffa3a79dbbfb3b48aa
-  TagListView: 669f7d4455003c877655875d34829731c4191528
-  UIImageViewAlignedSwift: 2e09096e6081ad26b848e19b4bc35a7d69165740
+  SwiftyJSON: c4bcba26dd9ec7a027fc8eade48e2c911f229e96
+  TagListView: 6dafd34a61021c6db72c0c8e3a044054c9854311
+  UIImageViewAlignedSwift: 78f70940f2a63c8fb4b710d14f273b1fb4cc869b
   UIScrollView-InfiniteScroll: c132d6d5851daff229ab4a1060ccf70a05a051c9
 
 PODFILE CHECKSUM: 0337737c1cb07f405fc4ee9529f88d3c4edc58a4
 
-COCOAPODS: 1.3.1
+COCOAPODS: 1.5.3

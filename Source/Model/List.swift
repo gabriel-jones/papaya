@@ -3,13 +3,13 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 12/24/17.
-//  Copyright © 2017 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import Foundation
 import SwiftyJSON
 
-struct List: BaseObject {
+final class List: BaseObject {
     let id: Int
     var name: String
     let itemCount: Int

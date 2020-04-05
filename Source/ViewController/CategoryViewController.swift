@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 11/12/17.
-//  Copyright © 2017 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import UIKit
@@ -38,7 +38,6 @@ class CategoryViewController: ViewControllerWithCart {
             return
         }
         
-        DispatchQueue.main.async { self.activityIndicator.startAnimating() }
         retryButton.isHidden = true
         tableView.isHidden = true
         self.getFeaturedItems()
@@ -112,10 +111,10 @@ class CategoryViewController: ViewControllerWithCart {
     private func buildViews() {
         view.backgroundColor = UIColor(named: .backgroundGrey)
         
-        navigationController?.interactivePopGestureRecognizer?.delegate = self
         navigationItem.title = category?.name
         navigationItem.backBarButtonItem = UIBarButtonItem(title: " ", style: .done, target: self, action: nil)
         navigationItem.leftBarButtonItem = nil
+        navigationController?.interactivePopGestureRecognizer?.delegate = self
 
         tableView.allowsSelection = false
         tableView.backgroundColor = .clear
@@ -151,6 +150,7 @@ class CategoryViewController: ViewControllerWithCart {
         
         activityIndicator.color = .lightGray
         view.addSubview(activityIndicator)
+        activityIndicator.startAnimating()
         
         retryButton.setTitle("Retry", for: .normal)
         retryButton.setImage(#imageLiteral(resourceName: "Replace").tintable, for: .normal)

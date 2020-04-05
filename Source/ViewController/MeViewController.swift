@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 11/11/17.
-//  Copyright © 2017 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import UIKit
@@ -94,7 +94,11 @@ class MeViewController: ViewControllerWithCart {
                 make.edges.equalToSuperview()
             } else {
                 make.top.left.right.equalToSuperview()
-                make.bottom.equalToSuperview().inset(99)
+                if #available(iOS 11, *) {
+                    make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(49)
+                } else {
+                    make.bottom.equalToSuperview().inset(99)
+                }
             }
         }
     }

@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 8/18/18.
-//  Copyright © 2018 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import UIKit
@@ -214,10 +214,6 @@ class StatusViewController: UIViewController, StatusHeaderViewDelegate {
         super.viewDidLoad()
         self.buildViews()
         self.buildConstraints()
-        
-        dataSource.orderId = orderId
-        dataSource.statusViewController = self
-        dataSource.initTableView(tableView)
     }
     
     func close() {
@@ -226,6 +222,10 @@ class StatusViewController: UIViewController, StatusHeaderViewDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        dataSource.orderId = orderId
+        dataSource.statusViewController = self
+        dataSource.initTableView(tableView)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -257,11 +257,20 @@ class StatusViewController: UIViewController, StatusHeaderViewDelegate {
     private func buildConstraints() {
         tableView.snp.makeConstraints { make in
             make.left.right.bottom.equalToSuperview()
-            make.top.equalTo(headerViewHeight)
+            if #available(iOS 11, *) {
+                make.top.equalTo(self.view.safeAreaLayoutGuide).offset(headerViewHeight)
+            } else {
+                make.top.equalTo(headerViewHeight)
+            }
         }
         
         headerView.snp.makeConstraints { make in
-            make.left.right.top.equalToSuperview()
+            make.left.right.equalToSuperview()
+            if #available(iOS 11, *) {
+                make.top.equalTo(self.view.safeAreaLayoutGuide)
+            } else {
+                make.top.equalToSuperview()
+            }
             make.height.equalTo(headerViewHeight)
         }
         
@@ -279,7 +288,11 @@ class StatusViewController: UIViewController, StatusHeaderViewDelegate {
                 make.height.equalTo(self.headerViewHeight)
             }
             self.tableView.snp.updateConstraints { make in
-                make.top.equalTo(self.headerViewHeight)
+                if #available(iOS 11, *) {
+                    make.top.equalTo(self.view.safeAreaLayoutGuide).offset(self.headerViewHeight)
+                } else {
+                    make.top.equalTo(self.headerViewHeight)
+                }
             }
             
             self.view.layoutIfNeeded()
@@ -294,7 +307,11 @@ class StatusViewController: UIViewController, StatusHeaderViewDelegate {
 
 extension StatusViewController: StatusFetcherDelegate {
     func startedFetch() {
-        headerView.setIsLoading(true)
+        if isInitialState {
+            loadingView.startAnimating()
+        } else {
+            headerView.setIsLoading(true)
+        }
     }
     
     func stoppedFetch(with result: Result<Order>) {
@@ -335,11 +352,6 @@ extension StatusViewController: UIScrollViewDelegate {
         self.view.layoutIfNeeded()
         headerView.scrollViewDidScroll(withOffset: y)
     }
-    
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        // let y = scrollView.contentOffset.y
-        //self.checkDismissingCondition(scrollView)
-    }
 }
 
 extension StatusViewController: SFSafariViewControllerDelegate {
@@ -353,8 +365,13 @@ extension StatusViewController: UITableViewDelegate {
         print(indexPath)
         if let cell = tableView.cellForRow(at: indexPath) as? Status_SupportCell {
             if cell.isDeclined {
-                guard let number = URL(string: "tel://14417035040") else { return nil }
-                UIApplication.shared.open(number)
+                let alert = UIAlertController(title: "Call Miles Market?", message: nil, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Call", style: .default, handler: { _ in
+                    guard let number = URL(string: "tel://14417035040") else { return }
+                    UIApplication.shared.open(number)
+                }))
+                alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+                present(alert, animated: true, completion: nil)
             } else {
                 let vc = SFSafariViewController(url: URL(string: C.URL.support)!)
                 vc.delegate = self

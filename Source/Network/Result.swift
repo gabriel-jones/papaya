@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 3/25/18.
-//  Copyright © 2018 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import Foundation
@@ -65,7 +65,7 @@ enum Result<A> {
     public var error: RequestError? {
         switch self {
         case .failure(_):
-            return error
+            return self.error
         default:
             return nil
         }

@@ -2,8 +2,8 @@
 //  Colors.swift
 //  PrePacked
 //
-//  Created by Gabriel Jones on 28/12/2016.
-//  Copyright © 2016 Fireminds Ltd. All rights reserved.
+//  Created by Gabriel Jones on 28/12/2018.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import UIKit

@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 12/23/17.
-//  Copyright © 2017 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import Foundation
@@ -174,6 +174,10 @@ extension Request {
         
         func json2Subscription(from json: JSON) -> Result<Subscription> {
             return jsonDict2Object(from: json["subscription"], to: Subscription.self)
+        }
+        
+        func json2OrderHistory(from json: JSON) -> Result<PaginatedResults<OrderHistory>> {
+            return json2Paginated(from: json, arrJson: json["orders"], with: OrderHistory.self)
         }
     }
 }

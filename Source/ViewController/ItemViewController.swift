@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 11/16/17.
-//  Copyright © 2017 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import UIKit
@@ -69,6 +69,8 @@ class ItemViewController: UIViewController {
                 self.isInCart = detail["item"]["in_cart"].bool
                 self.numberInCart = detail["item"]["number_in_cart"].int
                 self.disclaimer = detail["item"]["disclaimer"].string
+                self.item?.pack = Item(dict: detail["item"]["pack_item"])
+                self.item?.packLabel = detail["item"]["pack_item"]["label"].string
             }
             group.leave()
         }
@@ -299,11 +301,25 @@ extension ItemViewController: StepperDelegate {
 
 extension ItemViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let y = scrollView.contentOffset.y
         UIView.animate(withDuration: 0.3) {
-            let isPastTop = scrollView.contentOffset.y > 0
+            let isPastTop = y > 0
             self.navigationController?.navigationBar.shadowImage = isPastTop ? nil : UIImage()
             self.navigationController?.navigationBar.setBackgroundImage(isPastTop ? nil : UIImage(), for: .default)
             self.navigationItem.title = isPastTop ? self.item?.name : nil
+        }
+        self.checkDismissingCondition(withScrollOffset: y)
+    }
+    
+    private func checkDismissingCondition(withScrollOffset y: CGFloat) {
+        if y < -130 {
+            self.tableView.isScrollEnabled = false
+            self.tableView.setContentOffset(self.tableView.contentOffset, animated: false)
+            self.tableView.contentOffset = CGPoint(x: 0, y: y)
+            if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ItemDetailTableViewCell {
+                cell.itemImage.heroID = nil
+            }
+            self.dismiss(animated: true, completion: nil)
         }
     }
 }
@@ -367,15 +383,27 @@ extension ItemViewController: ViewAllDelegate {
             vc.items = .similar(to: item!)
             vc.groupTitle = "Similar to \(item!.name)"
         }
+        vc.isModal = true
         navigationController?.pushViewController(vc, animated: true)
     }
 }
 
 @objc protocol ItemImageDelegate {
     func openImage(_ sender: Any)
+    func openItem(item: Any)
 }
 
 extension ItemViewController: ItemImageDelegate {
+    func openItem(item: Any) {
+        guard let item = item as? Item else {
+            return
+        }
+        let vc = ItemViewController()
+        vc.item = item
+        vc.isOnNavigationStack = true
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
     func openImage(_ sender: Any) {
         let vc = ItemImageViewController()
         if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ItemDetailTableViewCell, let img = cell.itemImage.image {

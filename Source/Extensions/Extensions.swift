@@ -2,8 +2,8 @@
 //  Extensions.swift
 //  PrePacked
 //
-//  Created by Gabriel Jones on 19/12/2016.
-//  Copyright © 2016 Fireminds Ltd. All rights reserved.
+//  Created by Gabriel Jones on 19/12/2018.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import UIKit
@@ -261,13 +261,11 @@ extension String {
                                             upper: min(count, max(0, r.upperBound))))
         let start = index(startIndex, offsetBy: range.lowerBound)
         let end = index(start, offsetBy: range.upperBound - range.lowerBound)
-        return String(self[Range(start ..< end)])
+        return String(self[start ..< end])
     }
     
     func capitalizingFirstLetter() -> String {
-        let first = String(characters.prefix(1)).capitalized
-        let other = String(characters.dropFirst())
-        return first + other
+        return prefix(1).uppercased() + dropFirst()
     }
     
     mutating func capitalizeFirstLetter() {

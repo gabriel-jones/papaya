@@ -3,13 +3,13 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 8/26/18.
-//  Copyright © 2018 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import Foundation
 import SwiftyJSON
 
-struct PaymentMethod: BaseObject {
+final class PaymentMethod: BaseObject {
     
     public enum CardType: String {
         case visa = "Visa", mastercard = "Mastercard", other = ""

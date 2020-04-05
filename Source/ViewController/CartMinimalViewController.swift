@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 3/22/18.
-//  Copyright © 2018 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import UIKit
@@ -65,13 +65,14 @@ extension CartMinimalViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .subtitle, reuseIdentifier: C.ViewModel.CellIdentifier.cartItemCell.rawValue)
         let item = cart.items[indexPath.row]
-        cell.textLabel?.text = "(\(item.quantity))  " + item.item.name
+        cell.textLabel?.text = "\n(\(item.quantity))  " + item.item.name
         cell.textLabel?.textColor = .black
         cell.textLabel?.font = Font.gotham(size: 14)
         cell.textLabel?.numberOfLines = 0
-        cell.detailTextLabel?.text = (Double(item.quantity) * item.item.price).currencyFormat
+        cell.detailTextLabel?.text = (Double(item.quantity) * item.item.price).currencyFormat + "\n"
         cell.detailTextLabel?.textColor = .gray
         cell.detailTextLabel?.font = Font.gotham(size: 14)
+        cell.detailTextLabel?.numberOfLines = 0
         cell.selectionStyle = .none
         cell.separatorInset = UIEdgeInsets.zero
         return cell

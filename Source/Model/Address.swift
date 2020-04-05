@@ -3,13 +3,13 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 12/23/17.
-//  Copyright © 2017 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import Foundation
 import SwiftyJSON
 
-struct Address: BaseObject {
+final class Address: BaseObject {
     public let id: Int
     public var street: String
     public var zip: String

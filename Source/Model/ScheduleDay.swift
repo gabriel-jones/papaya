@@ -3,13 +3,13 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 4/8/18.
-//  Copyright © 2018 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import Foundation
 import SwiftyJSON
 
-struct ScheduleDay: BaseObject {
+final class ScheduleDay: BaseObject {
     public let id: Int
     public let date: Date
     public let isOpen: Bool

@@ -3,12 +3,14 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 4/10/18.
-//  Copyright © 2018 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import UIKit
 
 class ExpressViewController: UIViewController {
+    
+    public var isModal = false
     
     private let activityIndicator = LoadingView()
     private let retryButton = UIButton()
@@ -66,8 +68,18 @@ class ExpressViewController: UIViewController {
         }
     }
     
+    @objc private func close(_ sender: UIBarButtonItem) {
+        navigationController?.dismiss(animated: true, completion: nil)
+    }
+    
     private func buildViews() {
         view.backgroundColor = .white
+        
+        if isModal {
+            let close = UIBarButtonItem(image: #imageLiteral(resourceName: "Close").tintable, style: .done, target: self, action: #selector(close(_:)))
+            close.tintColor = UIColor(named: .green)
+            navigationItem.leftBarButtonItem = close
+        }
         
         activityIndicator.color = .lightGray
         view.addSubview(activityIndicator)

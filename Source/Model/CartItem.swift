@@ -3,13 +3,13 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 11/12/17.
-//  Copyright © 2017 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import Foundation
 import SwiftyJSON
 
-struct CartItem: BaseObject {
+final class CartItem: BaseObject {
     public let id: Int
     public var quantity: Int
     public let item: Item

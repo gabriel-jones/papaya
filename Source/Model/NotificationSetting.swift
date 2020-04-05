@@ -3,13 +3,13 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 4/17/18.
-//  Copyright © 2018 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import Foundation
 import SwiftyJSON
 
-struct NotificationSettingGroup: BaseObject {
+final class NotificationSettingGroup: BaseObject {
     public let id: Int
     public let name: String
     public let settings: [NotificationSetting]
@@ -36,7 +36,7 @@ struct NotificationSettingGroup: BaseObject {
     }
 }
 
-struct NotificationSetting: BaseObject {
+final class NotificationSetting: BaseObject {
     public let id: Int
     public let name: String
     public let value: Bool

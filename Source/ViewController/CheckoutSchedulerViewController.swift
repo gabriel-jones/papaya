@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 2/4/18.
-//  Copyright © 2018 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import Foundation
@@ -17,12 +17,16 @@ class DayCell: UICollectionViewCell {
     
     let dayLabel = UILabel()
     let dateLabel = UILabel()
+    let closedLabel = UILabel()
     
     var viewModel: DayCellViewModel? {
         didSet {
             guard let viewModel = viewModel else { return }
             dayLabel.text = viewModel.dayLabelText?.uppercased()
             dateLabel.text = viewModel.dateLabelText
+            dayLabel.alpha = viewModel.isSelectable ? 1 : 0.5
+            dateLabel.alpha = viewModel.isSelectable ? 1 : 0.5
+            closedLabel.isHidden = viewModel.isSelectable
         }
     }
     
@@ -43,6 +47,16 @@ class DayCell: UICollectionViewCell {
         contentView.addSubview(dateLabel)
         dateLabel.snp.makeConstraints { make in
             make.top.equalTo(dayLabel.snp.bottom).offset(5)
+            make.centerX.equalToSuperview()
+        }
+        
+        closedLabel.font = Font.gotham(size: 12)
+        closedLabel.textAlignment = .center
+        closedLabel.text = "CLOSED"
+        closedLabel.textColor = UIColor(named: .red)
+        contentView.addSubview(closedLabel)
+        closedLabel.snp.makeConstraints { make in
+            make.top.equalTo(dateLabel.snp.bottom).offset(6)
             make.centerX.equalToSuperview()
         }
     }
@@ -241,8 +255,8 @@ class CheckoutSchedulerViewController: UIViewController {
             navigationController?.navigationBar.backgroundColor = .white
         }
         
-        setButton(to: selectedDate)
-        setDetail(to: selectedDate)
+        setButton(to: selectedDate, day: schedule.first!)
+        setDetail(to: selectedDate, day: schedule.first!)
     }
     
     func daySuffix(date: Date) -> String {
@@ -255,9 +269,16 @@ class CheckoutSchedulerViewController: UIViewController {
         }
     }
     
-    private func setButton(to date: Date) {
+    private func setButton(to date: Date, day: ScheduleDay) {
+        scheduleButton.isEnabled = true
+        scheduleButton.alpha = 1
         if isAsap {
             scheduleButton.setTitle("Schedule for ASAP", for: .normal)
+            return
+        } else if !day.isOpen {
+            scheduleButton.setTitle("CLOSED", for: .normal)
+            scheduleButton.isEnabled = false
+            scheduleButton.alpha = 0.5
             return
         }
         let formatter = DateFormatter()
@@ -277,7 +298,7 @@ class CheckoutSchedulerViewController: UIViewController {
         return str
     }
     
-    private func setDetail(to date: Date) {
+    private func setDetail(to date: Date, day: ScheduleDay) {
         let str = getDetailString(date: date)
         
         if isModal {
@@ -285,8 +306,8 @@ class CheckoutSchedulerViewController: UIViewController {
         } else {
             UIView.setAnimationsEnabled(false)
             tableView.beginUpdates()
-            tableView.footerView(forSection: 0)?.textLabel?.text = "\n" + str + "\n"
-            tableView.footerView(forSection: 0)?.sizeToFit()
+            tableView.footerView(forSection: 1)?.textLabel?.text = "\n" + str + "\n"
+            tableView.footerView(forSection: 1)?.sizeToFit()
             tableView.endUpdates()
             UIView.setAnimationsEnabled(true)
         }
@@ -379,7 +400,7 @@ class CheckoutSchedulerViewController: UIViewController {
         }
         isAsap = sender.isOn
         tableView.reloadData()
-        self.setButton(to: self.selectedDate)
+        self.setButton(to: self.selectedDate, day: schedule.first!)
     }
 }
 
@@ -393,11 +414,11 @@ extension CheckoutSchedulerViewController: PickerDayDelegate {
     func didSelect(day: ScheduleDay, date: Date, shouldRefresh: Bool) {
         if shouldRefresh {
             timeModel.day = day
-            tableView.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .none)
+            tableView.reloadRows(at: [IndexPath(row: 1, section: 1)], with: .none)
         }
         
-        setButton(to: date)
-        setDetail(to: date)
+        setButton(to: date, day: day)
+        setDetail(to: date, day: day)
         
         selectedDate = date
     }
@@ -490,7 +511,9 @@ extension CheckoutSchedulerViewController: UITableViewDelegate, UITableViewDataS
         if indexPath.section == 0 && indexPath.row == 1 {
             tableView.deselectRow(at: indexPath, animated: true)
             let vc = ExpressViewController()
+            vc.isModal = true
             let nav = UINavigationController(rootViewController: vc)
+            nav.navigationBar.tintColor = UIColor(named: .green)
             present(nav, animated: true, completion: nil)
         }
     }

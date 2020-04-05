@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 1/18/18.
-//  Copyright © 2018 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import UIKit
@@ -51,12 +51,7 @@ class AccountSettingsViewController: UIViewController {
         self.buildViews()
         self.buildConstraints()
         
-        if let currentUser = User.current {
-            self.user = currentUser
-            self.tableView.reloadData()
-        } else {
-            self.fetchUserDetails()
-        }
+        self.fetchUserDetails()
         
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: .UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: .UIKeyboardWillHide, object: nil)

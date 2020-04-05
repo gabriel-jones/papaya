@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 11/10/17.
-//  Copyright © 2017 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import Foundation
@@ -51,5 +51,17 @@ class ItemGroupModel: GroupModel {
             return
         }
         delegate?.open(item: items[indexPath.row], imageId: (collectionView.cellForItem(at: indexPath) as? ItemCollectionViewCell)?.getImageId() ?? "")
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        let offsetEnd = scrollView.contentOffset.x - scrollView.contentSize.width
+        self.checkDismissingCondition(withScrollOffset: offsetEnd, scrollView: scrollView)
+    }
+    
+    private func checkDismissingCondition(withScrollOffset x: CGFloat, scrollView: UIScrollView) {
+        print(x)
+        if x > 100 {
+
+        }
     }
 }

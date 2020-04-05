@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 11/10/17.
-//  Copyright © 2017 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import UIKit
@@ -41,6 +41,7 @@ class ItemCollectionViewCell: UICollectionViewCell {
     private var name1Template: UIView!
     private var name2Template: UIView!
     private var name3Template: UIView!
+    private let heartImage = UIImageView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -96,6 +97,11 @@ class ItemCollectionViewCell: UICollectionViewCell {
         
         name3Template = buildTemplate()
         itemName.addSubview(name3Template)
+        
+        heartImage.image = #imageLiteral(resourceName: "Heart").tintable
+        heartImage.tintColor = UIColor(named: .red)
+        heartImage.isHidden = true
+        addSubview(heartImage)
     }
     
     private func buildConstraints() {
@@ -146,6 +152,11 @@ class ItemCollectionViewCell: UICollectionViewCell {
             make.height.equalTo(priceTemplate.snp.height).multipliedBy(0.8)
             make.width.equalToSuperview().multipliedBy(CGFloat(8.0/10.0))
         }
+        
+        heartImage.snp.makeConstraints { make in
+            make.left.top.equalToSuperview().inset(8)
+            make.width.height.equalTo(25)
+        }
     }
     
     public func load(item: Item) {
@@ -157,6 +168,7 @@ class ItemCollectionViewCell: UICollectionViewCell {
 
         itemPrice.text = item.price.currencyFormat
         itemName.text = item.name
+        heartImage.isHidden = !(item.isLiked ?? false)
         
         self.itemImage.pin_setPlaceholder(with: #imageLiteral(resourceName: "Picture").tintable)
         self.setImageTemplate(to: true)
@@ -167,6 +179,10 @@ class ItemCollectionViewCell: UICollectionViewCell {
             }
             
             itemImage.heroID = self.getImageId()
+        }
+        
+        if item.id == 0 {
+            self.isHidden = true
         }
     }
     

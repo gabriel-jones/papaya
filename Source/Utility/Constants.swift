@@ -3,7 +3,7 @@
 //  PrePacked
 //
 //  Created by Gabriel Jones on 10/27/17.
-//  Copyright © 2017 Fireminds Ltd. All rights reserved.
+//  Copyright © 2017  Ltd. All rights reserved.
 //
 
 import Foundation

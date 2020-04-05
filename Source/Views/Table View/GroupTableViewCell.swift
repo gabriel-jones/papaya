@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 11/13/17.
-//  Copyright © 2017 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import UIKit
@@ -63,7 +63,7 @@ class GroupTableViewCell: UITableViewCell {
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.alwaysBounceHorizontal = true
         collectionView.backgroundColor = .clear
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24)
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 24)
         collectionView.delaysContentTouches = true
         collectionView.masksToBounds = false
         collectionView.showsHorizontalScrollIndicator = false

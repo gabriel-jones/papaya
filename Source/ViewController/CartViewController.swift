@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 11/11/17.
-//  Copyright © 2017 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import UIKit
@@ -17,8 +17,11 @@ extension UIImage {
 class CartViewController: UIViewController {
     
     private var cart: Cart?
+    private var schedule: ScheduleDay?
     public var delegate: CartViewControllerDelegate?
-    
+    private let group = DispatchGroup()
+    private var isInitialLoad: Bool = true
+
     private var closeButton: UIBarButtonItem!
     private let tableView = UITableView(frame: .zero, style: .grouped)
     private let toolbar = UIView()
@@ -40,9 +43,6 @@ class CartViewController: UIViewController {
     private func loadCart(_ completion: (() -> Void)? = nil) {
         retryButton.isHidden = true
         Request.shared.getCart { result in
-            self.activityIndicator.stopAnimating()
-            self.checkoutButton.hideLoading()
-            completion?()
             switch result {
             case .success(let cart):
                 self.hideMessage()
@@ -55,8 +55,11 @@ class CartViewController: UIViewController {
                 self.tableView.isUserInteractionEnabled = true
                 
                 self.cart = cart
-                self.update()
-            case .failure(_):                
+                
+                if !self.isInitialLoad {
+                    self.update()
+                }
+            case .failure(_):
                 self.checkoutButton.hideLoading()
                 self.checkoutButton.alpha = 0.5
                 self.checkoutButton.isEnabled = false
@@ -69,6 +72,9 @@ class CartViewController: UIViewController {
                     .hideOnTap(false)
                 ])
             }
+            self.activityIndicator.stopAnimating()
+            self.checkoutButton.hideLoading()
+            completion?()
         }
     }
     
@@ -85,8 +91,28 @@ class CartViewController: UIViewController {
             self.activityIndicator.startAnimating()
             self.tableView.isHidden = true
         }
+        group.enter()
         self.loadCart {
+            self.group.leave()
+        }
+        
+        group.enter()
+        Request.shared.getSchedule(days: 1) { result in
+            switch result {
+            case .success(let days):
+                guard let day = days.first else {
+                    return
+                }
+                self.schedule = day
+            case .failure(_): break
+            }
+            self.group.leave()
+        }
+        
+        group.notify(queue: .main) {
+            self.isInitialLoad = false
             self.tableView.isHidden = false
+            self.update()
         }
     }
     
@@ -170,6 +196,7 @@ class CartViewController: UIViewController {
         Request.shared.getSchedule { result in
             switch result {
             case .success(let days):
+                print(days)
                 Request.shared.createCheckout { result in
                     sender.hideLoading()
                     switch result {
@@ -347,11 +374,11 @@ extension CartViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard let _cart = self.cart else {
+        guard let cart = self.cart, let schedule = self.schedule else {
             return nil
         }
         let header = CartHeaderView()
-        header.load(cart: _cart)
+        header.load(cart: cart, schedule: schedule)
         return header
     }
 }

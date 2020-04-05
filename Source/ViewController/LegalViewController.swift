@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 1/22/18.
-//  Copyright © 2018 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import UIKit
@@ -89,6 +89,8 @@ extension LegalViewController: UITableViewDelegate, UITableViewDataSource {
         cell.textLabel?.text = libs[indexPath.row].name
         cell.textLabel?.font = Font.gotham(size: 16)
         cell.textLabel?.textColor = .darkGray
+        cell.imageView?.image = #imageLiteral(resourceName: "Plugin").tintable
+        cell.imageView?.tintColor = .gray
         cell.accessoryType = .disclosureIndicator
         return cell
     }

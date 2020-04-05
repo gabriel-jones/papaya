@@ -1,9 +1,10 @@
+
 //
 //  SearchVC.swift
 //  Papaya
 //
 //  Created by Gabriel Jones on 11/11/17.
-//  Copyright © 2017 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import UIKit
@@ -97,6 +98,7 @@ class SearchViewController: ViewControllerWithCart {
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.register(SearchEmptyCollectionViewCell.classForCoder(), forCellWithReuseIdentifier: SearchEmptyCollectionViewCell.identifier)
         collectionView.register(ItemCollectionViewCell.classForCoder(), forCellWithReuseIdentifier: ItemCollectionViewCell.identifier)
+        collectionView.register(SearchSuggestCollectionViewCell.classForCoder(), forCellWithReuseIdentifier: SearchSuggestCollectionViewCell.identifier)
         view.addSubview(collectionView)
         
         /*
@@ -169,7 +171,11 @@ class SearchViewController: ViewControllerWithCart {
                 make.edges.equalToSuperview()
             } else {
                 make.top.left.right.equalToSuperview()
-                make.bottom.equalToSuperview().inset(99)
+                if #available(iOS 11, *) {
+                    make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(49)
+                } else {
+                    make.bottom.equalToSuperview().inset(99)
+                }
             }
         }
         
@@ -392,13 +398,20 @@ class SearchItemsModel: SearchModel, UICollectionViewDelegate, UICollectionViewD
         } else if items.results.isEmpty {
             return 8
         }
-        return items.results.count
+        
+        if items.results.count % 2 != 0 {
+            items.results.append(Item())
+        }
+        return items.results.count + 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if items.isLast && items.results.isEmpty {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchEmptyCollectionViewCell.identifier, for: indexPath) as! SearchEmptyCollectionViewCell
             cell.query = query
+            return cell
+        } else if !items.results.isEmpty && indexPath.row == items.results.count {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchSuggestCollectionViewCell.identifier, for: indexPath) as! SearchSuggestCollectionViewCell
             return cell
         }
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ItemCollectionViewCell.identifier, for: indexPath) as! ItemCollectionViewCell
@@ -413,11 +426,17 @@ class SearchItemsModel: SearchModel, UICollectionViewDelegate, UICollectionViewD
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if items.isLast && items.results.isEmpty {
             return CGSize(width: collectionView.frame.width, height: 200)
+        } else if !items.results.isEmpty && indexPath.row == items.results.count {
+            return CGSize(width: collectionView.frame.width - 32, height: 140)
         }
         return CGSize(width: (collectionView.frame.width / 2) - 24, height: 200)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if !items.results.isEmpty && indexPath.row == items.results.count {
+            print("suggest")
+            return
+        }
         let item = items.results[indexPath.row]
         var imageId: String?
         if let cell = collectionView.cellForItem(at: indexPath) as? ItemCollectionViewCell {
@@ -426,6 +445,81 @@ class SearchItemsModel: SearchModel, UICollectionViewDelegate, UICollectionViewD
         delegate?.openItem(item: item, imageId: imageId)
     }
     
+}
+
+class SearchSuggestCollectionViewCell: UICollectionViewCell {
+    public static let identifier: String = C.ViewModel.CellIdentifier.similarItemCell.rawValue // TODO: standardise this shit or just add all the right cells
+    
+    private let card = UIView()
+    private let titleLabel = UILabel()
+    private let subtitleLabel = UILabel()
+    private let suggestButton = UIButton()
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.buildViews()
+        self.buildConstraints()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func buildViews() {
+        card.layer.cornerRadius = 7
+        card.layer.shadowOpacity = 0.05
+        card.layer.shadowColor = UIColor.black.cgColor
+        card.layer.shadowOffset = CGSize(width: 0, height: 2)
+        card.layer.shadowRadius = 5
+        card.backgroundColor = .white
+        card.clipsToBounds = false
+        card.masksToBounds = false
+        addSubview(card)
+        
+        titleLabel.font = Font.gotham(size: 18)
+        titleLabel.textColor = .black
+        titleLabel.numberOfLines = 0
+        titleLabel.text = "Can't find what you're looking for?"
+        card.addSubview(titleLabel)
+        
+        subtitleLabel.font = Font.gotham(size: 15)
+        subtitleLabel.textColor = .darkGray
+        subtitleLabel.numberOfLines = 0
+        subtitleLabel.text = "Suggest a grocery and we'll add it to our database."
+        card.addSubview(subtitleLabel)
+        
+        suggestButton.setTitle("Suggest", for: .normal)
+        suggestButton.setTitleColor(UIColorFromRGB(0x2CC664), for: .normal)
+        suggestButton.setImage(#imageLiteral(resourceName: "Right Arrow").tintable, for: .normal)
+        suggestButton.tintColor = UIColorFromRGB(0x2CC664)
+        //suggestButton.addTarget(self, action: #selector(view(_:)), for: .touchUpInside)
+        suggestButton.titleLabel?.font = Font.gotham(weight: .bold, size: 14)
+        suggestButton.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
+        suggestButton.titleLabel?.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
+        suggestButton.imageView?.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
+        card.addSubview(suggestButton)
+    }
+    
+    private func buildConstraints() {
+        card.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        titleLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(16)
+            make.left.right.equalToSuperview().inset(16)
+        }
+        
+        subtitleLabel.snp.makeConstraints { make in
+            make.top.equalTo(titleLabel.snp.bottom).offset(8)
+            make.left.right.equalToSuperview().inset(16)
+        }
+        
+        suggestButton.snp.makeConstraints { make in
+            make.top.equalTo(subtitleLabel.snp.bottom).offset(8)
+            make.left.equalToSuperview().inset(16)
+        }
+    }
 }
 
 class SearchEmptyCollectionViewCell: UICollectionViewCell {

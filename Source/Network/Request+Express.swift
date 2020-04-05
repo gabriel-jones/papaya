@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 8/29/18.
-//  Copyright © 2018 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import Foundation

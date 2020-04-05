@@ -141,7 +141,7 @@
 		C005D70E2139F13E0044374B /* ExpressBuyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpressBuyViewController.swift; sourceTree = "<group>"; };
 		C005D7102139F40B0044374B /* Subscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Subscription.swift; sourceTree = "<group>"; };
 		C005D712213B111F0044374B /* Papaya.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Papaya.entitlements; sourceTree = "<group>"; };
-		C00A1EC11FAEBEF6007B04B7 /* deliveri.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = deliveri.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C00A1EC11FAEBEF6007B04B7 /* Papaya.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Papaya.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C00A20E11FAEC27D007B04B7 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C00A21371FAEC27D007B04B7 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		C00A21381FAEC27D007B04B7 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -303,7 +303,7 @@
 		C00A1EC21FAEBEF6007B04B7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C00A1EC11FAEBEF6007B04B7 /* deliveri.app */,
+				C00A1EC11FAEBEF6007B04B7 /* Papaya.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -381,8 +381,8 @@
 				C063DE541FF0656D001D19BE /* QueryString.swift */,
 				C063DE201FEF10B4001D19BE /* URLRequest+Papaya.swift */,
 				C063DE2E1FEF1D79001D19BE /* Response.swift */,
-				C07255432068630300839BB8 /* HTTPMethod.swift */,
 				C063DE281FEF15B5001D19BE /* RequestError.swift */,
+				C07255432068630300839BB8 /* HTTPMethod.swift */,
 				C063DE1A1FEEFF83001D19BE /* Request.swift */,
 				C063DE301FEF1E0E001D19BE /* Request+Parse.swift */,
 				C063DE1E1FEF0F4F001D19BE /* Request+User.swift */,
@@ -581,25 +581,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		C00A1EC01FAEBEF6007B04B7 /* deliveri */ = {
+		C00A1EC01FAEBEF6007B04B7 /* Papaya */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C00A1ED31FAEBEF6007B04B7 /* Build configuration list for PBXNativeTarget "deliveri" */;
+			buildConfigurationList = C00A1ED31FAEBEF6007B04B7 /* Build configuration list for PBXNativeTarget "Papaya" */;
 			buildPhases = (
 				F4A05C28BB95F8B216B4530D /* [CP] Check Pods Manifest.lock */,
 				C00A1EBD1FAEBEF6007B04B7 /* Sources */,
 				C00A1EBE1FAEBEF6007B04B7 /* Frameworks */,
 				C00A1EBF1FAEBEF6007B04B7 /* Resources */,
 				39147B561DE6DDF1FC719C94 /* [CP] Embed Pods Frameworks */,
-				FDABC68516BAE171A6D3375E /* [CP] Copy Pods Resources */,
 				C02A02171FBB475600DC3DDD /* ShellScript */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = deliveri;
+			name = Papaya;
 			productName = Papaya;
-			productReference = C00A1EC11FAEBEF6007B04B7 /* deliveri.app */;
+			productReference = C00A1EC11FAEBEF6007B04B7 /* Papaya.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -639,7 +638,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				C00A1EC01FAEBEF6007B04B7 /* deliveri */,
+				C00A1EC01FAEBEF6007B04B7 /* Papaya */,
 			);
 		};
 /* End PBXProject section */
@@ -740,24 +739,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		FDABC68516BAE171A6D3375E /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Papaya/Pods-Papaya-resources.sh",
-				"${PODS_ROOT}/GooglePlaces/Frameworks/GooglePlaces.framework/Resources/GooglePlaces.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Papaya/Pods-Papaya-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1006,11 +987,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Papaya.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = RFJRV86B8R;
+				DEVELOPMENT_TEAM = 2URPV3567V;
 				INFOPLIST_FILE = "$(SRCROOT)/Source/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = bm.papaya.PapayaTemporary;
+				PRODUCT_BUNDLE_IDENTIFIER = bm.papaya.Papaya;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Source/Papaya-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
@@ -1025,11 +1006,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Papaya.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = RFJRV86B8R;
+				DEVELOPMENT_TEAM = 2URPV3567V;
 				INFOPLIST_FILE = "$(SRCROOT)/Source/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = bm.papaya.PapayaTemporary;
+				PRODUCT_BUNDLE_IDENTIFIER = bm.papaya.Papaya;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Source/Papaya-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
@@ -1049,7 +1030,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C00A1ED31FAEBEF6007B04B7 /* Build configuration list for PBXNativeTarget "deliveri" */ = {
+		C00A1ED31FAEBEF6007B04B7 /* Build configuration list for PBXNativeTarget "Papaya" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C00A1ED41FAEBEF6007B04B7 /* Debug */,

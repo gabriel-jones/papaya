@@ -3,13 +3,13 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 5/3/18.
-//  Copyright © 2018 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import Foundation
 import SwiftyJSON
 
-struct SpecialItem: BaseObject {
+final class SpecialItem: BaseObject {
     let id: Int
     let name: String
     let description: String

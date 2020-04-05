@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 8/31/18.
-//  Copyright © 2018 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import Foundation
@@ -62,7 +62,7 @@ func makeAttributedStringFromFormatted(_ str: String, boldFont: UIFont) -> NSMut
 }
 
 class ExpressBuyViewController: UIViewController {
-    
+        
     private let scroll = UIScrollView()
     private let stack = UIStackView()
     

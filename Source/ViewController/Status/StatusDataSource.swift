@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 8/19/18.
-//  Copyright © 2018 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import UIKit
@@ -41,6 +41,7 @@ class StatusCell: UITableViewCell {
     }
     
     internal func buildViews() {
+        selectionStyle = .none
         backgroundColor = .clear
         
         view.backgroundColor = .white
@@ -92,8 +93,6 @@ class Status_PendingCell: StatusCell, CellWithIdentifier {
     
     override func buildViews() {
         super.buildViews()
-        
-        self.selectionStyle = .none
         
         view.addSubview(progressView)
         Timer.scheduledTimer(withTimeInterval: 0.01, repeats: false) { _ in
@@ -684,7 +683,7 @@ class Status_SupportCell: StatusCell, CellWithIdentifier {
         
         subtitleLabel.snp.makeConstraints { make in
             make.left.equalToSuperview().inset(16)
-            make.right.equalToSuperview().inset(24)
+            make.right.equalToSuperview().inset(32)
             make.top.equalTo(titleLabel.snp.bottom).offset(8)
             make.bottom.equalTo(-28)
         }

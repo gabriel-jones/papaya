@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 8/19/18.
-//  Copyright © 2018 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import Foundation
@@ -45,5 +45,17 @@ extension Request {
         
         return self.execute(request: request, completion: completion)
     }
+    
+    @discardableResult
+    public func getAllOrderHistory(page: Int, completion: (CompletionHandler<PaginatedResults<OrderHistory>>)? = nil) -> URLSessionDataTask? {
+        guard let request = URLRequest.get(path: "/order/history/all/\(page)") else {
+            completion?(Result(error: .cannotBuildRequest))
+            return nil
+        }
+        
+        return self.execute(request: request, parseMethod: parse.json2OrderHistory, completion: completion)
+    }
+    
+    
     
 }

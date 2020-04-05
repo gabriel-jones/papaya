@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 2/6/18.
-//  Copyright © 2018 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import UIKit
@@ -255,7 +255,7 @@ class CheckoutViewController: UIViewController {
         if !sender.isOn {
             if sender.tag == 0 {
                 purchasePriority = false
-                purchaseExpress = true
+                tableView.deleteRows(at: [IndexPath.init(row: 3, section: 4)], with: .none)
             } else if sender.tag == 1 {
                 purchaseExpress = false
             }
@@ -263,23 +263,24 @@ class CheckoutViewController: UIViewController {
             if sender.tag == 0 {
                 purchaseExpress = false
                 purchasePriority = true
+                tableView.insertRows(at: [IndexPath.init(row: 3, section: 4)], with: .none)
             } else if sender.tag == 1 {
                 purchasePriority = false
                 purchaseExpress = true
             }
         }
         
-        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 4)) {
+        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 3)) {
             if let switchView = cell.accessoryView as? UISwitch {
                 switchView.setOn(purchasePriority, animated: true)
             }
         }
-        if let cell = tableView.cellForRow(at: IndexPath(row: 1, section: 4)) {
+        if let cell = tableView.cellForRow(at: IndexPath(row: 1, section: 3)) {
             if let switchView = cell.accessoryView as? UISwitch {
                 switchView.setOn(purchaseExpress, animated: true)
             }
         }
-        tableView.reloadSections(IndexSet(integer: 3), with: .automatic)
+        tableView.reloadSections(IndexSet(integer: 4), with: .none)
     }
 }
 
@@ -531,6 +532,13 @@ extension CheckoutViewController: UITableViewDelegate, UITableViewDataSource {
             make.edges.equalToSuperview().inset(8)
         }
         return container
+    }
+    
+    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        if section == 4 || (section == 3 && User.current!.isExpress) {
+            return "Your card will be temporarily authorised for more than the order total so that any changes in your order can be handled without issue."
+        }
+        return nil
     }
 }
 

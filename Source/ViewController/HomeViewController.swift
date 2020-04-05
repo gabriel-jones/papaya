@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 11/10/17.
-//  Copyright © 2017 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import UIKit
@@ -76,38 +76,6 @@ class HomeViewController: ViewControllerWithCart {
         }
     }
     
-    override func viewDidAppear(_ animated: Bool) {        
-//        if let checkout = checkout, let scheduleDays = scheduleDays {
-//            isHeroEnabled = true
-//            let cart = CartViewController()
-//            cart.delegate = self
-//            cart.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .done, target: cart, action: nil)
-//            let navCart = UINavigationController()
-//            navCart.isHeroEnabled = true
-//            navCart.navigationBar.tintColor = UIColor(named: .green)
-//            navCart.heroModalAnimationType = .selectBy(presenting: .cover(direction: .left), dismissing: .uncover(direction: .right))
-//            let scheduler = CheckoutSchedulerViewController()
-//            scheduler.checkout = checkout
-//            scheduler.schedule = scheduleDays
-//            scheduler.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .done, target: scheduler, action: nil)
-//            var vcs: [UIViewController] = [cart, scheduler]
-//            if checkout.orderDate != nil {
-//                scheduler.selectedDate = checkout.orderDate!
-//                let checkoutVC = CheckoutViewController()
-//                checkoutVC.checkout = checkout
-//                checkoutVC.schedule = scheduleDays
-//                checkoutVC.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .done, target: checkoutVC, action: nil)
-//                vcs.append(checkoutVC)
-//            }
-//
-//            navCart.viewControllers = vcs
-//            view.window?.rootViewController?.present(navCart, animated: true) {
-//                self.checkout = nil
-//                self.scheduleDays = nil
-//            }
-//        }
-    }
-    
     private func buildViews() {
         isHeroEnabled = true
         view.backgroundColor = UIColor(named: .backgroundGrey)
@@ -156,7 +124,11 @@ class HomeViewController: ViewControllerWithCart {
                 make.edges.equalToSuperview()
             } else {
                 make.top.left.right.equalToSuperview()
-                make.bottom.equalToSuperview().inset(99)
+                if #available(iOS 11, *) {
+                    make.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(49)
+                } else {
+                    make.bottom.equalToSuperview().inset(99)
+                }
             }
         }
     }

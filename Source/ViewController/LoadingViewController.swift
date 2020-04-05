@@ -3,7 +3,7 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 12/3/17.
-//  Copyright © 2017 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import UIKit
@@ -66,9 +66,8 @@ class LoadingViewController: UIViewController {
         logoName.layer.shadowColor = UIColor.black.cgColor
         logoName.layer.shadowOpacity = 0.15
         logoName.layer.shadowOffset = CGSize(width: 0, height: 2)
-        let attributedString = NSMutableAttributedString(string: "deliveri")
+        let attributedString = NSMutableAttributedString(string: "Papaya")
         attributedString.addAttribute(.kern, value: CGFloat(-2), range: NSRange(location: 0, length: attributedString.length))
-        attributedString.addAttribute(.foregroundColor, value: UIColorFromRGB(0xFFD600), range: NSRange(location: 7, length: 1))
         logoName.attributedText = attributedString
         logoView.addSubview(logoName)
         
@@ -307,7 +306,11 @@ class LoadingViewController: UIViewController {
         currentOrderView.snp.makeConstraints { make in
             make.left.right.equalToSuperview()
             make.height.equalTo(50)
-            make.bottom.equalToSuperview().inset(49)
+            if #available(iOS 11, *) {
+                make.bottom.equalTo(tabBarController.view.safeAreaLayoutGuide).inset(49)
+            } else {
+                make.bottom.equalToSuperview().inset(49)
+            }
         }
         
         StatusFetcher.shared.delegate = currentOrderView
@@ -349,7 +352,7 @@ class CurrentOrderView: UIView, StatusFetcherDelegate {
     }
     
     private let topBorder = UIView()
-    private let backgroundView = UIVisualEffectView()
+    private let backgroundView = UIView()
     private let orderLabel = UILabel()
     private let statusView = UIView()
     private let statusViewLabel = UILabel()
@@ -391,18 +394,18 @@ class CurrentOrderView: UIView, StatusFetcherDelegate {
     }
     
     private func buildViews() {
-        backgroundView.effect = UIBlurEffect(style: .prominent)
+        backgroundView.backgroundColor = UIColor(red: 247/255, green: 247/255, blue: 247/255, alpha: 1)
         addSubview(backgroundView)
 
         topBorder.backgroundColor = UIColorFromRGB(0xdbdbdb)
-        backgroundView.contentView.addSubview(topBorder)
+        backgroundView.addSubview(topBorder)
         
         orderLabel.font = Font.gotham(size: 17)
         orderLabel.textColor = .black
-        backgroundView.contentView.addSubview(orderLabel)
+        backgroundView.addSubview(orderLabel)
         
         statusView.backgroundColor = UIColor(named: .green)
-        backgroundView.contentView.addSubview(statusView)
+        backgroundView.addSubview(statusView)
         
         statusViewLabel.textColor = .white
         statusViewLabel.font = Font.gotham(size: 12)
@@ -417,10 +420,10 @@ class CurrentOrderView: UIView, StatusFetcherDelegate {
         viewButton.titleLabel?.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
         viewButton.imageView?.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
         viewButton.addTarget(self, action: #selector(tapped), for: .touchUpInside)
-        backgroundView.contentView.addSubview(viewButton)
+        backgroundView.addSubview(viewButton)
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(tapped))
-        backgroundView.contentView.addGestureRecognizer(tap)
+        backgroundView.addGestureRecognizer(tap)
     }
     
     @objc private func tapped() {

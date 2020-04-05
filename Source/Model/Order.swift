@@ -3,13 +3,13 @@
 //  Papaya
 //
 //  Created by Gabriel Jones on 8/19/18.
-//  Copyright © 2018 Papaya. All rights reserved.
+//  Copyright © 2018 Papaya Ltd. All rights reserved.
 //
 
 import Foundation
 import SwiftyJSON
 
-struct Transaction: BaseObject {
+final class Transaction: BaseObject {
     public let id: Int
     public let baseAmount: Float
     public let capturedAmount: Float
@@ -45,7 +45,7 @@ struct Transaction: BaseObject {
     }
 }
 
-struct OrderItem: BaseObject {
+final class OrderItem: BaseObject {
     
     public enum ReplaceOption: String {
         case skip
@@ -107,7 +107,7 @@ struct OrderItem: BaseObject {
     }
 }
 
-struct Delivery: BaseObject {
+final class Delivery: BaseObject {
     public let id: Int
     public let address: Address
     
@@ -137,7 +137,7 @@ struct Delivery: BaseObject {
     }
 }
 
-struct Order: BaseObject {
+final class Order: BaseObject {
     
     public enum Status: String {
         case new, packing, packed, delivery, finished, declined
@@ -234,7 +234,7 @@ struct Order: BaseObject {
     }
 }
 
-struct OrderStatus: BaseObject {
+final class OrderStatus: BaseObject {
     public let id: Int
     public let status: Order.Status
     
@@ -243,12 +243,44 @@ struct OrderStatus: BaseObject {
             let _id = dict["id"].int,
             let _statusString = dict["status"].string,
             let _status = Order.Status(rawValue: _statusString)
-            else {
-                return nil
+        else {
+            return nil
         }
         
         id = _id
         status = _status
+    }
+}
+
+final class OrderHistory: BaseObject {
+    public let id: Int
+    public let status: Order.Status
+    public let bags: Int?
+    public let timeClosed: Date?
+    public let total: Double?
+    public let deliveryAddress: Address?
+    public let isDelivery: Bool
+    public let isPriority: Bool
+    
+    init?(dict: JSON) {
+        guard
+            let _id = dict["id"].int,
+            let _statusString = dict["status"].string,
+            let _status = Order.Status(rawValue: _statusString),
+            let _isDelivery = dict["is_delivery"].bool,
+            let _isPriority = dict["is_priority"].bool
+        else {
+            return nil
+        }
+        
+        id = _id
+        status = _status
+        bags = dict["bags"].int
+        timeClosed = dateTimeFormatter.date(from: dict["time_closed"].string)
+        total = dict["total"].double
+        deliveryAddress = Address(dict: dict["delivery"]["address"])
+        isDelivery = _isDelivery
+        isPriority = _isPriority
     }
 }
 
